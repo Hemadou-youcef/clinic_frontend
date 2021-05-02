@@ -1,81 +1,16 @@
 <template>
-  <v-container fluid >
+  <v-container fluid class="pa-5 pl-0 pb-0">
+
     <v-row class="fill-height">
-      <v-col cols="2">
-        <v-row>
-          <v-col>
-            <v-expansion-panels class="mb-6 rounded-0">
-              <v-expansion-panel>
-                <v-expansion-panel-header expand-icon="mdi-menu-down rounded-0">
-                  WEEKDAY
-                </v-expansion-panel-header>
-                <v-expansion-panel-content class="rounded-0">
-                  <v-row
-                      no-gutters
-                      style="width: available"
-                  >
-                    <v-col>
-                      <v-checkbox
-                          v-model="weekday"
-                          label="Sunday"
-                          v-bind:value="0"
-                      ></v-checkbox>
-                    </v-col>
-                    <v-col>
-                      <v-checkbox
-                          v-model="weekday"
-                          label="Tuesday"
-                          v-bind:value="2"
-                      ></v-checkbox>
-                    </v-col>
-                    <v-col>
-                      <v-checkbox
-                          v-model="weekday"
-                          label="Wednesday"
-                          v-bind:value="3"
-                      ></v-checkbox>
-                    </v-col>
-                    <v-col>
-                      <v-checkbox
-                          v-model="weekday"
-                          label="Thursday"
-                          v-bind:value="4"
-                      ></v-checkbox>
-                    </v-col>
-                    <v-col>
-                      <v-checkbox
-                          v-model="weekday"
-                          label="Friday"
-                          v-bind:value="5"
-                      ></v-checkbox>
-                    </v-col>
-                    <v-col>
-                      <v-checkbox
-                          v-model="weekday"
-                          label="Saturday"
-                          v-bind:value="6"
-                      ></v-checkbox>
-                    </v-col>
-                  </v-row>
-                </v-expansion-panel-content>
-              </v-expansion-panel>
-            </v-expansion-panels>
-          </v-col>
-          <v-col>
-
-          </v-col>
-        </v-row>
-
-      </v-col>
-      <v-col cols="10">
-        <v-sheet height="64">
+      <v-col class="pt-0 pr-0">
+        <v-sheet height="64"  dark>
           <v-toolbar
               flat
+              :color="(darkMode)?'':'light-blue darken-4'"
           >
             <v-btn
                 outlined
                 class="mr-4"
-                color="grey darken-2"
                 @click="setToday"
             >
               Today
@@ -84,7 +19,6 @@
                 fab
                 text
                 small
-                color="grey darken-2"
                 @click="prev"
             >
               <v-icon small>
@@ -95,27 +29,44 @@
                 fab
                 text
                 small
-                color="grey darken-2"
                 @click="next"
             >
               <v-icon small>
                 mdi-chevron-right
               </v-icon>
             </v-btn>
-            <v-toolbar-title v-if="$refs.calendar">
+            <v-toolbar-title v-if="$refs.calendar" >
               {{ $refs.calendar.title }}
             </v-toolbar-title>
+
             <v-spacer></v-spacer>
+
+            <v-btn
+                @click="hover = true"
+                class="white--text ma-2 ml-0 rounded-0 blue darken-2 "
+            >
+              ADD
+              <v-icon color="white" class="pl-2">mdi-plus-box</v-icon>
+            </v-btn>
+            <v-btn
+                @click="hover = true"
+                class="white--text ma-2 ml-0 rounded-0 red darken-2"
+            >
+              DELETE
+              <v-icon color="white" class="pl-2">mdi-delete-outline</v-icon>
+            </v-btn>
+
             <v-menu
                 bottom
                 right
+                dark
             >
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
                     outlined
-                    color="grey darken-2"
                     v-bind="attrs"
                     v-on="on"
+
                 >
                   <span>{{ typeToLabel[type] }}</span>
                   <v-icon right>
@@ -153,39 +104,50 @@
               @click:date="viewDay"
               @mousedown:event="editAppointment"
               @mousedown:time="addAppointment"
+              :first-interval= 16
+              :interval-minutes= 30
+              :interval-count= 22
               @change="updateRange"
               :weekdays="weekday"
           ></v-calendar>
-          <v-fade-transition >
+          <div>
+            <v-fade-transition >
 
-            <v-overlay
-                v-if="hover"
-                absolute
+              <v-overlay
+                  v-if="hover"
+                  absolute
 
-            >
+              >
                 <v-icon  @click="hover = false;timed = false" color="white" large>
                   mdi-close-box
                 </v-icon>
-              <AddAppointment :dateApp="dateApp" :timeApp="timeApp" :timeLApp="timeLApp" :timed="timed" :patient="patientName"/>
-            </v-overlay>
-          </v-fade-transition>
+                <AddAppointment :dateApp="dateApp" :timeApp="timeApp" :timeLApp="timeLApp" :timed="timed" :patient="patientName"/>
+              </v-overlay>
+            </v-fade-transition>
+          </div>
+
 
         </v-sheet>
 
       </v-col>
     </v-row>
+    <AppFooter :darkMode="darkMode"/>
   </v-container>
 </template>
 
 <script>
 import AddAppointment from "../components/AddAppointment";
+import AppFooter from "../components/AppFooter";
 export default {
-  components: {AddAppointment},
+  components: {AppFooter, AddAppointment},
+  props: [
+      'darkMode'
+  ],
   data: () => ({
     name: "agenda",
     hover : false,
     focus: '',
-    type: 'month',
+    type: 'week',
     weekday: [0,1,2,3,4,5,6],
     typeToLabel: {
       month: 'Month',
@@ -215,7 +177,7 @@ export default {
       if(!this.timed) {
         this.dateApp = event.date;
         this.timeApp = event.time;
-
+        this.timeLApp = 0;
         this.hover = true
       }
     },
@@ -229,7 +191,7 @@ export default {
         this.dateApp = fdate.getFullYear() + '-' + (fdate.getMonth() + 1) + '-' + fdate.getDate();
         this.timeApp = fdate.getHours().toString() + ':' + fdate.getMinutes().toString();
         this.patientName = event.name
-        this.length(event.start ,event.end)
+        this.longeur(event.start ,event.end)
 
         this.hover = true
       }
@@ -250,7 +212,7 @@ export default {
     next () {
       this.$refs.calendar.next()
     },
-    length (first, second) {
+    longeur (first,second) {
       var firstD = new Date(first)
       var secondD = new Date(second)
       var minus = (secondD.getTime() - firstD.getTime()) / 60000
@@ -295,6 +257,5 @@ export default {
 
 </script>
 
-<style scoped>
-
+<style lang="scss">
 </style>

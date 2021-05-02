@@ -59,9 +59,9 @@ const routes = [
          next({name : 'login'})
      }
   }
-  },{
-        path: '/appointments',
-        name: 'appointment',
+  }, {
+        path: '/agenda',
+        name: 'agenda',
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
@@ -76,6 +76,72 @@ const routes = [
                 next({name : 'login'})
             }
         }
+    },
+    {
+        path: '/patients',
+        name: 'patients',
+        component: () => import(/* webpackChunkName: "about" */ '../views/Patients.vue'),
+        beforeEnter: (to ,from , next ) => {
+            if(store.state.authenticated){
+                console.log('auth OK')
+                next()
+            }else{
+                console.log('auth not OK')
+
+                next({name : 'login'})
+            }
+        }
+    },
+    {
+        path: '/patients/:id',
+        name: 'patient',
+
+        component: () => import(/* webpackChunkName: "about" */ '../views/Patient.vue'),
+        beforeEnter: (to ,from , next ) => {
+            if(store.state.authenticated){
+                console.log('auth OK')
+                next()
+            }else{
+                console.log('auth not OK')
+
+                next({name : 'login'})
+            }
+        }
+    },
+    {
+        path: '/medicines',
+        name: 'medicines',
+        component: () => import(/* webpackChunkName: "about" */ '../views/Medicines.vue'),
+        beforeEnter: (to ,from , next ) => {
+            if(store.state.authenticated){
+                console.log('auth OK')
+                next()
+            }else{
+                console.log('auth not OK')
+
+                next({name : 'login'})
+            }
+        }
+    },
+    {
+        path: '/statistique',
+        name: 'statistique',
+        component: () => import(/* webpackChunkName: "about" */ '../views/Statistique.vue'),
+        beforeEnter: (to ,from , next ) => {
+            if(store.state.authenticated){
+                console.log('auth OK')
+                next()
+            }else{
+                console.log('auth not OK')
+
+                next({name : 'login'})
+            }
+        }
+    },
+    {
+        path: '/*',
+        name: 'Notfound',
+        component: () => import(/* webpackChunkName: "about" */ '../views/Notfound.vue')
     }
 ]
 

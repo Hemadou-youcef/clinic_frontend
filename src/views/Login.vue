@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-container fluid fill-height class="loginOverlay">
+    <v-container fluid fill-height class="loginOverlay pt-10">
       <v-layout flex align-center justify-center>
         <v-flex xs12 md6 sm8 elevation-6>
           <v-toolbar height="80" class="pt-5 grey darken-4">
@@ -14,7 +14,7 @@
                   </div>
               <v-spacer></v-spacer>
           </v-toolbar>
-          <v-card>
+          <v-card class="rounded-0">
             <v-card-text class="pt-4">
               <div>
                 <v-form v-model="valid" ref="form">
