@@ -2,7 +2,7 @@
   <div>
     <v-container fluid fill-height class="loginOverlay">
       <v-layout flex align-center justify-center>
-        <v-flex xs12 sm4 elevation-6>
+        <v-flex xs12 md6 sm8 elevation-6>
           <v-toolbar height="80" class="pt-5 grey darken-4">
               <v-spacer></v-spacer>
 
@@ -18,24 +18,33 @@
             <v-card-text class="pt-4">
               <div>
                 <v-form v-model="valid" ref="form">
+
                   <v-text-field
+                      :error-messages="errors.username"
+
                       prepend-icon="mdi-account"
                       label="Enter your username"
-                      v-model="username"
+                      v-model="form.username"
                       :rules="usernameRules"
                       required
                       class="mt-3"
+                      @focus="errors.username = ''"
                   ></v-text-field>
                   <v-text-field
+                      :error-messages="errors.password"
                       prepend-icon="mdi-lock"
                       type="password"
                       label="Enter your password"
-                      v-model="password"
+                      v-model="form.password"
                       min="8"
                       :rules="passwordRules"
                       required
                       class="mb-3"
+                      @focus="errors.password = ''"
+
                   ></v-text-field>
+                  <div class="caption error--text ml-3" v-if="errors.UserNotValid">{{errors.UserNotValid[0]}}</div>
+
                   <v-layout justify-space-between>
                     <v-spacer></v-spacer>
                     <v-btn @click="submit" :disabled="!valid"  :class=" { 'blue darken-4 white--text' : valid, 'disabled': !valid }">Login</v-btn>
@@ -59,21 +68,45 @@ export default {
   data () {
     return {
       valid: false,
-      password: '',
       passwordRules: [
         (v) => !!v || 'Password is required',
         (v) => v.length > 7 || "password must be greated that 8 characters"
       ],
-      username: '',
+
       usernameRules: [
         (v) => !!v || 'username is required',
       ],
+      form : {
+        username: '',
+        password: ''
+      },
+      errors:[]
     }
   },
   methods: {
     submit () {
       if (this.$refs.form.validate()) {
-        console.log('form submited')
+        // eslint-disable-next-line no-unused-vars
+        this.axios.get('/csrf-cookie').then(response => {
+
+          this.axios.post('/login' , this.form).then((res) => {
+
+            localStorage.setItem('auth' , 1 )
+            localStorage.setItem('role' , res.data.role)
+            this.$store.commit('authenticate' , true)
+            console.log(res.data)
+            this.$store.commit('setRole' , res.data.role)
+            this.$router.push({name : 'dashboard'})
+          }).catch(
+
+              err => {
+                this.errors = err.response.data.errors
+                console.log(this.errors)
+              }
+
+          )
+        });
+
       }
     },
     clear () {
