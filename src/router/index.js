@@ -51,7 +51,6 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/Dashboard.vue'),
     beforeEnter: (to ,from , next ) => {
      if(store.state.authenticated){
-         console.log('auth OK')
        next()
      }else{
          console.log('auth not OK')
@@ -65,10 +64,9 @@ const routes = [
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "about" */ '../views/agenda.vue'),
+        component: () => import(/* webpackChunkName: "about" */ '../views/Agenda.vue'),
         beforeEnter: (to ,from , next ) => {
             if(store.state.authenticated){
-                console.log('auth OK')
                 next()
             }else{
                 console.log('auth not OK')
@@ -83,7 +81,6 @@ const routes = [
         component: () => import(/* webpackChunkName: "about" */ '../views/Patients.vue'),
         beforeEnter: (to ,from , next ) => {
             if(store.state.authenticated){
-                console.log('auth OK')
                 next()
             }else{
                 console.log('auth not OK')
@@ -99,7 +96,6 @@ const routes = [
         component: () => import(/* webpackChunkName: "about" */ '../views/Patient.vue'),
         beforeEnter: (to ,from , next ) => {
             if(store.state.authenticated){
-                console.log('auth OK')
                 next()
             }else{
                 console.log('auth not OK')
@@ -114,7 +110,6 @@ const routes = [
         component: () => import(/* webpackChunkName: "about" */ '../views/Medicines.vue'),
         beforeEnter: (to ,from , next ) => {
             if(store.state.authenticated){
-                console.log('auth OK')
                 next()
             }else{
                 console.log('auth not OK')
@@ -124,12 +119,11 @@ const routes = [
         }
     },
     {
-        path: '/statistique',
-        name: 'statistique',
-        component: () => import(/* webpackChunkName: "about" */ '../views/Statistique.vue'),
+        path: '/statistics',
+        name: 'statistics',
+        component: () => import(/* webpackChunkName: "about" */ '../views/Statistics'),
         beforeEnter: (to ,from , next ) => {
             if(store.state.authenticated){
-                console.log('auth OK')
                 next()
             }else{
                 console.log('auth not OK')

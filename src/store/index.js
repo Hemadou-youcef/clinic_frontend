@@ -1,13 +1,14 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-
+import router from '../router/index.js'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
     authenticated: localStorage.getItem('auth') ? true : false,
-    role: localStorage.getItem('role')  || 'guest',
-      user: {}
+    role: localStorage.getItem('role')  || 'null',
+    user: {},
+
 
   },
   getters: {
@@ -32,6 +33,24 @@ export default new Vuex.Store({
                   context.commit('setUser' , res.data)
               }
           )
+      },
+      logout(context) {
+          Vue.axios.post('/logout').then(res => {
+              console.log('logout request')
+              console.log(res)
+              localStorage.removeItem('auth')
+              localStorage.removeItem('role')
+              context.commit('authenticate' , false)
+              context.commit('setRole' , null)
+              context.commit('setUser' , {})
+              if (!(router.currentRoute.name == 'login')){
+                  router.push({name : 'login'})
+              }
+
+          }).catch((err) => {
+              console.log('logout error')
+              console.log(err)
+          })
       },
   },
   modules: {

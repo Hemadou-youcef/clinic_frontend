@@ -43,7 +43,7 @@
                       @focus="errors.password = ''"
 
                   ></v-text-field>
-                  <div class="caption error--text ml-3" v-if="errors.UserNotValid">{{errors.UserNotValid[0]}}</div>
+                  <div class="caption error--text ml-3" v-if="errors.UserNotFound">{{errors.UserNotFound[0]}}</div>
 
                   <v-layout justify-space-between>
                     <v-spacer></v-spacer>
@@ -90,18 +90,20 @@ export default {
         this.axios.get('/csrf-cookie').then(response => {
 
           this.axios.post('/login' , this.form).then((res) => {
-
+            console.log('login request')
+            console.log(res.data)
             localStorage.setItem('auth' , 1 )
             localStorage.setItem('role' , res.data.role)
             this.$store.commit('authenticate' , true)
-            console.log(res.data)
             this.$store.commit('setRole' , res.data.role)
+            this.$store.dispatch('getUser')
             this.$router.push({name : 'dashboard'})
           }).catch(
 
-              err => {
+              (err) => {
                 this.errors = err.response.data.errors
-                console.log(this.errors)
+                console.log('login errors')
+                console.log(err.response.data)
               }
 
           )

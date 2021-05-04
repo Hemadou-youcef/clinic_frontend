@@ -1,59 +1,112 @@
 <template>
-  <div>
-    <v-container fluid fill-height class="loginOverlay">
-      <v-layout flex align-center justify-center>
-        <v-flex xs12 sm4 elevation-6 class="loginOverlayFlex">
-          <v-toolbar height="80" class="pt-5 grey" style="background-color: #0f6674 !important;">
+  <div >
+
+
+          <v-toolbar height="80" class="pt-5 grey" style="background-color: #070606 !important;">
+
+            <v-row>
               <v-spacer></v-spacer>
 
+              <div class="white--text mb-10 " style="font-size: 1.5em;">
 
-                  <div class="white--text mb-10 " style="font-size: 1.5em;">
+                <v-icon size="50" color="white">mdi-account-plus</v-icon>
 
-                    <v-icon size="50" color="white">mdi-account-plus</v-icon>
-
-                  </div>
+              </div>
               <v-spacer></v-spacer>
+            </v-row>
+
           </v-toolbar>
-          <v-card>
+          <v-card class="pa-6">
+
             <v-card-text class="pt-4">
+              <v-row justify="center" class="font-weight-black">
+                <div>ADD NEW PATIENT</div>
+
+              </v-row>
               <div>
                 <v-form v-model="valid" ref="form">
                   <v-text-field
+                      :error-messages="formErrors.firstname"
+                      @focus="formErrors.firstname= ''"
                       label="First Name"
-                      v-model="first_name"
+                      v-model="patientForm.firstname"
                       :rules="requireField"
                       required
-                      class="mt-3"
+                      class="mt-1"
                   ></v-text-field>
 
                   <v-text-field
+                      :error-messages="formErrors.lastname"
+                      @focus="formErrors.lastname= ''"
                       label="Last name"
-                      v-model="last_name"
+                      v-model="patientForm.lastname"
                       :rules="requireField"
                       required
-                      class="mt-3"
+                      class="mt-1"
                   ></v-text-field>
+                  <v-row class="mt-2">
+                    <v-col cols="6">
+                      <v-combobox
+                          :error-messages="formErrors.gender"
+                          @focus="formErrors.gender= ''"
+                          label="Patient gender"
+                          dense
+                          :rules="requireField"
+                          v-model="patientForm.gender"
+                          value="male"
 
+                          :items="genders"
+
+                      >Gender</v-combobox>
+                    </v-col>
+                    <v-col cols="6">
+                      <v-combobox
+                          :error-messages="formErrors.bloodType"
+                          @focus="formErrors.bloodType= ''"
+                          label="Patient blood type"
+                          dense
+                          :rules="requireField"
+                          v-model="patientForm.bloodType"
+
+
+                          :items="bloodType"
+
+                      >Gender</v-combobox>
+                    </v-col>
+                  </v-row>
                   <v-text-field
+                      :error-messages="formErrors.address"
+                      @focus="formErrors.address= ''"
+                      label="Address"
+                      v-model="patientForm.address"
+                      :rules="requireField"
+                      required
+                      class="mt-1"
+                  ></v-text-field>
+                  <v-text-field
+                      :error-messages="formErrors.phone"
+                      @focus="formErrors.phone= ''"
                       label="Phone Number"
-                      v-model="phone"
+                      v-model="patientForm.phone"
                       :rules="phoneRules"
                       required
-                      class="mt-3"
+                      class="mt-1"
                   ></v-text-field>
 
                   <v-menu
                       ref="menu"
                       v-model="menu"
                       :close-on-content-click="false"
-                      :return-value.sync="date"
+                      :return-value.sync="patientForm.birthday"
                       transition="scale-transition"
                       offset-y
                       min-width="auto"
                   >
                     <template v-slot:activator="{ on, attrs }">
                       <v-text-field
-                          v-model="date"
+                          :error-messages="formErrors.birthday"
+                          @focus="formErrors.birthday= ''"
+                          v-model="patientForm.birthday"
                           label="Birthday"
                           prepend-icon="mdi-calendar"
                           readonly
@@ -62,7 +115,7 @@
                       ></v-text-field>
                     </template>
                     <v-date-picker
-                        v-model="date"
+                        v-model="patientForm.birthday"
                         no-title
                         scrollable
                     >
@@ -77,7 +130,7 @@
                       <v-btn
                           text
                           color="primary"
-                          @click="$refs.menu.save(date)"
+                          @click="$refs.menu.save(patientForm.birthday)"
                       >
                         OK
                       </v-btn>
@@ -85,35 +138,22 @@
                   </v-menu>
 
                   <v-text-field
+                      :error-messages="formErrors.email"
+                      @focus="formErrors.email= ''"
                       label="Email"
                       type="email"
-                      v-model="email"
+                      v-model="patientForm.email"
                       :rules="emailRules"
                       required
                       class="mt-3"
                   ></v-text-field>
                   <v-layout justify-space-between>
                     <v-spacer></v-spacer>
-                    <v-btn @click="submit" color="success" :disabled="!valid"  :class=" { 'blue darken-4 white--text' : valid, 'disabled': !valid }">
+                    <v-btn @click="submit" color="black" :disabled="!valid"  :class=" { 'blue darken-4 white--text' : valid, 'disabled': !valid }">
                       ADD PATIENT
                       <v-icon color="white" class="pl-2">mdi-plus-box</v-icon>
                     </v-btn>
-                    <v-snackbar
-                        v-model="snackbar"
-                    >
-                      {{ text }}
 
-                      <template v-slot:action="{ attrs }">
-                        <v-btn
-                            color="pink"
-                            text
-                            v-bind="attrs"
-                            @click="snackbar = false"
-                        >
-                          Close
-                        </v-btn>
-                      </template>
-                    </v-snackbar>
                     <v-spacer></v-spacer>
 
                   </v-layout>
@@ -121,36 +161,42 @@
               </div>
             </v-card-text>
           </v-card>
-        </v-flex>
-      </v-layout>
-    </v-container>
+
   </div>
 </template>
 
 <script>
 export default {
   name: "Login",
+
   data () {
     return {
+
+      patientForm : {
+        firstname: '',
+        lastname: '',
+        password: '',
+        phone: '',
+        email: '',
+        birthday: new Date().toISOString().substr(0, 10),
+        gender: '',
+        bloodType: '',
+        address: ''
+      },
+      formErrors: [],
+
+      genders: ['male' , 'female'],
+      bloodType:  ['O-' , 'O+', 'A+' , 'A-' , 'B+' , 'B-' , 'AB+' , 'AB-'] ,
       valid: false,
-      password: '',
-      first_name: '',
-      last_name: '',
-      phone: '',
-      email: '',
-      date: new Date().toISOString().substr(0, 10),
       menu: false,
       modal: false,
-      snackbar: false,
       text: `Patient added`,
-
       requireField: [
-
-        (v) => !!v || 'name is required',
+        (v) => !!v || 'field is required',
       ],
       phoneRules: [
-        (v) => !isNaN(parseFloat(v)) || 'phone number must be number',
-        (v) => v.length == 10 || 'phone number must have 10 characters'
+
+        (v) => v.length > 4 || 'phone number must have at least 5 numbers'
       ],
       emailRules: [
         v => /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) || 'E-mail must be valid'
@@ -160,20 +206,29 @@ export default {
   methods: {
     submit () {
       if (this.$refs.form.validate()) {
-        this.snackbar = true;
-        this.clear();
-        console.log('form submited')
+
+            this.addPatient()
       }
     },
+    addPatient(){
+      this.axios.post('/patient/create' , this.patientForm).
+          then(res => {
+            console.log('create new patient request')
+            console.log(res)
+            this.$emit('closeDialog' , 'Patient Added');
+            this.snackbar = true;
+      }).catch(err => {
+            this.formErrors = err.response.data.errors
+            console.log(err)
+      })
+    }
+    ,
     clear () {
       this.$refs.form.reset()
     },
-
   },
-
 }
 </script>
 
 <style scoped>
-
 </style>
