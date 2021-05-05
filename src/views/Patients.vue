@@ -6,11 +6,14 @@
         <v-card-title class="text-center text-h4">Patients list</v-card-title>
 
         <v-text-field
+            @keydown.enter="searchPatient"
             prepend-inner-icon="mdi-account-search"
+            @input="isTyping = true"
             filled
             label="Search patient"
             clearable
-        ></v-text-field>
+            v-model="searchQuery"
+        ><v-icon right>mdi-search</v-icon></v-text-field>
 
         <!--       Patients Pagination-->
         <div v-if="pagination.pagesCount" class="text-center mb-8">
@@ -20,7 +23,13 @@
               v-model="pagination.currentPage"
               :length="pagination.pagesCount"
           ></v-pagination>
+
+
         </div>
+        <div v-show="noResultMessage" class="text-center text--darken-3 text-h4 py-4">No result</div>
+
+
+        <!--        Loading button-->
         <div class="text-center pb-5">
           <v-btn
               :loading="loadingButton"
@@ -29,6 +38,7 @@
               color="blue-grey"
               class="ma-2 white--text"
               fab
+              small
               @click="loader = 'loading5'"
           >
             <v-icon dark>
@@ -151,6 +161,7 @@
 import PatientCard from "../components/PatientCard";
 import AddPatient from "../components/AddPatient";
 import EditPatient from "../components/EditPatient";
+import _ from 'lodash';
 // eslint-disable-next-line no-unused-vars
 import {EventBus} from "../plugins/EventBus";
 
@@ -172,7 +183,7 @@ export default {
     editPatientID: 0,
     pagination: {
       currentPage: 1,
-      pagesCount: 0,
+      pagesCount: 0 ,
     },
     loadingButton: false,
     addPatientDialog: false,
@@ -180,15 +191,34 @@ export default {
     deletePatientDialog: false,
     deletePatientId : null,
     snackbar: false,
-    snackbarMessage: ''
+    snackbarMessage: '',
+    searchQuery : '',
+    noResultMessage: false,
+    isTyping: false
 
 
   }),
   watch: {
-    'pagination.currentPage': function (newPage, oldPage) {
-      console.log('page changed from ' + oldPage + 'to  ' + newPage)
+    'pagination.currentPage': function (newPage) {
       this.getPatients(newPage)
     },
+    searchQuery: _.debounce(function() {
+      if(this.searchQuery){
+        this.isTyping = false;
+      }
+      else{
+        this.getPatients()
+      }
+
+    }, 400),
+
+    isTyping: function(value) {
+      if (!value) {
+        this.searchPatient();
+      }
+
+
+    }
 
   },
   methods: {
@@ -197,15 +227,11 @@ export default {
       this.loadingButton = true
       this.axios.get(`/patients?page=${page}`)
           .then(res => {
+            this.handerResponse(res)
 
-            this.pagination.currentPage = res.data.current_page
-            this.pagination.pagesCount = res.data.last_page
-            // res.data.data.map(el => {
-            //   console.log( Date(el.birthday) )
-            // })
-            this.patientsList = res.data.data
-            this.loadingButton = false
-          })
+          }).catch(err => {
+        console.log(err)
+      })
     },
 
     closeDialog(message) {
@@ -233,9 +259,9 @@ export default {
     },
     deletePatient(){
       this.axios.post(`/patient/delete/${this.deletePatientId}`)
+          // eslint-disable-next-line no-unused-vars
       .then(res => {
         console.log('deleting user '+ this.deletePatientId);
-        console.log(res)
         this.deletePatientDialog= false
 
         this.showSnackBar('Patient Deleted')
@@ -245,14 +271,38 @@ export default {
       .catch(err => {
         console.log(err)
       })
+    },
+    searchPatient() {
+      this.loadingButton = true
+      this.$store.dispatch('searchPatient',this.searchQuery).then((res) => {
+        this.handerResponse(res)
+      }).catch(err => {
+        console.log(err)
+      })
+    },
+    handerResponse(res){
+      console.log('handling response ')
+      console.log(res)
+      this.pagination.currentPage = res.data.current_page
+      if (res.data.total == 0){
+        this.noResultMessage = true
+        this.pagination.pagesCount = 0
+      }else{
+        this.noResultMessage = false
+        this.pagination.pagesCount = res.data.last_page
+
+      }
+      this.patientsList = res.data.data
+      this.loadingButton = false
+
     }
   },
   created() {
-    console.log('patients componenct created then get patients')
     this.getPatients()
   },
   updated() {
   },
+
   computed: {}
 
 

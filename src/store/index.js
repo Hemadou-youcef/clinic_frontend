@@ -8,6 +8,7 @@ export default new Vuex.Store({
     authenticated: localStorage.getItem('auth') ? true : false,
     role: localStorage.getItem('role')  || 'null',
     user: {},
+    patientsSearch:[]
 
 
   },
@@ -23,7 +24,10 @@ export default new Vuex.Store({
       },
       setUser:(state, payload) => {
           state.user = payload
-      }
+      },
+      setPatientsSearch : (state,payload) =>{
+          state.patientsSearch = payload
+    },
   },
   actions: {
       getUser(context){
@@ -52,6 +56,22 @@ export default new Vuex.Store({
               console.log(err)
           })
       },
+      searchPatient(context,query){
+          return new Promise(function (resolve, reject) {
+              Vue.axios.get(`/patients?q=${query}`)
+                  .then(res => {
+
+                      context.commit('setPatientsSearch' , res)
+                      resolve(res)
+                  })
+                  .catch (err => {
+                      console.log(err)
+                      reject(err)
+                  })
+          })
+
+
+      }
   },
   modules: {
   },
