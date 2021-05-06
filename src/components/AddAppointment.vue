@@ -1,25 +1,43 @@
 <template>
   <v-card
-      class="mx-auto"
+      class="mx-auto pa-2 pb-0 px-0"
       max-width="500"
+      dark
   >
-
-
     <v-card-text class="p-2">
       <div>
         <v-form v-model="valid" ref="form">
-          <v-select
-              :items="items"
-              label="CHOOSE PATIENT"
+          <v-overflow-btn
+              class="my-2"
+              :items="patients"
+              editable
+              dark
+              label="patient"
               v-model="patientName"
-              dense
-              solo
-          ></v-select>
+              :rules="patientRule"
+              :disabled="timed || loadingInfo"
+              :loading="loadingInfo"
+          >
+          </v-overflow-btn>
+          <v-row>
+            <v-col>
+              <v-switch
+                  v-model="picker_model"
+                  :label="(picker_model) ? 'Dated Model' : 'Longeur Model'"
+              ></v-switch>
+            </v-col>
+            <v-col>
+              <v-switch
+                  v-model="revisit"
+                  color="primary"
+                  :class="{'custom-green': !revisit}"
+                  :loading="loadingInfo"
+                  :label="(!revisit) ? 'Consult' : 'revisite'"
+              ></v-switch>
+            </v-col>
+          </v-row>
 
-          <v-switch
-              v-model="picker_model"
-              :label="(picker_model) ? 'Dated Model' : 'Longeur Model'"
-          ></v-switch>
+
 
           <v-dialog
               ref="date_dialog"
@@ -81,6 +99,9 @@
             <v-time-picker
                 v-if="time_model"
                 v-model="time"
+                :color="(revisit)?'':'#00ee00'"
+                ampm-in-title
+                scrollable
                 full-width
             >
               <v-spacer></v-spacer>
@@ -123,7 +144,10 @@
             <v-time-picker
                 v-if="time_model2"
                 v-model="time2"
+                :color="(revisit)?'':'#00ee00'"
                 full-width
+                scrollable
+                ampm-in-title
             >
               <v-spacer></v-spacer>
               <v-btn
@@ -155,30 +179,22 @@
 
           <v-layout justify-space-between>
             <v-spacer></v-spacer>
-            <v-btn v-if="!timed" @click="submit" :disabled="!valid"  :class=" { 'blue darken-1 white--text' : valid, 'disabled': !valid }">
+            <v-btn v-if="!timed" @click="CheckAvailable(true)" :loading="Submitloading" :disabled="!valid"  :class=" { 'blue darken-1 white--text' : valid, 'disabled': !valid }">
               ADD APPOINTMENT
               <v-icon color="white" class="pl-2">mdi-plus-box</v-icon>
             </v-btn>
-            <v-btn v-else @click="submit" :disabled="!valid" color="success" :class=" { ' white--text' : valid, 'disabled': !valid }">
-              EDIT APPOINTMENT
-              <v-icon color="white" class="pl-2">mdi-pencil</v-icon>
-            </v-btn>
-            <v-snackbar
-                v-model="snackbar"
-            >
-              {{ message }}
+            <div v-else >
+              <v-btn @click="CheckAvailable(false)" :loading="Editloading" :disabled="!valid" color="success" :class=" { ' white--text' : valid, 'disabled': !valid }">
+                EDIT APPOINTMENT
+                <v-icon color="white" class="pl-2">mdi-pencil</v-icon>
+              </v-btn>
+              <v-btn @click="deleteAppointment" :loading="Deleteloading" :disabled="!valid" color="red" class="ml-2" :class=" { ' white--text' : valid}">
+                DELETE
+                <v-icon color="white" class="pl-2">mdi-delete-outline</v-icon>
+              </v-btn>
+            </div>
 
-              <template v-slot:action="{ attrs }">
-                <v-btn
-                    color="pink"
-                    text
-                    v-bind="attrs"
-                    @click="snackbar = false"
-                >
-                  Close
-                </v-btn>
-              </template>
-            </v-snackbar>
+
             <v-spacer></v-spacer>
 
           </v-layout>
@@ -191,19 +207,25 @@
 <script>
 export default {
 name: "AddAppointment",
+  props: [
+    'dateApp','timeApp','timeLApp','timed','patientId','color','appointmentId'
+  ],
   data () {
     return {
-      items: [
-          'Hemadou Youcef',
-          'Hemadi anis',
-          'bouloudnine sami',
-          'zahi oussama',
-          'bensakria aboud',
-          'laib zakaria',
-      ],
-      picker_model : false,
+      patients: [],
+      patientsInfo: [],
+      patientName: '',
+      hello : '',
 
-      patientName: this.patient,
+      picker_model : false,
+      revisit: false,
+      loadingInfo: true,
+      Submitloading: false,
+      Editloading: false,
+      Deleteloading: false,
+      valid: false,
+
+
 
       time: this.TimeDesign(this.timeApp),
       time_model: false,
@@ -213,54 +235,98 @@ name: "AddAppointment",
       time2: this.timeApp,
       time_model2: false,
 
-      date: new Date(this.dateApp).toISOString().substr(0, 10),
+      date: new Date(this.dateApp + ' 01:00:00').toISOString().substr(0, 10),
       date_model: false,
 
-      valid: false,
-      snackbar: false,
-      message: 'appointment added'
+      patientRule: [
+        (v) => !!v || 'Patient is required',
+      ],
+      form : {
+        patient_id: '',
+        date: '',
+        start_time: '',
+        end_time: '',
+        status: '',
+      },
+      AppointmentForm : {
+        id: '',
+        confirme: 'yes'
+      },
     }
   },
-  props: [
-      'dateApp','timeApp','timeLApp','timed','patient'
-  ],
-  watch: {
-    picker_model (v){
-      if(v){
-        this.time = this.TimeDesign(this.time)
-        this.time2 = this.TimeDesign(this.CalcAddedTime(this.time,this.longeur))
-      }else {
-        this.longeur = this.CalcLongeur(this.time2,this.time)
-      }
-    },
-    time (v){
-      const long = this.CalcLongeur(this.time2,v)
-      if(long < 0) {
-        v = this.time2
-      }else {
-        this.longeur = long
-      }
-    },
-    time2 (v){
-      const long = this.CalcLongeur(v,this.time)
+  computed: {
 
-      if(long < 0) {
-        v = this.time
-      }else {
-        this.longeur = long
-      }
-    },
-    longeur (v){
-      if(!isNaN(v)){
-        if(!(v === '')) {
-          this.time2 = this.TimeDesign(this.CalcAddedTime(this.time,v))
-        }
-      }
-    },
   },
   methods: {
-    submit (){
-      this.snackbar= true;
+    allowedHours: m => m > 8 && m < 17,
+    submitAppointment (){
+          this.axios.post('/appointment/add' , this.form).then(() => {
+            this.Submitloading = false;
+            this.$emit('HideOverLay')
+            this.$emit('ShowSnackBar','appointment Added',(this.revisit)?'primary':'green')
+          }).catch(
+              err => {
+                this.errors = err.response.data.errors
+                console.log(this.errors)
+              }
+
+          )
+    },
+    EditAppointment (){
+        this.axios.post('/appointment/edit', Object.assign(this.form, this.AppointmentForm)).then(() => {
+          this.Editloading = false;
+          this.$emit('HideOverLay')
+          this.$emit('ShowSnackBar', 'appointment Edited','green')
+        }).catch(
+            err => {
+              this.errors = err.response.data.errors
+              console.log(this.errors)
+            }
+        )
+    },
+    deleteAppointment (){
+      this.Deleteloading = true;
+      this.axios.post('/appointment/delete' , this.AppointmentForm).then(() => {
+        this.Deleteloading = false;
+        this.$emit('HideOverLay')
+        this.$emit('ShowSnackBar','appointment Deleted','red')
+      }).catch(
+          err => {
+            this.errors = err.response.data.errors
+            console.log(this.errors)
+          }
+      )
+
+    },
+    CheckAvailable (Add){
+      if(Add) {
+        this.Submitloading = true;
+      }else{
+        this.Editloading = true;
+      }
+      this.axios.get('/appointments/range',{
+        params: { fromtime : this.form.start_time,
+          totime: this.form.end_time,
+          fromdate: this.form.date,
+          todate: this.form.date} })
+          .then((res) => {
+            if(res.data.length == 0 || res.data[0].id == this.AppointmentForm.id){
+              if(Add) this.submitAppointment()
+              else this.EditAppointment ()
+            }else {
+              this.Submitloading = false;
+              this.Editloading = false;
+              this.$emit('ShowSnackBar','Time Already reserved !!!','red')
+            }
+
+      }).catch(
+
+          err => {
+            this.errors = err.response.data.errors
+            console.log(this.errors)
+          }
+
+      )
     },
     CalcLongeur (first,second) {
       var changed_time = first.split(':')
@@ -294,12 +360,108 @@ name: "AddAppointment",
       if(TimeArray[0].length == 1) TimeArray[0] = '0' + TimeArray[0].toString()
       if(TimeArray[1].length == 1) TimeArray[1] = '0' + TimeArray[1].toString()
       return TimeArray.join(':')
+    },
+  },
+  watch: {
+    date(v){
+      this.form.date = v;
+    },
+    picker_model (v){
+      if(v){
+        this.time = this.TimeDesign(this.time)
+        this.time2 = this.TimeDesign(this.CalcAddedTime(this.time,this.longeur))
+      }else {
+        this.longeur = this.CalcLongeur(this.time2,this.time)
+      }
+    },
+    time (v){
+      this.form.start_time = v;
+      this.time2 = this.TimeDesign(this.CalcAddedTime(this.time,this.longeur))
+    },
+    time2 (v){
+      this.form.end_time = v;
+      const long = this.CalcLongeur(v,this.time)
+
+      if(long < 0) {
+        v = this.time
+      }else {
+        this.longeur = long
+      }
+    },
+    longeur (v){
+      if(!isNaN(v)){
+        if(!(v === '')) {
+          this.time2 = this.TimeDesign(this.CalcAddedTime(this.time,v))
+          this.form.end_time = this.time2;
+        }
+      }
+    },
+    patientName (v){
+      for(var i = 0; i < this.patientsInfo.length; i += 1) {
+        if(this.patientsInfo[i].name === v) {
+          this.form.patient_id =  this.patientsInfo[i].idreal;
+          break;
+        }
+      }
+    },
+    revisit(v){
+      if(v) this.form.status = 'revisit'
+      else this.form.status = 'consult'
     }
   },
+  created() {
+      this.axios.get('/patients').then((res) => {
+        for (let i = 0; i < res.data.data.length; i++) {
+          const Patientid = res.data.data[i].id
+          const name = res.data.data[i].firstname + ' ' + res.data.data[i].lastname
 
+          this.patients.push(name)
+          this.patientsInfo.push({
+            name:name,
+            idreal: Patientid,
+            id: i,
+          })
+        }
+
+        this.loadingInfo = false
+        if(this.timed){
+          if(!isNaN(this.patientId)){
+            if(!(this.patientId === '')) {
+              var PN;
+              for(var i = 0; i < this.patientsInfo.length; i += 1) {
+                if(this.patientsInfo[i].idreal === this.patientId) {
+                  PN =  this.patientsInfo[i].id;
+                  break;
+                }
+              }
+              if(this.color == 'green') this.revisit = false
+              else this.revisit = true
+
+              this.patientName =  this.patients[PN];
+            }
+          }
+        }
+        this.AppointmentForm.id = this.appointmentId;
+        this.form.date = this.dateApp;
+        this.form.start_time = this.timeApp;
+        this.form.end_time = this.TimeDesign(this.CalcAddedTime(this.time,this.timeLApp));
+        this.form.patient_id = this.patientId;
+        this.form.status = (this.color == 'green')? 'consult':'revisit';
+
+      }).catch(
+          err => {
+            this.errors = err.response.data.errors
+            console.log(this.errors)
+          }
+      )
+
+
+  }
 }
 </script>
 
-<style scoped>
-
+<style>
+  .custom-green .v-input--selection-controls__input div {
+    color: #00ee00 !important;
+  }
 </style>

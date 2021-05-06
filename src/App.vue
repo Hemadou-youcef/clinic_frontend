@@ -55,7 +55,7 @@
       <v-row
 
           pa-0>
-        <v-col cols="2" class="px-0 pb-0" v-if="authenticated">
+        <v-col :cols="WidthBP" class="md px-0 pb-0" v-if="authenticated">
           <v-card
               :dark="darkMode"
               class="fill-height rounded-0"
@@ -187,6 +187,7 @@ export default {
       visibility: false,
       showLoading: false,
       UserInfo: false,
+      screenW : screen.width,
       items: [
         { title: 'Home', icon: 'mdi-view-dashboard',link: '/'},
         { title: 'Appointment', icon: 'mdi-calendar-multiple-check',link: '/agenda'},
@@ -199,8 +200,7 @@ export default {
   },
   methods: {
     logout() {
-      this.axios.post('/logout').then(res => {
-        console.log(res)
+      this.axios.post('/logout').then(() => {
         localStorage.removeItem('auth')
         this.$store.commit('authenticate' , false)
         this.$router.push(('/login'))
@@ -259,12 +259,21 @@ export default {
         return 'https://previews.123rf.com/images/yupiramos/yupiramos1607/yupiramos160705616/59613224-doctor-avatar-profile-isolated-icon-vector-illustration-graphic-.jpg'
       }
       return 'https://cdn1.iconfinder.com/data/icons/avatar-3/512/Secretary-512.png';
-    }
+    },
+    WidthBP () {
+      switch (this.$vuetify.breakpoint.name) {
+        case 'sm': return '12'
+        case 'md': return '3'
+        case 'lg': return '2'
+        case 'xl': return '2'
+      }
+      return 12;
+    },
   }
   ,
   created() {
     if (this.getRole == 'doctor'){
-      this.items.push({ title: 'Consultation', icon: 'mdi-heart-pulse',link: '/Consultation'},);
+      this.items.splice( 4,0, { title: 'Consultation', icon: 'mdi-heart-pulse',link: '/Consultation'});
     }
 
   },
@@ -275,5 +284,8 @@ export default {
 <style>
 #app {
   background-color: #01579B;
+}
+.v-col {
+
 }
 </style>

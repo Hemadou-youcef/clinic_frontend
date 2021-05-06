@@ -90,13 +90,12 @@ export default {
         this.axios.get('/csrf-cookie').then(response => {
 
           this.axios.post('/login' , this.form).then((res) => {
-
             localStorage.setItem('auth' , 1 )
-            localStorage.setItem('role' , res.data.role)
+            localStorage.setItem('role' , res.data[0].role)
             this.$store.commit('authenticate' , true)
-            console.log(res.data)
-            this.$store.commit('setRole' , res.data.role)
-            this.$router.push({name : 'dashboard'})
+
+            this.$store.commit('setRole' , res.data[0].role)
+            this.$router.push({name : 'home'})
           }).catch(
 
               err => {

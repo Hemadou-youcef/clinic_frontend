@@ -21,6 +21,7 @@ export default new Vuex.Store({
         state.role = payload
       },
       setUser:(state, payload) => {
+
           state.user = payload
       }
   },
