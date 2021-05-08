@@ -3,7 +3,6 @@
     <v-container>
 
       <v-card class="pa-4">
-        <v-card-title class="text-center text-h4">Patients list</v-card-title>
 
         <v-text-field
             @keydown.enter="searchPatient"
@@ -19,7 +18,7 @@
         <div v-if="pagination.pagesCount" class="text-center mb-8">
           <v-pagination
               :disabled="loadingButton"
-              color="#09dca4"
+              color="secondary"
               v-model="pagination.currentPage"
               :length="pagination.pagesCount"
           ></v-pagination>
@@ -35,7 +34,7 @@
               :loading="loadingButton"
               :disabled="loadingButton"
               v-show="loadingButton"
-              color="blue-grey"
+              color="secondary"
               class="ma-2 white--text"
               fab
               small
@@ -66,7 +65,7 @@
           <v-tooltip left>
             <template v-slot:activator="{on : tooltip }">
               <v-fab-transition>
-                <v-btn v-bind="attr" v-on="{...dialog , ...tooltip}" color="blue" dark fab fixed bottom right>
+                <v-btn v-bind="attr" v-on="{...dialog , ...tooltip}" color="secondary" dark fab fixed bottom right>
                   <v-icon>mdi-plus</v-icon>
                 </v-btn>
               </v-fab-transition>
@@ -129,7 +128,7 @@
       <div v-if="pagination.pagesCount" class="text-center mt-3">
         <v-pagination
             :disabled="loadingButton"
-            color="#09dca4"
+            color="secondary"
             v-model="pagination.currentPage"
             :length="pagination.pagesCount"
         ></v-pagination>
@@ -142,7 +141,7 @@
 
         <template v-slot:action="{ attrs }">
           <v-btn
-              color="pink"
+              color="secondary"
               text
               v-bind="attrs"
               @click="snackbar = false"

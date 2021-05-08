@@ -1,23 +1,31 @@
 <template>
   <div>
     <v-app-bar
+        class="pt-1"
+        dense
 
-        dark
         app
         mobile-break-point="960"
+        color="white"
+        flat
+
+
 
 
     >
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
+      <v-toolbar-title class="">{{$store.state.navBarTitle}}</v-toolbar-title>
+      <v-spacer></v-spacer>
+
 
     </v-app-bar>
-    <v-navigation-drawer dark width="260" src="..//assets/med.jpg" v-model="drawer" app>
-      <template v-slot:img="props">
-        <v-img
-            :gradient="`to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, .5)`"
-            v-bind="props"
-        />
-      </template>
+    <v-navigation-drawer  width="260"  v-model="drawer" app>
+<!--      <template v-slot:img="props">-->
+<!--        <v-img-->
+<!--            :gradient="`to bottom, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, .5)`"-->
+<!--            v-bind="props"-->
+<!--        />-->
+<!--      </template>-->
       <v-list-item class="pa-2">
         <v-spacer></v-spacer>
         <v-list-item-avatar width="80" height="80">
@@ -49,7 +57,7 @@
       </v-list-item-group>
       <template v-slot:append>
         <div class="pa-2">
-          <v-btn block @click="logout">Logout
+          <v-btn depressed outlined block @click="logout">Logout
             <v-icon right>mdi-account-remove</v-icon>
           </v-btn>
         </div>
@@ -102,6 +110,9 @@ export default {
 
 <style scoped>
 .v-list .v-list-item--active {
-  background-color: rgba(9, 220, 164, 0.2) !important;
+  background-color: rgb(9, 220, 164) !important;
+
+  /*background-color:#02333C !important;*/
+  color: white !important;;
 }
 </style>

@@ -1,11 +1,14 @@
 <template>
   <v-card elevation="8" outlined shaped class="pt-6 pa-2 ma-3" min-width="250px" >
+    <div>
+
+    </div>
     <v-row justify="center" align="center">
-      <v-avatar id="avatar" size="80px"><img :src="getAvatar(patientInfo.gender, patientInfo.firstname)" ></v-avatar>
+      <v-avatar id="avatar" size="85px"><v-img :src="getAvatar(patientInfo.image)" aspect-ratio="1"></v-img></v-avatar>
     </v-row>
     <div class="mt-16">
       <v-row  justify="center" align="center">
-        <router-link :to="`patients/${patientInfo.id}`" style="text-decoration: none; color:#2E3842   ;">
+        <router-link :to="`patients/${patientInfo.id}`" style="text-decoration: none;    ;">
           <div  class="text--darken-3 text-h6">{{ patientInfo.firstname }} {{patientInfo.lastname}}</div>
         </router-link>
       </v-row >
@@ -15,30 +18,30 @@
           {{patientInfo.address}}
         </div>
       </v-row>
-      <v-divider class="mb-"></v-divider>
+      <v-divider class="mb-1"></v-divider>
       <v-card-text>
         <v-row class="px-2" >
-          <v-col cols="6"><div class="font-weight-black">Gender: </div></v-col>
+          <v-col cols="6"><div class=" strong">Gender: </div></v-col>
           <v-spacer></v-spacer>
           <v-col cols="6">{{ patientInfo.gender }} </v-col>
         </v-row>
         <v-row class="px-2" >
-          <v-col cols="6"><div class="font-weight-black">Birthday: </div></v-col>
+          <v-col cols="6"><div class=" strong" >Birthday: </div></v-col>
           <v-spacer></v-spacer>
           <v-col cols="6">{{ patientInfo.birthday }} </v-col>
         </v-row>
         <v-row class="px-2" >
-          <v-col cols="5"><div class="font-weight-black">Phone: </div></v-col>
+          <v-col cols="5"><div class=" strong">Phone: </div></v-col>
           <v-spacer></v-spacer>
-          <v-col cols="7">{{ patientInfo.phone }}</v-col>
+          <v-col cols="7">{{ patientInfo.phone.substring(0,10)+"..." }}</v-col>
         </v-row>
 <!--        <v-row class="px-2" >-->
-<!--          <v-col   class="font-weight-black">Email: </v-col>-->
+<!--          <v-col   class="">Email: </v-col>-->
 
 <!--          <v-col ><div  style="font-size: 12px !important;">{{patientInfo.email}}</div>  </v-col>-->
 <!--        </v-row>-->
         <v-row  class="px-2" >
-          <v-col cols="6"><div class=" font-weight-black">Blood Type: </div></v-col>
+          <v-col cols="6"><div class="  strong">Blood Type: </div></v-col>
           <v-col cols="6">{{ patientInfo.bloodType }}</v-col>
         </v-row>
 
@@ -83,8 +86,11 @@ export default {
 
   },
   methods:{
-    getAvatar: (gender , name)=>{
-      return `https://avatars.dicebear.com/api/${gender}/${name}.svg`;
+    // eslint-disable-next-line no-unused-vars
+    getAvatar: (image)=>{
+      return `http://localhost:8000${image}`
+      // return `https://i.pravatar.cc/150?${name}`
+      // return `https://avatars.dicebear.com/api/${gender}/${name}.svg`;
     },
     showEditForm(id){
       console.log('edit button clicked')
@@ -108,16 +114,18 @@ export default {
     position: absolute;
     top: -25px;
   }
-  .v-application .font-weight-black {
-    font-weight: 400 !important;
-    opacity: 0.8;
-  }
+
 
   a:hover {
     color: #09dca4 !important;
   }
   a{
     transition: all 0.5s;
+  }
+  .strong{
+    font-weight: 600 !important;
+    opacity: 0.8;
+
   }
 
 </style>

@@ -2,7 +2,7 @@
   <div>
 
 
-    <v-toolbar height="80" class="pt-5 grey" style="background-color: #070606 !important;">
+    <v-toolbar height="80" class="pt-5 grey" color="secondary">
 
       <v-row>
         <v-spacer></v-spacer>
@@ -149,10 +149,33 @@
                 required
                 class="mt-3"
             ></v-text-field>
+            <v-row class="mb-4">
+              <v-col cols="8">
+                <v-file-input
+
+                    type="file"
+                    show-size
+                    accept="image/png, image/jpeg, image/bmp"
+                    label="Image (optional)"
+                    prepend-icon="mdi-image"
+                    v-model="patientImage.image"
+                    @change="previewImage"
+                >
+
+                </v-file-input>
+              </v-col>
+              <v-col v-if="patientImage.image" cols="4">
+                <v-img  style="border-radius: 50px !important;"  :src="patientImage.imageURL" width="100" height="100" ></v-img>
+              </v-col>
+
+              <v-col v-if="!patientImage.imageURL" cols="4">
+                <v-img  style="border-radius: 50px !important;"  :src="'http://localhost:8000' + editForm.image" width="100" height="100" ></v-img>
+              </v-col>
+            </v-row>
             <v-layout justify-space-between>
               <v-spacer></v-spacer>
-              <v-btn @click="submit" color="black" :disabled="!valid"
-                     :class=" { 'blue darken-4 white--text' : valid, 'disabled': !valid }">
+              <v-btn @click="submit" color="secondary" :disabled="!valid"
+                     :class=" { 'secondary darken-4 white--text' : valid, 'disabled': !valid }">
                 EDIT PATIENT
                 <v-icon color="white" class="pl-2">mdi-plus-box</v-icon>
               </v-btn>
@@ -190,6 +213,11 @@ export default {
         bloodType: '',
         address: ''
       },
+      patientImage:{
+        image: null,
+        imageURL: '',
+        oldImageURL: ''
+      },
 
       formErrors: [],
 
@@ -219,18 +247,50 @@ export default {
 
 
     editPatient() {
+
       this.axios.post(`/patient/update/${this.editForm.id}`, this.editForm).then(res => {
         console.log('edit patient request')
         console.log(res)
-        this.$emit('closeDialog' , 'Patient Updated' );
+        if (this.patientImage.image){
+          this.updateImage()
+        }else {
+
+          this.$emit('closeDialog' , 'Patient Updated' );
+        }
+        this.clear()
 
       }).catch(err => {
         this.formErrors = err.response.data.errors
         console.log(err)
       })
     },
+    updateImage(){
+      let data = new FormData();
+      data.append('image' , this.patientImage.image )
+      this.axios.post(`/image/${this.editForm.id}` , data , {
+        headers: {
+          'accept': 'application/json',
+          'Accept-Language': 'en-US,en;q=0.8',
+          'Content-Type': `multipart/form-data; boundary=${data._boundary}`,
+        }
+      }).then(res => {
+        console.log(res)
+        this.$emit('closeDialog' , 'Patient Added');
+      })
+    },
+
+    previewImage(){
+
+        if (this.patientImage.image){
+
+          this.patientImage.imageURL = URL.createObjectURL(this.patientImage.image)
+        }
+        else{
+          this.patientImage.imageURL= ''
+        }
 
 
+    },
 
     getPatient(id) {
       this.axios.get(`/patient/${id}`).then(res => {

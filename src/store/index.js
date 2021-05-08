@@ -8,7 +8,9 @@ export default new Vuex.Store({
     authenticated: localStorage.getItem('auth') ? true : false,
     role: localStorage.getItem('role')  || 'null',
     user: {},
-    patientsSearch:[]
+    patientsSearch:[],
+    navBarTitle: 'Dashboard',
+    localhost: 'http://localhost:8000'
 
 
   },
@@ -28,6 +30,9 @@ export default new Vuex.Store({
       setPatientsSearch : (state,payload) =>{
           state.patientsSearch = payload
     },
+      setnavBarTitle(state, payload){
+          state.navBarTitle = payload
+      }
   },
   actions: {
       getUser(context){
@@ -39,22 +44,24 @@ export default new Vuex.Store({
           )
       },
       logout(context) {
+          localStorage.removeItem('auth')
+          localStorage.removeItem('role')
+          context.commit('authenticate' , false)
+          context.commit('setRole' , null)
+          context.commit('setUser' , {})
           Vue.axios.post('/logout').then(res => {
               console.log('logout request')
               console.log(res)
-              localStorage.removeItem('auth')
-              localStorage.removeItem('role')
-              context.commit('authenticate' , false)
-              context.commit('setRole' , null)
-              context.commit('setUser' , {})
-              if (!(router.currentRoute.name == 'login')){
-                  router.push({name : 'login'})
-              }
+
+
 
           }).catch((err) => {
               console.log('logout error')
               console.log(err)
           })
+          if (!(router.currentRoute.name == 'login')){
+              router.push({name : 'login'})
+          }
       },
       searchPatient(context,query){
           return new Promise(function (resolve, reject) {

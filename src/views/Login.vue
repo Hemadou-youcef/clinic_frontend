@@ -3,7 +3,7 @@
     <v-container fluid fill-height class="loginOverlay pt-10">
       <v-layout flex align-center justify-center>
         <v-flex xs12 md6 sm8 elevation-6>
-          <v-toolbar height="80" class="pt-5 grey darken-4">
+          <v-toolbar color="secondary" height="80" class="pt-5 grey ">
               <v-spacer></v-spacer>
 
 
@@ -47,7 +47,7 @@
 
                   <v-layout justify-space-between>
                     <v-spacer></v-spacer>
-                    <v-btn @click="submit" :disabled="!valid"  :class=" { 'blue darken-4 white--text' : valid, 'disabled': !valid }">Login</v-btn>
+                    <v-btn @click="submit" :disabled="!valid" color="secondary"  :class=" { 'white--text' : valid, 'disabled': !valid }">Login</v-btn>
 
                     <v-spacer></v-spacer>
 
@@ -97,7 +97,7 @@ export default {
             this.$store.commit('authenticate' , true)
             this.$store.commit('setRole' , res.data.role)
             this.$store.dispatch('getUser')
-            this.$router.push({name : 'dashboard'})
+            this.$router.push({name : 'appointments'})
           }).catch(
 
               (err) => {
