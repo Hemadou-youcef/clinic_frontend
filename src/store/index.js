@@ -1,13 +1,17 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-
+import router from '../router/index.js'
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
     authenticated: localStorage.getItem('auth') ? true : false,
-    role: localStorage.getItem('role')  || 'guest',
-      user: {}
+    role: localStorage.getItem('role')  || 'null',
+    user: {},
+    patientsSearch:[],
+    navBarTitle: 'Dashboard',
+    localhost: 'http://localhost:8000'
+
 
   },
   getters: {
@@ -23,6 +27,12 @@ export default new Vuex.Store({
       setUser:(state, payload) => {
 
           state.user = payload
+      },
+      setPatientsSearch : (state,payload) =>{
+          state.patientsSearch = payload
+    },
+      setnavBarTitle(state, payload){
+          state.navBarTitle = payload
       }
   },
   actions: {
@@ -34,6 +44,42 @@ export default new Vuex.Store({
               }
           )
       },
+      logout(context) {
+          localStorage.removeItem('auth')
+          localStorage.removeItem('role')
+          context.commit('authenticate' , false)
+          context.commit('setRole' , null)
+          context.commit('setUser' , {})
+          Vue.axios.post('/logout').then(res => {
+              console.log('logout request')
+              console.log(res)
+
+
+
+          }).catch((err) => {
+              console.log('logout error')
+              console.log(err)
+          })
+          if (!(router.currentRoute.name == 'login')){
+              router.push({name : 'login'})
+          }
+      },
+      searchPatient(context,query){
+          return new Promise(function (resolve, reject) {
+              Vue.axios.get(`/patients?q=${query}`)
+                  .then(res => {
+
+                      context.commit('setPatientsSearch' , res)
+                      resolve(res)
+                  })
+                  .catch (err => {
+                      console.log(err)
+                      reject(err)
+                  })
+          })
+
+
+      }
   },
   modules: {
   },

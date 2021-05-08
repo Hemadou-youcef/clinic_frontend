@@ -24,18 +24,15 @@
         </v-btn>
       </v-col>
     </v-row>
-    <AppFooter :darkMode="darkMode"/>
   </v-parallax>
 </template>
 
 <script>
-import AppFooter from "../components/AppFooter";
 export default {
 name: "Notfound",
   props: [
       'darkMode'
   ],
-  components: {AppFooter}
 }
 </script>
 

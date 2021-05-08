@@ -6,7 +6,7 @@
         <v-sheet height="64"  dark>
           <v-toolbar
               flat
-              :color="(darkMode)?'':'light-blue darken-4'"
+              color="secondary"
           >
             <v-btn
                 outlined
@@ -83,7 +83,7 @@
                   </v-icon>
                 </v-btn>
               </template>
-              <v-list>
+              <v-list >
                 <v-list-item @click="type = 'day'">
                   <v-list-item-title>Day</v-list-item-title>
                 </v-list-item>
@@ -101,7 +101,7 @@
           <v-calendar
               ref="calendar"
               v-model="focus"
-              color="primary"
+              color="secondary"
               :events="events"
               :event-color="getEventColor"
               :type="type"
@@ -121,8 +121,8 @@
                 <div v-if="type != 'day'">
                   <span>{{ daysInWeek[weekday]}}</span>
                   <v-btn
-                      class="mx-auto"
-                      :class="{'blue white--text ': getFullDate() == date}"
+                      class="mx-auto text-caption"
+                      :class="{'secondary white--text ': getFullDate() == date}"
                       @click="viewDay(date)"
                   >
                     {{date}}
@@ -134,7 +134,7 @@
                 <div v-else>
                   <v-row>
                     <v-col>
-                          <span class="text-lg-h3 font-weight-bold">
+                          <span class="text-caption font-weight-bold">
                             {{ date }}
                             {{ (getFullDate() == date)? '(Today)':''}}
                           </span>
@@ -146,25 +146,25 @@
                 </div>
               </div>
             </template>
-              <template v-slot:event="{event}">
+            <template v-slot:event="{event}">
 
-                {{ CheckColorAppointment(event)}}
-                <div @contextmenu="show" style="height: 100%;">
-                  <h2 v-if="type == 'day'" class="white--text font-weight-bold align-center pa-1 pt-0" >
-                    #{{event.idpatient + ' ' + event.name}}
-                    From: {{ event.start.split(' ')[1]}}
-                    To: {{ event.end.split(' ')[1]}}
-                  </h2>
-                  <h3  v-if="type == 'week'" class="white--text font-weight-bold align-center pa-1 pt-1" style="overflow: visible">
-                    {{event.start.split(' ')[1] + ' - ' + event.name}}
-                    <!--                {{event.name.split(' ')[1].substr(0, 1).toUpperCase() + '.' + event.name.split(' ')[0]}}-->
-                  </h3>
-                  <h3 v-if="type == 'month'" class="white--text font-weight-bold align-center pl-2">
-                    {{event.name.toString()}}
-                  </h3>
-                </div>
+              {{ CheckColorAppointment(event)}}
+              <div @contextmenu="show" style="height: 100%;">
+                <h2 v-if="type == 'day'" class="white--text font-weight-bold align-center pa-1 pt-0" >
+                  #{{event.idpatient + ' ' + event.name}}
+                  From: {{ event.start.split(' ')[1]}}
+                  To: {{ event.end.split(' ')[1]}}
+                </h2>
+                <h3  v-if="type == 'week'" class="white--text font-weight-bold align-center pa-1 pt-1" style="overflow: visible">
+                  {{event.start.split(' ')[1] + ' - ' + event.name}}
+                  <!--                {{event.name.split(' ')[1].substr(0, 1).toUpperCase() + '.' + event.name.split(' ')[0]}}-->
+                </h3>
+                <h3 v-if="type == 'month'" class="white--text font-weight-bold align-center pl-2">
+                  {{event.name.toString()}}
+                </h3>
+              </div>
 
-              </template>
+            </template>
 
             <template v-slot:day-body="{ date }">
               <div
@@ -185,18 +185,18 @@
 
           </v-calendar>
           <div>
-<!--            <v-fade-transition>-->
+            <!--            <v-fade-transition>-->
 
-<!--              <v-overlay-->
-<!--                  v-if="hover"-->
-<!--                  absolute-->
-<!--              >-->
-<!--                <v-icon  @click="closeOverLay(true)" color="white" large>-->
-<!--                  mdi-close-box-->
-<!--                </v-icon>-->
-<!--                <AddAppointment v-on:ShowSnackBar="ShowSnackBar" v-on:HideOverLay="closeOverLay" :dateApp="dateApp" :timeApp="timeApp" :timeLApp="timeLApp" :timed="timed" :patientId="PatientId" :appointmentId="AppointmentId" :color="color"/>-->
-<!--              </v-overlay>-->
-<!--            </v-fade-transition>-->
+            <!--              <v-overlay-->
+            <!--                  v-if="hover"-->
+            <!--                  absolute-->
+            <!--              >-->
+            <!--                <v-icon  @click="closeOverLay(true)" color="white" large>-->
+            <!--                  mdi-close-box-->
+            <!--                </v-icon>-->
+            <!--                <AddAppointment v-on:ShowSnackBar="ShowSnackBar" v-on:HideOverLay="closeOverLay" :dateApp="dateApp" :timeApp="timeApp" :timeLApp="timeLApp" :timed="timed" :patientId="PatientId" :appointmentId="AppointmentId" :color="color"/>-->
+            <!--              </v-overlay>-->
+            <!--            </v-fade-transition>-->
             <v-dialog
                 v-model="hover"
                 transition="dialog-bottom-transition"
@@ -204,7 +204,7 @@
                 :scrollable="false"
                 @click:outside="closeOverLay(true)"
             >
-                  <AddAppointment v-if="hover" v-on:ShowSnackBar="ShowSnackBar" v-on:HideOverLay="closeOverLay" :dateApp="dateApp" :timeApp="timeApp" :timeLApp="timeLApp" :timed="timed" :patientId="PatientId" :appointmentId="AppointmentId" :color="color"/>
+              <AddAppointment v-if="hover" v-on:ShowSnackBar="ShowSnackBar" v-on:HideOverLay="closeOverLay" :dateApp="dateApp" :timeApp="timeApp" :timeLApp="timeLApp" :timed="timed" :patientId="PatientId" :appointmentId="AppointmentId" :color="color"/>
             </v-dialog>
 
           </div>
@@ -223,8 +223,7 @@
                 <v-list-item>
                   <v-list-item-avatar>
                     <img
-                        src="https://cdn.vuetifyjs.com/images/john.jpg"
-                        alt="John"
+                        :src="$store.state.localhost+ MenuPatientImage"
                     >
                   </v-list-item-avatar>
 
@@ -322,28 +321,24 @@
 
       </v-col>
     </v-row>
-    <AppFooter :darkMode="darkMode"/>
   </v-container>
 </template>
 
 <script>
 import AddAppointment from "../components/AddAppointment";
-import AppFooter from "../components/AppFooter";
 export default {
   name: "agenda",
-  components: {AppFooter, AddAppointment},
+  components: {AddAppointment},
   props: [
     'darkMode'
   ],
   data: () => ({
-
     items: [
       { title: 'Click Me' },
       { title: 'Click Me' },
       { title: 'Click Me' },
       { title: 'Click Me 2' },
     ],
-
     focus: '',
     type: 'week',
     daysInWeek : ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
@@ -356,7 +351,6 @@ export default {
       id: '',
       confirme: 'yes'
     },
-
     events: [],
     selectedEvent: {},
     color: '',
@@ -369,10 +363,10 @@ export default {
     message: '',
     MenuSelectedEvent: {},
     MenuPatient: '',
+    MenuPatientImage: '',
     MenuTimeLine: '',
     x: 0,
     y: 0,
-
     hover : false,
     showMenu : false,
     ready: false,
@@ -381,8 +375,6 @@ export default {
     timed: false,
     Deleteloading: false,
     snackbar: false,
-
-
   }),
   computed: {
     cal () {
@@ -391,8 +383,6 @@ export default {
     nowY () {
       return this.cal ? this.cal.timeToY(this.cal.times.now) + 'px' : '-10px'
     },
-
-
   },
   mounted () {
     this.$refs.calendar.checkChange()
@@ -401,21 +391,20 @@ export default {
     this.updateTime()
   },
   created() {
-      this.getAppointment();
-
+    this.getAppointment();
   },
   methods: {
     getAppointment (){
       this.axios.get('/appointments/all').then((res) => {
         this.events = [];
         for (let i = 0; i < res.data.data.length; i++) {
-          const name = 'patient ID' + res.data.data[i].patient_id
+          const name =  `${res.data.data[i].patient_firstname} ${res.data.data[i].patient_lastname}`
+          const image = res.data.data[i].image
           const id = res.data.data[i].id
           const idPatient = res.data.data[i].patient_id
           const start = res.data.data[i].date + ' ' + res.data.data[i].start.substr(0,5)
           const end = res.data.data[i].date + ' ' + res.data.data[i].end.substr(0,5)
           const color = res.data.data[i].color
-
           this.events.push({
             name: name,
             id: id,
@@ -425,15 +414,14 @@ export default {
             color:color,
             dead: false,
             realcolor: color,
+            image : image
           })
         }
       }).catch(
-
           err => {
             this.errors = err.response.data.errors
             console.log(this.errors)
           }
-
       )
     },
     deleteAppointment (){
@@ -452,7 +440,6 @@ export default {
             this.errors = err.response.data.errors
             console.log(this.errors)
           }
-
       )
     },
     selectAppointment({event,timed}){
@@ -465,6 +452,7 @@ export default {
             this.selectedEvent = event;
             this.MenuSelectedEvent = event
             this.MenuPatient = event.name
+            this.MenuPatientImage = event.image
             this.MenuTimeLine = `From ${event.start.split(' ')[1]} To: ${event.end.split(' ')[1]}`
             this.selectedEvent.color = 'red'
             this.AlreadyselectedEvent = true
@@ -525,7 +513,6 @@ export default {
         this.color = event.realcolor
         this.timeLApp = this.longeur(event.start ,event.end)
         this.showMenu = false
-
         this.hover = true
       }
     },
@@ -542,12 +529,10 @@ export default {
     },
     getFullDate(){
       var fdate = new Date()
-
       return this.TimeDesignDate(fdate.getFullYear() + '-' + (fdate.getMonth() + 1) + '-' + fdate.getDate());
     },
     getFullTime(){
       var fdate = new Date()
-
       return this.TimeDesignTime(fdate.getHours().toString() + ':' + fdate.getMinutes().toString());
     },
     TimeDesignDate (time){
@@ -625,28 +610,26 @@ export default {
       this.message = message
     },
     show (e) {
-        e.preventDefault()
-        this.showMenu = false
-
-        if(this.AlreadyselectedEvent){
-          this.MenuSelectedEvent = this.selectedEvent
-          this.MenuPatient = this.selectedEvent.name
-          this.MenuTimeLine = `From ${this.selectedEvent.start.split(' ')[1]} To: ${this.selectedEvent.end.split(' ')[1]}`
-        }else {
-          this.AlreadyselectedEvent = true
-          this.timed = true
-          this.selectedEvent = this.MenuSelectedEvent
-          this.selectedEvent.color = 'red'
-        }
-        this.x = e.clientX
-        this.y = e.clientY
-        this.$nextTick(() => {
-          this.showMenu = true
-        })
+      e.preventDefault()
+      this.showMenu = false
+      if(this.AlreadyselectedEvent){
+        this.MenuSelectedEvent = this.selectedEvent
+        this.MenuPatient = this.selectedEvent.name
+        this.MenuTimeLine = `From ${this.selectedEvent.start.split(' ')[1]} To: ${this.selectedEvent.end.split(' ')[1]}`
+      }else {
+        this.AlreadyselectedEvent = true
+        this.timed = true
+        this.selectedEvent = this.MenuSelectedEvent
+        this.selectedEvent.color = 'red'
+      }
+      this.x = e.clientX
+      this.y = e.clientY
+      this.$nextTick(() => {
+        this.showMenu = true
+      })
     },
   },
 }
-
 </script>
 
 <style lang="scss">
@@ -657,7 +640,6 @@ export default {
   left: -1px;
   right: 0;
   pointer-events: none;
-
 }
 .v-current-time-accual p {
   margin-top: -11px;

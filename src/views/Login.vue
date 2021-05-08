@@ -3,7 +3,7 @@
     <v-container fluid fill-height class="loginOverlay pt-10">
       <v-layout flex align-center justify-center>
         <v-flex xs12 md6 sm8 elevation-6>
-          <v-toolbar height="80" class="pt-5 grey darken-4">
+          <v-toolbar color="secondary" height="80" class="pt-5 grey ">
               <v-spacer></v-spacer>
 
 
@@ -43,11 +43,11 @@
                       @focus="errors.password = ''"
 
                   ></v-text-field>
-                  <div class="caption error--text ml-3" v-if="errors.UserNotValid">{{errors.UserNotValid[0]}}</div>
+                  <div class="caption error--text ml-3" v-if="errors.UserNotFound">{{errors.UserNotFound[0]}}</div>
 
                   <v-layout justify-space-between>
                     <v-spacer></v-spacer>
-                    <v-btn @click="submit" :disabled="!valid"  :class=" { 'blue darken-4 white--text' : valid, 'disabled': !valid }">Login</v-btn>
+                    <v-btn @click="submit" :disabled="!valid" color="secondary"  :class=" { 'white--text' : valid, 'disabled': !valid }">Login</v-btn>
 
                     <v-spacer></v-spacer>
 
@@ -90,17 +90,20 @@ export default {
         this.axios.get('/csrf-cookie').then(response => {
 
           this.axios.post('/login' , this.form).then((res) => {
+            console.log('login request')
+            console.log(res.data)
             localStorage.setItem('auth' , 1 )
-            localStorage.setItem('role' , res.data[0].role)
+            localStorage.setItem('role' , res.data.role)
             this.$store.commit('authenticate' , true)
-
-            this.$store.commit('setRole' , res.data[0].role)
-            this.$router.push({name : 'home'})
+            this.$store.commit('setRole' , res.data.role)
+            this.$store.dispatch('getUser')
+            this.$router.push({name : 'appointments'})
           }).catch(
 
-              err => {
+              (err) => {
                 this.errors = err.response.data.errors
-                console.log(this.errors)
+                console.log('login errors')
+                console.log(err.response.data)
               }
 
           )

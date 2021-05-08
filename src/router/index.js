@@ -2,110 +2,143 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 // eslint-disable-next-line no-unused-vars
 import store from '../store/index'
-import Home from '../views/Home.vue'
-
 Vue.use(VueRouter)
 
 const routes = [
-        {
-            path: '/',
-            name: 'home',
-            component: Home,
-            beforeEnter : (to , from , next) => {
-                if (store.state.authenticated){
-                    next()
-                }else{
-                    next({name : 'login'})
-                }
-            },
-        },{
-            path: '/about',
-            name: 'About',
-            // route level code-splitting
-            // this generates a separate chunk (about.[hash].js) for this route
-            // which is lazy-loaded when the route is visited.
-            component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
-        },{
-            path: '/login',
-            name: 'login',
-            // route level code-splitting
-            // this generates a separate chunk (about.[hash].js) for this route
-            // which is lazy-loaded when the route is visited.
-
-            component: () => import(/* webpackChunkName: "about" */ '../views/Login.vue'),
-            // eslint-disable-next-line no-unused-vars
-            beforeEnter: (to, from , next) => {
-                if (store.state.authenticated){
-                  next({name : 'home'})
-                }else{
-                  next()
-                }
-            }
-
-        },{
-            path: '/agenda',
-            name: 'agenda',
-            // route level code-splitting
-            // this generates a separate chunk (about.[hash].js) for this route
-            // which is lazy-loaded when the route is visited.
-            component: () => import(/* webpackChunkName: "about" */ '../views/agenda.vue'),
-            beforeEnter: (to ,from , next ) => {
-                if(store.state.authenticated){
-                    next()
-                }else{
-                    next({name : 'login'})
-                }
-            }
-        },{
-            path: '/patients',
-            name: 'patients',
-            component: () => import(/* webpackChunkName: "about" */ '../views/Patients.vue'),
-            beforeEnter: (to ,from , next ) => {
-                if(store.state.authenticated){
-                    next()
-                }else{
-                    next({name : 'login'})
-                }
-            }
-        },{
-            path: '/patients/:id',
-            name: 'patient',
-
-            component: () => import(/* webpackChunkName: "about" */ '../views/Patient.vue'),
-            beforeEnter: (to ,from , next ) => {
-                if(store.state.authenticated){
-                    next()
-                }else{
-                    next({name : 'login'})
-                }
-            }
-        },{
-            path: '/medicines',
-            name: 'medicines',
-            component: () => import(/* webpackChunkName: "about" */ '../views/Medicines.vue'),
-            beforeEnter: (to ,from , next ) => {
-                if(store.state.authenticated){
-                    next()
-                }else{
-                    next({name : 'login'})
-                }
-            }
-        },{
-            path: '/statistique',
-            name: 'statistique',
-            component: () => import(/* webpackChunkName: "about" */ '../views/Statistique.vue'),
-            beforeEnter: (to ,from , next ) => {
-                if(store.state.authenticated){
-                    next()
-                }else{
-                    next({name : 'login'})
-                }
-            }
-        },{
-            path: '/*',
-            name: 'Notfound',
-            component: () => import(/* webpackChunkName: "about" */ '../views/Notfound.vue')
+  {
+    path: '/',
+    name: 'Home',
+    // eslint-disable-next-line no-unused-vars
+    beforeEnter : (to , from , next) => {
+        if (store.state.authenticated){
+          next({name : 'dashboard'})
+        }else{
+          next({name : 'login'})
         }
+  },
+  },
+  {
+    path: '/about',
+    name: 'About',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
+  },{
+    path: '/login',
+    name: 'login',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+
+    component: () => import(/* webpackChunkName: "about" */ '../views/Login.vue'),
+    // eslint-disable-next-line no-unused-vars
+    beforeEnter: (to, from , next) => {
+        console.log(store.state.authenticated)
+        if (store.state.authenticated){
+          next({name : 'dashboard'})
+        }else{
+          next()
+        }
+    }
+
+  },{
+    path: '/dashboard',
+    name: 'dashboard',
+    // route level code-splitting
+    // this generates a separate chunk (about.[hash].js) for this route
+    // which is lazy-loaded when the route is visited.
+    component: () => import(/* webpackChunkName: "about" */ '../views/Dashboard.vue'),
+    beforeEnter: (to ,from , next ) => {
+     if(store.state.authenticated){
+       next()
+     }else{
+         console.log('auth not OK')
+
+         next({name : 'login'})
+     }
+  }
+  }, {
+        path: '/appointments',
+        name: 'appointments',
+        // route level code-splitting
+        // this generates a separate chunk (about.[hash].js) for this route
+        // which is lazy-loaded when the route is visited.
+        component: () => import(/* webpackChunkName: "about" */ '../views/Agenda.vue'),
+        beforeEnter: (to ,from , next ) => {
+            if(store.state.authenticated){
+                store.commit('setnavBarTitle' , 'Appointments')
+                next()
+            }else{
+                console.log('auth not OK')
+
+                next({name : 'login'})
+            }
+        }
+    },
+    {
+        path: '/patients',
+        name: 'patients',
+        component: () => import(/* webpackChunkName: "about" */ '../views/Patients.vue'),
+        beforeEnter: (to ,from , next ) => {
+            if(store.state.authenticated){
+                next()
+                store.commit('setnavBarTitle' , 'Patients')
+            }else{
+                console.log('auth not OK')
+
+                next({name : 'login'})
+            }
+        }
+    },
+    {
+        path: '/patients/:id',
+        name: 'patient',
+
+        component: () => import(/* webpackChunkName: "about" */ '../views/Patient.vue'),
+        beforeEnter: (to ,from , next ) => {
+            if(store.state.authenticated){
+                next()
+            }else{
+                console.log('auth not OK')
+
+                next({name : 'login'})
+            }
+        }
+    },
+    {
+        path: '/medicines',
+        name: 'medicines',
+        component: () => import(/* webpackChunkName: "about" */ '../views/Medicines.vue'),
+        beforeEnter: (to ,from , next ) => {
+            if(store.state.authenticated){
+                next()
+            }else{
+                console.log('auth not OK')
+
+                next({name : 'login'})
+            }
+        }
+    },
+    {
+        path: '/statistics',
+        name: 'statistics',
+        component: () => import(/* webpackChunkName: "about" */ '../views/Statistics'),
+        beforeEnter: (to ,from , next ) => {
+            if(store.state.authenticated){
+                next()
+            }else{
+                console.log('auth not OK')
+
+                next({name : 'login'})
+            }
+        }
+    },
+    {
+        path: '/*',
+        name: 'Notfound',
+        component: () => import(/* webpackChunkName: "about" */ '../views/Notfound.vue')
+    }
 ]
 
 const router = new VueRouter({

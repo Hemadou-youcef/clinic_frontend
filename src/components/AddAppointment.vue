@@ -2,7 +2,7 @@
   <v-card
       class="mx-auto pa-2 pb-0 px-0"
       max-width="500"
-      dark
+
   >
     <v-card-text class="p-2">
       <div>
@@ -11,7 +11,7 @@
               class="my-2"
               :items="patients"
               editable
-              dark
+
               label="patient"
               v-model="patientName"
               :rules="patientRule"
@@ -23,7 +23,7 @@
             <v-col>
               <v-switch
                   v-model="picker_model"
-                  :label="(picker_model) ? 'Dated Model' : 'Longeur Model'"
+                  :label="(picker_model) ? 'Dated Model' : 'Duration Model'"
               ></v-switch>
             </v-col>
             <v-col>
@@ -170,7 +170,7 @@
 
           <v-text-field
               v-else
-              label="Longeur Consultation"
+              label="Consultation Duration type"
               v-model="longeur"
               required
               class="mt-3"
@@ -206,7 +206,7 @@
 
 <script>
 export default {
-name: "AddAppointment",
+  name: "AddAppointment",
   props: [
     'dateApp','timeApp','timeLApp','timed','patientId','color','appointmentId'
   ],
@@ -216,7 +216,6 @@ name: "AddAppointment",
       patientsInfo: [],
       patientName: '',
       hello : '',
-
       picker_model : false,
       revisit: false,
       loadingInfo: true,
@@ -224,20 +223,13 @@ name: "AddAppointment",
       Editloading: false,
       Deleteloading: false,
       valid: false,
-
-
-
       time: this.TimeDesign(this.timeApp),
       time_model: false,
-
       longeur: this.timeLApp,
-
       time2: this.timeApp,
       time_model2: false,
-
       date: new Date(this.dateApp + ' 01:00:00').toISOString().substr(0, 10),
       date_model: false,
-
       patientRule: [
         (v) => !!v || 'Patient is required',
       ],
@@ -255,34 +247,32 @@ name: "AddAppointment",
     }
   },
   computed: {
-
   },
   methods: {
     allowedHours: m => m > 8 && m < 17,
     submitAppointment (){
-          this.axios.post('/appointment/add' , this.form).then(() => {
-            this.Submitloading = false;
-            this.$emit('HideOverLay')
-            this.$emit('ShowSnackBar','appointment Added',(this.revisit)?'primary':'green')
-          }).catch(
-              err => {
-                this.errors = err.response.data.errors
-                console.log(this.errors)
-              }
-
-          )
+      this.axios.post('/appointment/add' , this.form).then(() => {
+        this.Submitloading = false;
+        this.$emit('HideOverLay')
+        this.$emit('ShowSnackBar','appointment Added',(this.revisit)?'primary':'green')
+      }).catch(
+          err => {
+            this.errors = err.response.data.errors
+            console.log(this.errors)
+          }
+      )
     },
     EditAppointment (){
-        this.axios.post('/appointment/edit', Object.assign(this.form, this.AppointmentForm)).then(() => {
-          this.Editloading = false;
-          this.$emit('HideOverLay')
-          this.$emit('ShowSnackBar', 'appointment Edited','green')
-        }).catch(
-            err => {
-              this.errors = err.response.data.errors
-              console.log(this.errors)
-            }
-        )
+      this.axios.post('/appointment/edit', Object.assign(this.form, this.AppointmentForm)).then(() => {
+        this.Editloading = false;
+        this.$emit('HideOverLay')
+        this.$emit('ShowSnackBar', 'appointment Edited','green')
+      }).catch(
+          err => {
+            this.errors = err.response.data.errors
+            console.log(this.errors)
+          }
+      )
     },
     deleteAppointment (){
       this.Deleteloading = true;
@@ -296,7 +286,6 @@ name: "AddAppointment",
             console.log(this.errors)
           }
       )
-
     },
     CheckAvailable (Add){
       if(Add) {
@@ -318,35 +307,26 @@ name: "AddAppointment",
               this.Editloading = false;
               this.$emit('ShowSnackBar','Time Already reserved !!!','red')
             }
-
-      }).catch(
-
+          }).catch(
           err => {
             this.errors = err.response.data.errors
             console.log(this.errors)
           }
-
       )
     },
     CalcLongeur (first,second) {
       var changed_time = first.split(':')
       first = (parseInt(changed_time[0]) * 60) +  parseInt(changed_time[1]);
-
       changed_time = second.split(':')
       second = (parseInt(changed_time[0]) * 60) +  parseInt(changed_time[1]);
-
       var minus = first - second
-
       return minus;
     },
     CalcAddedTime(time,minute){
       const changed_time = time.split(':')
-
       time = (parseInt(changed_time[0]) * 60) +  parseInt(changed_time[1]) + parseInt(minute);
-
       const stime = (time / 60).toString().split('.')
       var nhours = stime[0]
-
       var nminutes;
       if(stime.length == 1){
         nminutes = 0
@@ -381,7 +361,6 @@ name: "AddAppointment",
     time2 (v){
       this.form.end_time = v;
       const long = this.CalcLongeur(v,this.time)
-
       if(long < 0) {
         v = this.time
       }else {
@@ -410,58 +389,52 @@ name: "AddAppointment",
     }
   },
   created() {
-      this.axios.get('/patients').then((res) => {
-        for (let i = 0; i < res.data.data.length; i++) {
-          const Patientid = res.data.data[i].id
-          const name = res.data.data[i].firstname + ' ' + res.data.data[i].lastname
-
-          this.patients.push(name)
-          this.patientsInfo.push({
-            name:name,
-            idreal: Patientid,
-            id: i,
-          })
-        }
-
-        this.loadingInfo = false
-        if(this.timed){
-          if(!isNaN(this.patientId)){
-            if(!(this.patientId === '')) {
-              var PN;
-              for(var i = 0; i < this.patientsInfo.length; i += 1) {
-                if(this.patientsInfo[i].idreal === this.patientId) {
-                  PN =  this.patientsInfo[i].id;
-                  break;
-                }
+    this.axios.get('/patients').then((res) => {
+      for (let i = 0; i < res.data.data.length; i++) {
+        const Patientid = res.data.data[i].id
+        const name = res.data.data[i].firstname + ' ' + res.data.data[i].lastname
+        this.patients.push(name)
+        this.patientsInfo.push({
+          name:name,
+          idreal: Patientid,
+          id: i,
+        })
+      }
+      this.loadingInfo = false
+      if(this.timed){
+        if(!isNaN(this.patientId)){
+          if(!(this.patientId === '')) {
+            var PN;
+            for(var i = 0; i < this.patientsInfo.length; i += 1) {
+              if(this.patientsInfo[i].idreal === this.patientId) {
+                PN =  this.patientsInfo[i].id;
+                break;
               }
-              if(this.color == 'green') this.revisit = false
-              else this.revisit = true
-
-              this.patientName =  this.patients[PN];
             }
+            if(this.color == 'green') this.revisit = false
+            else this.revisit = true
+            this.patientName =  this.patients[PN];
           }
         }
-        this.AppointmentForm.id = this.appointmentId;
-        this.form.date = this.dateApp;
-        this.form.start_time = this.timeApp;
-        this.form.end_time = this.TimeDesign(this.CalcAddedTime(this.time,this.timeLApp));
-        this.form.patient_id = this.patientId;
-        this.form.status = (this.color == 'green')? 'consult':'revisit';
-
-      }).catch(
-          err => {
-            this.errors = err.response.data.errors
-            console.log(this.errors)
-          }
-      )
-
-
+      }
+      this.AppointmentForm.id = this.appointmentId;
+      this.form.date = this.dateApp;
+      this.form.start_time = this.timeApp;
+      this.form.end_time = this.TimeDesign(this.CalcAddedTime(this.time,this.timeLApp));
+      this.form.patient_id = this.patientId;
+      this.form.status = (this.color == 'green')? 'consult':'revisit';
+    }).catch(
+        err => {
+          this.errors = err.response.data.errors
+          console.log(this.errors)
+        }
+    )
   }
 }
 </script>
 
 <style>
-  .custom-green .v-input--selection-controls__input div {
-    color: #00ee00 !important;
-  }
+.custom-green .v-input--selection-controls__input div {
+  color: #00ee00 !important;
+}
 </style>
