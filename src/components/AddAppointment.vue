@@ -11,11 +11,10 @@
               class="my-2"
               :items="patients"
               editable
-
               label="patient"
               v-model="patientName"
               :rules="patientRule"
-              :disabled="timed || loadingInfo"
+              :disabled="timed || loadingInfo || revisitApp"
               :loading="loadingInfo"
           >
           </v-overflow-btn>
@@ -99,7 +98,7 @@
             <v-time-picker
                 v-if="time_model"
                 v-model="time"
-                :color="(revisit)?'':'#00ee00'"
+                :color="(revisit)?'':'#009688'"
                 ampm-in-title
                 scrollable
                 full-width
@@ -144,7 +143,7 @@
             <v-time-picker
                 v-if="time_model2"
                 v-model="time2"
-                :color="(revisit)?'':'#00ee00'"
+                :color="(revisit)?'':'#009688'"
                 full-width
                 scrollable
                 ampm-in-title
@@ -170,7 +169,8 @@
 
           <v-text-field
               v-else
-              label="Consultation Duration type"
+              label="Consultation Duration"
+              prepend-icon="mdi-circle-slice-5"
               v-model="longeur"
               required
               class="mt-3"
@@ -184,7 +184,7 @@
               <v-icon color="white" class="pl-2">mdi-plus-box</v-icon>
             </v-btn>
             <div v-else >
-              <v-btn @click="CheckAvailable(false)" :loading="Editloading" :disabled="!valid" color="success" :class=" { ' white--text' : valid, 'disabled': !valid }">
+              <v-btn @click="CheckAvailable(false)" :loading="Editloading" :disabled="!valid" color="teal darken-2" :class=" { ' white--text' : valid, 'disabled': !valid }">
                 EDIT APPOINTMENT
                 <v-icon color="white" class="pl-2">mdi-pencil</v-icon>
               </v-btn>
@@ -208,7 +208,7 @@
 export default {
   name: "AddAppointment",
   props: [
-    'dateApp','timeApp','timeLApp','timed','patientId','color','appointmentId'
+    'dateApp','timeApp','timeLApp','timed','revisitApp','patientId','color','appointmentId'
   ],
   data () {
     return {
@@ -238,7 +238,8 @@ export default {
         date: '',
         start_time: '',
         end_time: '',
-        status: '',
+        type: '',
+        state: 'fix',
       },
       AppointmentForm : {
         id: '',
@@ -254,7 +255,7 @@ export default {
       this.axios.post('/appointment/add' , this.form).then(() => {
         this.Submitloading = false;
         this.$emit('HideOverLay')
-        this.$emit('ShowSnackBar','appointment Added',(this.revisit)?'primary':'green')
+        this.$emit('ShowSnackBar','appointment Added',(this.revisit)?'primary':'teal')
       }).catch(
           err => {
             this.errors = err.response.data.errors
@@ -299,7 +300,7 @@ export default {
           fromdate: this.form.date,
           todate: this.form.date} })
           .then((res) => {
-            if(res.data.length == 0 || res.data[0].id == this.AppointmentForm.id){
+            if(res.data.data.length == 0 || (res.data.data[0].id == this.AppointmentForm.id && res.data.data.length  == 1)){
               if(Add) this.submitAppointment()
               else this.EditAppointment ()
             }else {
@@ -384,8 +385,8 @@ export default {
       }
     },
     revisit(v){
-      if(v) this.form.status = 'revisit'
-      else this.form.status = 'consult'
+      if(v) this.form.type = 'revisit'
+      else this.form.type = 'consult'
     }
   },
   created() {
@@ -401,7 +402,7 @@ export default {
         })
       }
       this.loadingInfo = false
-      if(this.timed){
+      if(this.timed || this.revisitApp){
         if(!isNaN(this.patientId)){
           if(!(this.patientId === '')) {
             var PN;
@@ -411,8 +412,9 @@ export default {
                 break;
               }
             }
-            if(this.color == 'green') this.revisit = false
+            if(this.color == 'teal') this.revisit = false
             else this.revisit = true
+            if(this.revisitApp) this.revisit = true
             this.patientName =  this.patients[PN];
           }
         }
@@ -422,7 +424,7 @@ export default {
       this.form.start_time = this.timeApp;
       this.form.end_time = this.TimeDesign(this.CalcAddedTime(this.time,this.timeLApp));
       this.form.patient_id = this.patientId;
-      this.form.status = (this.color == 'green')? 'consult':'revisit';
+      this.form.type = (this.color == 'teal')? 'consult':'revisit';
     }).catch(
         err => {
           this.errors = err.response.data.errors
@@ -435,6 +437,6 @@ export default {
 
 <style>
 .custom-green .v-input--selection-controls__input div {
-  color: #00ee00 !important;
+  color: #009688 !important;
 }
 </style>

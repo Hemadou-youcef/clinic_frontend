@@ -64,7 +64,7 @@ const routes = [
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "about" */ '../views/Agenda.vue'),
+        component: () => import(/* webpackChunkName: "about" */ '../views/agenda.vue'),
         beforeEnter: (to ,from , next ) => {
             if(store.state.authenticated){
                 store.commit('setnavBarTitle' , 'Appointments')
@@ -123,7 +123,7 @@ const routes = [
     {
         path: '/statistics',
         name: 'statistics',
-        component: () => import(/* webpackChunkName: "about" */ '../views/Statistics'),
+        component: () => import(/* webpackChunkName: "about" */ '../views/Statistics.vue'),
         beforeEnter: (to ,from , next ) => {
             if(store.state.authenticated){
                 next()

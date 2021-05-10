@@ -75,6 +75,7 @@ export default {
     drawer: true,
     selectedItem: 1,
     drawer_items: [
+      {'item': 'Dashboard', 'icon': 'mdi-view-dashboard', 'to': '/dashboard'},
       {'item': 'Appointment', 'icon': 'mdi-calendar-check', 'to': '/appointments'},
       {'item': 'Patients', 'icon': 'mdi-account-supervisor', 'to': '/patients'},
       {'item': 'Medicines', 'icon': 'mdi-pill', 'to': '/medicines'},

@@ -51,7 +51,7 @@
             <v-btn
                 :disabled="!this.AlreadyselectedEvent"
                 @click="editAppointment"
-                class="white--text ma-2 ml-0 green darken-2"
+                class="white--text ma-2 ml-0 teal darken-2 darken-2"
             >
               <v-icon color="white">mdi-pencil</v-icon>
             </v-btn>
@@ -118,8 +118,9 @@
               <div
                   class="ma-2 pa-2"
               >
-                <div v-if="type != 'day'">
-                  <span>{{ daysInWeek[weekday]}}</span>
+                <div v-if="type != 'day'" class="d-flex flex-column justify-center">
+                  <span style="text-align: center" class="mb-2">{{ daysInWeek[weekday]}}</span>
+                  <v-spacer></v-spacer>
                   <v-btn
                       class="mx-auto text-caption"
                       :class="{'secondary white--text ': getFullDate() == date}"
@@ -151,13 +152,12 @@
               {{ CheckColorAppointment(event)}}
               <div @contextmenu="show" style="height: 100%;">
                 <h2 v-if="type == 'day'" class="white--text font-weight-bold align-center pa-1 pt-0" >
-                  #{{event.idpatient + ' ' + event.name}}
+                  {{ event.name}}
                   From: {{ event.start.split(' ')[1]}}
                   To: {{ event.end.split(' ')[1]}}
                 </h2>
                 <h3  v-if="type == 'week'" class="white--text font-weight-bold align-center pa-1 pt-1" style="overflow: visible">
                   {{event.start.split(' ')[1] + ' - ' + event.name}}
-                  <!--                {{event.name.split(' ')[1].substr(0, 1).toUpperCase() + '.' + event.name.split(' ')[0]}}-->
                 </h3>
                 <h3 v-if="type == 'month'" class="white--text font-weight-bold align-center pl-2">
                   {{event.name.toString()}}
@@ -185,18 +185,6 @@
 
           </v-calendar>
           <div>
-            <!--            <v-fade-transition>-->
-
-            <!--              <v-overlay-->
-            <!--                  v-if="hover"-->
-            <!--                  absolute-->
-            <!--              >-->
-            <!--                <v-icon  @click="closeOverLay(true)" color="white" large>-->
-            <!--                  mdi-close-box-->
-            <!--                </v-icon>-->
-            <!--                <AddAppointment v-on:ShowSnackBar="ShowSnackBar" v-on:HideOverLay="closeOverLay" :dateApp="dateApp" :timeApp="timeApp" :timeLApp="timeLApp" :timed="timed" :patientId="PatientId" :appointmentId="AppointmentId" :color="color"/>-->
-            <!--              </v-overlay>-->
-            <!--            </v-fade-transition>-->
             <v-dialog
                 v-model="hover"
                 transition="dialog-bottom-transition"
@@ -238,7 +226,7 @@
                     <v-btn
                         color="white"
 
-                        class="green darken-2"
+                        class="teal darken-2"
                         @click="editAppointment"
                     >
                       <v-icon color="white">mdi-pencil</v-icon>
@@ -260,16 +248,16 @@
               <v-list-item>
                 <v-list-item-title>
                   <v-chip
-                      v-if="MenuSelectedEvent.realcolor == 'green'"
-                      class="ma-2 white--text"
+                      v-if="MenuSelectedEvent.realcolor == 'teal'"
+                      class="ma-2 white--text font-weight-bold"
                       label
-                      color="green"
+                      color="teal"
                   >
                     consult
                   </v-chip>
                   <v-chip
                       v-else
-                      class="ma-2 white--text"
+                      class="ma-2 white--text font-weight-bold"
                       label
                       color="primary"
                   >
@@ -333,12 +321,6 @@ export default {
     'darkMode'
   ],
   data: () => ({
-    items: [
-      { title: 'Click Me' },
-      { title: 'Click Me' },
-      { title: 'Click Me' },
-      { title: 'Click Me 2' },
-    ],
     focus: '',
     type: 'week',
     daysInWeek : ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
@@ -404,7 +386,8 @@ export default {
           const idPatient = res.data.data[i].patient_id
           const start = res.data.data[i].date + ' ' + res.data.data[i].start.substr(0,5)
           const end = res.data.data[i].date + ' ' + res.data.data[i].end.substr(0,5)
-          const color = res.data.data[i].color
+          const color = (res.data.data[i].type == 'consult')? 'teal': 'primary'
+
           this.events.push({
             name: name,
             id: id,
@@ -478,7 +461,7 @@ export default {
             this.dateApp = this.getFullDate()
             this.timeApp = '08:00'
             this.timeLApp = 15
-            this.color = 'green'
+            this.color = 'teal darken-1'
           } else {
             this.dateApp = event.date;
             var hour = event.time.split(':')[0]
@@ -493,7 +476,7 @@ export default {
               this.timeApp = hour + ':45';
             }
             this.timeLApp = 15;
-            this.color = 'green';
+            this.color = 'teal';
           }
           this.timed = false
           this.hover = true
