@@ -51,6 +51,7 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/Dashboard.vue'),
     beforeEnter: (to ,from , next ) => {
      if(store.state.authenticated){
+         store.commit('setnavBarTitle' , 'Dashboard')
        next()
      }else{
          console.log('auth not OK')

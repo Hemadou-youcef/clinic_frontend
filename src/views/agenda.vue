@@ -1,12 +1,11 @@
 <template>
-  <v-container fluid class="pa-5 pl-0 pb-0">
-
-    <v-row class="fill-height">
-      <v-col class="pt-0 pr-0">
+  <v-container fluid class=" pa-2 blue-grey lighten-5 fill-height" style="width: auto !important;">
+    <v-row>
+      <v-col>
         <v-sheet height="64"  dark>
           <v-toolbar
               flat
-              color="secondary"
+              :color="(mode)?'#00b383':'primary'"
           >
             <v-btn
                 outlined
@@ -97,11 +96,11 @@
             </v-menu>
           </v-toolbar>
         </v-sheet>
-        <v-sheet height="600">
+        <v-sheet >
           <v-calendar
               ref="calendar"
+              :color="(mode)?'secondary darken-2':'primary darken-2'"
               v-model="focus"
-              color="secondary"
               :events="events"
               :event-color="getEventColor"
               :type="type"
@@ -112,18 +111,20 @@
               :first-interval= 32
               :interval-minutes= 15
               :interval-count= 36
-              :interval-height="30"
+              :interval-height="40"
           >
             <template v-slot:day-header="{date,weekday}">
               <div
-                  class="ma-2 pa-2"
+                  class=" pa-2 fill-height"
+                  :class="(weekday == 5 || weekday == 6)? 'grey lighten-2':''"
               >
                 <div v-if="type != 'day'" class="d-flex flex-column justify-center">
                   <span style="text-align: center" class="mb-2">{{ daysInWeek[weekday]}}</span>
                   <v-spacer></v-spacer>
                   <v-btn
-                      class="mx-auto text-caption"
-                      :class="{'secondary white--text ': getFullDate() == date}"
+                      class="mx-auto text-caption white--text"
+                      :class="{'white--text ': getFullDate() == date}"
+                      :color="(mode)?'#00b383':'primary'"
                       @click="viewDay(date)"
                   >
                     {{date}}
@@ -318,7 +319,7 @@ export default {
   name: "agenda",
   components: {AddAppointment},
   props: [
-    'darkMode'
+    'mode'
   ],
   data: () => ({
     focus: '',

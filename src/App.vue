@@ -1,10 +1,10 @@
 <template>
 
   <v-app>
-    <NavBar v-if="authenticated"></NavBar>
+    <NavBar v-if="authenticated" v-on:changeMode="modeChanger" :mode="mode"></NavBar>
 
     <v-main>
-      <router-view></router-view>
+      <router-view :mode="mode"></router-view>
     </v-main>
   </v-app>
 
@@ -21,10 +21,18 @@ export default {
   },
   data(){
     return {
+      mode: true
     }
   }
   ,
   methods: {
+    modeChanger(){
+      if (this.mode){
+        this.mode = false
+      }else{
+        this.mode = true
+      }
+    }
   },
   computed: {
     authenticated() {
@@ -45,3 +53,9 @@ export default {
   },
 };
 </script>
+
+<style >
+  .v-main {
+    background-color: #ecf0f4;
+  }
+</style>

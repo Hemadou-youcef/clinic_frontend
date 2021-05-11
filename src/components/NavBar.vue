@@ -1,21 +1,32 @@
 <template>
   <div>
     <v-app-bar
-        class="pt-1"
-        dense
-
         app
         mobile-break-point="960"
-        color="white"
+        :color="(mode)?'#09DCA4':'primary'"
         flat
-
-
-
-
     >
       <v-app-bar-nav-icon @click="drawer = !drawer"></v-app-bar-nav-icon>
-      <v-toolbar-title class="">{{$store.state.navBarTitle}}</v-toolbar-title>
+      <v-toolbar-title class="white--text font-weight-bold">{{$store.state.navBarTitle}}</v-toolbar-title>
       <v-spacer></v-spacer>
+
+      <v-btn @click="$emit('changeMode')" icon>
+          <v-icon color="white">
+            mdi-cog-outline
+          </v-icon>
+      </v-btn>
+      <v-btn icon>
+        <v-badge color="red" bottom left overlap>
+          <v-icon color="white">
+            mdi-forum
+          </v-icon>
+          <template v-slot:badge>
+            <div>
+              5
+            </div>
+          </template>
+        </v-badge>
+      </v-btn>
 
 
     </v-app-bar>
@@ -26,7 +37,14 @@
 <!--            v-bind="props"-->
 <!--        />-->
 <!--      </template>-->
+      <v-card flat class="pa-2 pt-4 darken-2 white--text font-weight-bold rounded-0" height="64px" :color="(mode)?'#00b383':'primary darken-2'">
+        <v-icon color="white" large>
+          mdi-hospital-building
+        </v-icon>
+        Clinic Management System
+      </v-card>
       <v-list-item class="pa-2">
+
         <v-spacer></v-spacer>
         <v-list-item-avatar width="80" height="80">
           <v-img
@@ -42,10 +60,15 @@
         <v-spacer></v-spacer>
       </v-list-item>
         <v-divider></v-divider>
-      <v-list-item-group class="pt-3" color="primary" v-model="selectedItem">
-        <v-list rounded>
-          <v-list-item class="mx-4 d-flex align-center justify-center" v-for="item in drawer_items" :key="item.item"
-                       link :to="item.to">
+      <v-list-item-group class="pt-3" v-model="selectedItem">
+        <v-list>
+          <v-list-item
+              class="mx-4 mb-2 d-flex align-center justify-center rounded-lg"
+              v-for="item in drawer_items" :key="item.item"
+              link :to="item.to"
+              :class="($store.state.navBarTitle.toUpperCase() == item.item.toUpperCase())?(mode)?'secondary darken-1':'primary darken-3':''"
+              color="white"
+          >
             <v-list-item-icon>
               <v-icon>{{ item.icon }}</v-icon>
             </v-list-item-icon>
@@ -71,12 +94,15 @@
 <script>
 export default {
   name: "NavBar",
+  props: [
+      'mode'
+  ],
   data: () => ({
     drawer: true,
     selectedItem: 1,
     drawer_items: [
       {'item': 'Dashboard', 'icon': 'mdi-view-dashboard', 'to': '/dashboard'},
-      {'item': 'Appointment', 'icon': 'mdi-calendar-check', 'to': '/appointments'},
+      {'item': 'Appointments', 'icon': 'mdi-calendar-check', 'to': '/appointments'},
       {'item': 'Patients', 'icon': 'mdi-account-supervisor', 'to': '/patients'},
       {'item': 'Medicines', 'icon': 'mdi-pill', 'to': '/medicines'},
 
@@ -111,9 +137,9 @@ export default {
 
 <style scoped>
 .v-list .v-list-item--active {
-  background-color: rgb(9, 220, 164) !important;
+  /*background-color: rgb(9, 220, 164) !important;*/
 
   /*background-color:#02333C !important;*/
-  color: white !important;;
+  /*color: white !important;;*/
 }
 </style>
