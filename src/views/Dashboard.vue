@@ -1,16 +1,16 @@
 <template>
   <v-container fluid>
-    <v-row class="mb-2">
-      <v-col>
-        <CardInfo :message="`Todays Patients`" :number="43" :icon="`mdi-human-queue`"/>
-      </v-col>
-      <v-col>
-        <CardInfo :message="`Todays Consultation`" :number="23" :icon="`mdi-human-queue`"/>
-      </v-col>
-      <v-col>
-        <CardInfo :message="`Todays Patients`" :number="43" :icon="`mdi-human-queue`"/>
-      </v-col>
-    </v-row>
+<!--    <v-row class="mb-2">-->
+<!--      <v-col>-->
+<!--        <CardInfo :message="`Todays Patients`" :number="43" :icon="`mdi-human-queue`"/>-->
+<!--      </v-col>-->
+<!--      <v-col>-->
+<!--        <CardInfo :message="`Todays Consultation`" :number="23" :icon="`mdi-human-queue`"/>-->
+<!--      </v-col>-->
+<!--      <v-col>-->
+<!--        <CardInfo :message="`Todays Patients`" :number="43" :icon="`mdi-human-queue`"/>-->
+<!--      </v-col>-->
+<!--    </v-row>-->
     <v-card class="mb-0" color="transparent" flat>
       <v-list color="transparent" class="white-text" v-if="checkedAppointment.length > 0">
         <v-subheader
@@ -187,6 +187,7 @@ import AppointmentCard from "../components/AppointmentCard";
 import AddAppointment from "../components/AddAppointment";
 export default {
   name: "Dashboard",
+  // eslint-disable-next-line vue/no-unused-components
   components: {AddAppointment, AppointmentCard, CardInfo},
   props: [
       'mode'

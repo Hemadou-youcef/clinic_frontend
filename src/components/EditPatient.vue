@@ -257,7 +257,6 @@ export default {
 
           this.$emit('closeDialog' , 'Patient Updated' );
         }
-        this.clear()
 
       }).catch(err => {
         this.formErrors = err.response.data.errors
@@ -275,7 +274,7 @@ export default {
         }
       }).then(res => {
         console.log(res)
-        this.$emit('closeDialog' , 'Patient Added');
+        this.$emit('closeDialog' , 'Patient Updated');
       })
     },
 

@@ -1,15 +1,446 @@
 <template>
-    <patient-card></patient-card>
+  <div>
+    <v-container fluid>
+
+      <v-tabs centered grow>
+        <v-tabs-slider></v-tabs-slider>
+        <v-tab>info</v-tab>
+        <v-tab-item>
+          <v-card class="pa-8">
+            <v-row justify="center">
+
+              <v-col class="mt-4" cols="12" sm="12" md="4" lg="4" xl="4">
+
+                <v-row justify="center" align="center" class="pa-3">
+                  <v-col cols="4">
+                    <v-row justify="center">
+
+                      <v-img aspect-ratio="1.6" width="200" height="200" min-width="200" min-height="200"
+                             :src="$store.state.localhost+ patientInfo.image"></v-img>
+                    </v-row>
+
+                  </v-col>
+
+
+                </v-row>
+                <v-row justify="center">
+                  <v-spacer></v-spacer>
+                  <v-col cols="2" class="text-center">
+                    <v-tooltip bottom>
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn @click=" showEditForm( patientInfo.id) " v-bind="attrs" v-on="on" color="#09dca4"
+                               outlined
+                               size="30" icon>
+                          <v-icon color="#09dca4">mdi-account-edit</v-icon>
+                        </v-btn>
+                      </template>
+                      <span>Edit Patient</span>
+                    </v-tooltip>
+                  </v-col>
+
+                  <v-col cols="2" class="text-center">
+                    <v-tooltip bottom>
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn @click="showDeleteConfirmationDialog" v-bind="attrs" v-on="on" color="red"
+                               outlined size="30" icon>
+                          <v-icon color="red">mdi-account-remove</v-icon>
+                        </v-btn>
+                      </template>
+                      <span>Delete Patient</span>
+                    </v-tooltip>
+                  </v-col>
+                  <v-spacer></v-spacer>
+                </v-row>
+
+              </v-col>
+
+
+              <v-col style="text-align: center !important;" cols="12" xs="12" sm="12" md="8" lg="8" xl="8">
+                <v-row justify="center" align="center" class="pt-3">
+                  <v-col cols="5">
+                    <div class=" text--lighten-2 text-caption">Firstname</div>
+                  </v-col>
+                  <v-col cols="7">{{ patientInfo.firstname }}</v-col>
+                </v-row>
+                <v-divider></v-divider>
+                <v-row justify="center" align="center" class="pt-3">
+                  <v-col cols="5">
+                    <div class=" text--lighten-2 text-caption">Lastname</div>
+                  </v-col>
+                  <v-col cols="7">{{ patientInfo.lastname }}</v-col>
+                </v-row>
+                <v-divider></v-divider>
+                <v-row justify="center" align="center" class="pt-3">
+                  <v-col cols="5">
+                    <div class=" text--lighten-2 text-caption">Birthday</div>
+                  </v-col>
+                  <v-col cols="7">{{ patientInfo.birthday }}</v-col>
+                </v-row>
+
+                <v-divider></v-divider>
+                <v-row justify="center" align="center" class="pt-3">
+                  <v-col cols="5">
+                    <div class=" text--lighten-2 text-caption">Gender</div>
+                  </v-col>
+                  <v-col cols="7">{{ patientInfo.gender }}</v-col>
+                </v-row>
+
+                <v-divider></v-divider>
+                <v-row justify="center" align="center" class="pt-3">
+                  <v-col cols="5">
+                    <div class=" text--lighten-2 text-caption">Address</div>
+                  </v-col>
+                  <v-col cols="7">{{ patientInfo.address }}</v-col>
+                </v-row>
+                <v-divider></v-divider>
+                <v-row justify="center" align="center" class="pt-3">
+                  <v-col cols="5">
+                    <div class=" text--lighten-2 text-caption">Phone-number</div>
+                  </v-col>
+                  <v-col cols="7">{{ patientInfo.phone }}</v-col>
+                </v-row>
+                <v-divider></v-divider>
+                <v-row justify="center" align="center" class="pt-3">
+                  <v-col cols="5">
+                    <div class=" text--lighten-2 text-caption">Email</div>
+                  </v-col>
+                  <v-col cols="7">{{ patientInfo.email }}</v-col>
+                </v-row>
+                <v-divider></v-divider>
+                <v-row justify="center" align="center" class="pt-3">
+                  <v-col cols="5">
+                    <div class=" text--lighten-2 text-caption">Blood type</div>
+                  </v-col>
+                  <v-col cols="7">{{ patientInfo.bloodType }}</v-col>
+                </v-row>
+
+
+              </v-col>
+
+            </v-row>
+          </v-card>
+
+        </v-tab-item>
+
+
+        <v-tab>appointments</v-tab>
+        <v-tab-item>
+          <v-row justify="center" class="my-4">
+            <v-col cols="10">
+              <div class="text-center py-5" v-if="appointments.items.length == 0">No appointments yet</div>
+
+              <v-data-table
+
+                  :headers="appointments.headers"
+                  :items="appointments.items"
+                  :items-per-page="5"
+                  class="elevation-1"
+              >
+                <template v-slot:item.state="{ item }">
+                  <v-chip
+                      :color="getColor(item.state)"
+                      dark
+                  >
+                    {{ item.state }}
+                  </v-chip>
+                </template>
+                <template v-slot:item.type="{ item }">
+                  <v-chip
+                      :color="getColor(item.type)"
+                      dark
+                  >
+                    {{ item.type }}
+                  </v-chip>
+                </template>
+              </v-data-table>
+            </v-col>
+          </v-row>
+
+        </v-tab-item>
+      </v-tabs>
+
+
+    </v-container>
+
+
+    <!-----------------------------------------    Dialogs --------------------------------------------------->
+
+    <v-dialog width="500" v-model="editPatientDialog">
+      <edit-patient
+          :patientID="patientInfo.id"
+          button-label="EDIT PATIENT"
+          method="edit"
+          @closeDialog="closeDialog"></edit-patient>
+    </v-dialog>
+
+    <v-dialog width="400" v-model="deletePatientDialog">
+      <v-card style="overflow: hidden !important;" width="400" height="150">
+        <div class="text-caption text-center pt-6 red--text" style="font-size: 16px !important; ">Are you sure you want
+          to delete this patient
+        </div>
+
+        <v-card-text>
+          <v-row class="mt-5" justify="center">
+
+            <v-spacer></v-spacer>
+
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn @click="deletePatient" v-on="on" v-bind="attrs" outlined icon large color="red">
+                  <v-icon color="red">mdi-check</v-icon>
+                </v-btn>
+
+              </template>
+              <span>Are you sure!</span>
+            </v-tooltip>
+
+            <v-spacer></v-spacer>
+            <v-tooltip bottom>
+
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn @click="deletePatientDialog = false" v-on="on" v-bind="attrs" outlined icon large color="green">
+                  <v-icon color="green">mdi-close</v-icon>
+                </v-btn>
+
+              </template>
+              <span>Cancel</span>
+
+            </v-tooltip>
+
+            <v-spacer></v-spacer>
+
+          </v-row>
+        </v-card-text>
+
+
+      </v-card>
+    </v-dialog>
+    <v-snackbar
+        color="primary"
+        v-model="snackbar"
+    >
+      {{ snackbarMessage }}
+
+      <template v-slot:action="{ attrs }">
+        <v-btn
+            text
+            v-bind="attrs"
+            @click="snackbar = false"
+            class="white--text"
+        >
+          Close
+        </v-btn>
+      </template>
+    </v-snackbar>
+
+    <v-dialog width="400" v-model="deletePatientDialog">
+      <v-card style="overflow: hidden !important;" width="400" height="150">
+        <div class="text-caption text-center pt-6 red--text" style="font-size: 16px !important; ">Are you sure you want
+          to delete this patient
+        </div>
+
+        <v-card-text>
+          <v-row class="mt-5" justify="center">
+
+            <v-spacer></v-spacer>
+
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn @click="deletePatient" v-on="on" v-bind="attrs" outlined icon large color="red">
+                  <v-icon color="red">mdi-check</v-icon>
+                </v-btn>
+
+              </template>
+              <span>Are you sure!</span>
+            </v-tooltip>
+
+            <v-spacer></v-spacer>
+            <v-tooltip bottom>
+
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn @click="deletePatientDialog = false" v-on="on" v-bind="attrs" outlined icon large color="green">
+                  <v-icon color="green">mdi-close</v-icon>
+                </v-btn>
+
+              </template>
+              <span>Cancel</span>
+
+            </v-tooltip>
+
+            <v-spacer></v-spacer>
+
+          </v-row>
+        </v-card-text>
+
+
+      </v-card>
+    </v-dialog>
+    <!-----------------------------------------    Dialogs --------------------------------------------------->
+
+
+  </div>
 </template>
 
 <script>
-import PatientCard from "../components/PatientCard";
+// eslint-disable-next-line no-unused-vars
+import EditPatient from "../components/EditPatient";
+
 export default {
-  components:[PatientCard],
-  name: "Patient"
+  components: {
+    'edit-patient': EditPatient
+  }
+  ,
+  name: "Patient",
+  data: () => ({
+    patientId: null,
+    patientInfo: {
+      appointments: []
+    },
+    errors: {},
+    editPatientDialog: false,
+    deletePatientDialog: false,
+    snackbar: false,
+    snackbarMessage: '',
+    appointments: {
+      headers: [
+        {
+          text: 'Date',
+          align: 'center',
+          sortable: true,
+          value: 'date',
+        },
+        {
+          align: 'center',
+          text: 'Start time',
+          sortable: false,
+          value: 'start_time',
+        },
+        {
+          text: 'End time',
+          sortable: false,
+          value: 'end_time',
+          align: 'center',
+
+        },
+        {
+          text: 'type',
+          sortable: false,
+          value: 'type',
+          align: 'center',
+
+        },
+        {
+          text: 'State',
+          sortable: false,
+          value: 'state',
+          align: 'center',
+
+        },
+      ],
+      items: []
+    },
+
+  }),
+  methods: {
+    // eslint-disable-next-line no-unused-vars
+
+    closeDialog(message) {
+
+      this.editPatientDialog = false
+      this.getPatientInfo()
+      this.showSnackBar(message)
+    },
+
+    showEditForm(patientId) {
+
+      this.editPatientID = patientId
+      this.editPatientDialog = true
+
+    },
+    showSnackBar(message) {
+      this.snackbarMessage = message
+      this.snackbar = true
+    },
+    showDeleteConfirmationDialog() {
+
+      this.deletePatientDialog = true
+    },
+    deletePatient() {
+      this.axios.post(`/patient/delete/${this.patientInfo.id}`)
+          // eslint-disable-next-line no-unused-vars
+          .then(res => {
+            console.log('deleting user ' + this.patientInfo.id);
+            this.deletePatientDialog = false
+
+            this.showSnackBar('Patient Deleted')
+            this.$router.push({name: 'patients'})
+
+          })
+          .catch(err => {
+            console.log(err)
+          })
+    },
+    getPatientInfo() {
+      this.axios.get(`/patient/${this.patientId}?with_appointments=1`).then(res => {
+        console.log(res)
+        this.patientInfo = res.data
+        console.log(this.patientInfo.appointments)
+        this.patientInfo.appointments.map(item => {
+          console.log(item)
+          this.appointments.items.push({
+            date: `${item.date_appointment}`,
+            start_time: item.start_time_appointment,
+            end_time: item.end_time_appointment,
+            type: item.type_appointment,
+            state: item.state_appointment
+          })
+        })
+        console.log(this.patientInfo.image)
+      }).catch(err => {
+        this.errors = err.response.data
+        console.log(err.response)
+
+      })
+    },
+    getColor(state) {
+
+      if( state == 'consult'){
+        return 'blue'
+      }else if (state == 'revisit'){
+        return 'green'
+      }
+
+      if (state == 'waiting') {
+        return 'orange'
+      } else if (state == 'missed') {
+        return 'red'
+      }
+      else{
+        return 'green'
+      }
+    }
+  },
+  created() {
+    this.patientId = this.$route.params.id
+    this.getPatientInfo()
+
+  }
 }
 </script>
 
 <style scoped>
 
+.v-divider {
+  margin-top: 8px;
+}
+
+.text-caption {
+  font-size: 16px !important;
+  font-weight: 450 !important;
+}
+
+img {
+  width: 200px !important;
+  height: 200px !important;
+}
 </style>
