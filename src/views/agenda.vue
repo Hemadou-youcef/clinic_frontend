@@ -96,12 +96,12 @@
             </v-menu>
           </v-toolbar>
         </v-sheet>
-        <v-sheet >
+        <v-sheet height="640px">
           <v-calendar
               ref="calendar"
               :color="(mode)?'secondary darken-2':'primary darken-2'"
               v-model="focus"
-              :events="events"
+              :events="appointmentInfo"
               :event-color="getEventColor"
               :type="type"
               @click:more="viewDay"
@@ -334,7 +334,7 @@ export default {
       id: '',
       confirme: 'yes'
     },
-    events: [],
+    appointmentInfo: [],
     selectedEvent: {},
     color: '',
     snackbarColor: '',
@@ -373,13 +373,10 @@ export default {
     this.scrollToTime()
     this.updateTime()
   },
-  created() {
-    this.getAppointment();
-  },
   methods: {
     getAppointment (){
       this.axios.get('/appointments/all').then((res) => {
-        this.events = [];
+        this.appointmentInfo = [];
         for (let i = 0; i < res.data.data.length; i++) {
           const name =  `${res.data.data[i].patient_firstname} ${res.data.data[i].patient_lastname}`
           const image = res.data.data[i].image
@@ -389,7 +386,7 @@ export default {
           const end = res.data.data[i].date + ' ' + res.data.data[i].end.substr(0,5)
           const color = (res.data.data[i].type == 'consult')? 'teal': 'primary'
 
-          this.events.push({
+          this.appointmentInfo.push({
             name: name,
             id: id,
             idpatient:idPatient,
@@ -401,12 +398,31 @@ export default {
             image : image
           })
         }
+        var dateScroll = this.$route.query.date
+        var timeScroll = this.$route.query.time;
+
+        if(!(timeScroll === undefined)) {
+          for(let i = 0;i < this.appointmentInfo.length;i++){
+            if(this.appointmentInfo[i].start == (dateScroll + ' ' + timeScroll.substr(0, 5))){
+              this.selectedEvent = this.appointmentInfo[i]
+              this.MenuSelectedEvent = this.appointmentInfo[i]
+              this.AlreadyselectedEvent = true
+              this.selectedEvent.color = 'red'
+              this.MenuPatient = this.appointmentInfo[i].name
+              this.MenuPatientImage = this.appointmentInfo[i].image
+              this.MenuTimeLine = `From ${this.appointmentInfo[i].start.split(' ')[1]} To: ${this.appointmentInfo[i].end.split(' ')[1]}`
+            }
+          }
+        }
       }).catch(
           err => {
             this.errors = err.response.data.errors
             console.log(this.errors)
           }
       )
+
+
+
     },
     deleteAppointment (){
       this.Deleteloading = true;
@@ -504,8 +520,20 @@ export default {
       return this.cal ? this.cal.times.now.hour * 60 + this.cal.times.now.minute : 0
     },
     scrollToTime () {
-      const time = this.getCurrentTime()
-      const first = Math.max(0, time - (time % 30) - 30)
+
+      var dateScroll = this.$route.query.date
+      var timeScroll = this.$route.query.time
+      var time = new Date()
+      var first = 0
+
+      if(!(timeScroll === undefined)) {
+        this.focus = dateScroll
+        first = parseInt(timeScroll.split(':')[0]) * 60 + parseInt(timeScroll.split(':')[1])
+      }else{
+        time = this.getCurrentTime()
+        first = Math.max(0, time - (time % 15) - 15)
+      }
+
       this.cal.scrollToTime(first)
     },
     updateTime () {
@@ -612,6 +640,9 @@ export default {
         this.showMenu = true
       })
     },
+  },
+  created() {
+    this.getAppointment();
   },
 }
 </script>

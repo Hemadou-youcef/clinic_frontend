@@ -127,10 +127,20 @@
         <v-tab-item>
           <v-row justify="center" class="my-4">
             <v-col cols="10">
+              <v-sheet class="d-flex justify-end">
+                <v-btn
+                    color="white"
+                    :class="(mode)?'secondary darken-2':'primary darken-2'"
+                    class="rounded-t-lg"
+                    @click="addAppointment"
+                >
+                  <v-icon color="white">
+                    mdi-plus
+                  </v-icon>
+                </v-btn>
+              </v-sheet>
               <div class="text-center py-5" v-if="appointments.items.length == 0">No appointments yet</div>
-
               <v-data-table
-
                   :headers="appointments.headers"
                   :items="appointments.items"
                   :items-per-page="5"
@@ -151,6 +161,16 @@
                   >
                     {{ item.type }}
                   </v-chip>
+                </template>
+                <template v-slot:item.link="{ item }">
+                  <v-btn
+                  color="primary"
+                  :to="`/appointments/?date=${item.link.split(' ')[0]}&time=${item.link.split(' ')[1]}`"
+                  >
+                    <v-icon>
+                      mdi-keyboard-tab
+                    </v-icon>
+                  </v-btn>
                 </template>
               </v-data-table>
             </v-col>
@@ -232,6 +252,35 @@
         </v-btn>
       </template>
     </v-snackbar>
+    <!--    -->
+    <div>
+      <v-dialog
+          v-model="hover"
+          transition="dialog-bottom-transition"
+          max-width="500"
+          :scrollable="false"
+          @click:outside="closeOverLay(true)"
+      >
+        <AddAppointment v-if="hover" v-on:ShowSnackBar="ShowSnackBar" v-on:HideOverLay="closeOverLay" :dateApp="dateApp" :timeApp="timeApp" :timeLApp="timeLApp" :revisitApp="revisit" :patientId="patientInfo.id" :appointmentId="``" :color="color"/>
+      </v-dialog>
+      <v-snackbar
+          :color="snackbarColor"
+          v-model="snackbarApp"
+      >
+        {{ message }}
+
+        <template v-slot:action="{ attrs }">
+          <v-btn
+              text
+              v-bind="attrs"
+              @click="snackbarApp = false"
+              class="white--text"
+          >
+            Close
+          </v-btn>
+        </template>
+      </v-snackbar>
+    </div>
 
     <v-dialog width="400" v-model="deletePatientDialog">
       <v-card style="overflow: hidden !important;" width="400" height="150">
@@ -284,13 +333,17 @@
 <script>
 // eslint-disable-next-line no-unused-vars
 import EditPatient from "../components/EditPatient";
+import AddAppointment from "../components/AddAppointment";
 
 export default {
   components: {
+    AddAppointment,
     'edit-patient': EditPatient
-  }
-  ,
+  },
   name: "Patient",
+  props: [
+      'mode'
+  ],
   data: () => ({
     patientId: null,
     patientInfo: {
@@ -299,8 +352,19 @@ export default {
     errors: {},
     editPatientDialog: false,
     deletePatientDialog: false,
+
     snackbar: false,
+    snackbarApp: false,
+    hover : false,
+    revisit : true,
     snackbarMessage: '',
+    dateApp : '',
+    timeApp : '08:00',
+    timeLApp : 15,
+    color : 'teal darken-1',
+    snackbarColor: '',
+    message: '',
+
     appointments: {
       headers: [
         {
@@ -335,6 +399,12 @@ export default {
           value: 'state',
           align: 'center',
 
+        },
+        {
+          text: 'Link',
+          sortable: false,
+          value: 'link',
+          align: 'center',
         },
       ],
       items: []
@@ -382,20 +452,19 @@ export default {
     },
     getPatientInfo() {
       this.axios.get(`/patient/${this.patientId}?with_appointments=1`).then(res => {
-        console.log(res)
+        this.appointments.items = []
         this.patientInfo = res.data
-        console.log(this.patientInfo.appointments)
         this.patientInfo.appointments.map(item => {
-          console.log(item)
           this.appointments.items.push({
             date: `${item.date_appointment}`,
             start_time: item.start_time_appointment,
             end_time: item.end_time_appointment,
             type: item.type_appointment,
-            state: item.state_appointment
+            state: item.state_appointment,
+            link: `${item.date_appointment} ${item.start_time_appointment}`
           })
         })
-        console.log(this.patientInfo.image)
+        this.appointments.items = this.orderly(this.appointments.items)
       }).catch(err => {
         this.errors = err.response.data
         console.log(err.response)
@@ -407,7 +476,7 @@ export default {
       if( state == 'consult'){
         return 'blue'
       }else if (state == 'revisit'){
-        return 'green'
+        return 'teal'
       }
 
       if (state == 'waiting') {
@@ -418,7 +487,48 @@ export default {
       else{
         return 'green'
       }
-    }
+    },
+    CoverterSimpleDate(sdate){
+      var date = new Date();
+      var FDArray = sdate.split(' ')
+      var DateArray = FDArray[0].split('-')
+      date.setFullYear(parseInt(DateArray[0]))
+      date.setMonth(parseInt(DateArray[1]) - 1)
+      date.setDate(parseInt(DateArray[2]))
+      var TimeArray = FDArray[1].split(':')
+      date.setHours(TimeArray[0])
+      date.setMinutes(TimeArray[1])
+      date.setSeconds(TimeArray[2])
+      return date;
+    },
+    orderly(list){
+      var NoOrdredList = list
+      NoOrdredList.sort(function(a, b) {
+        const first_start = a.date.split('-').join('')
+        const second_start = b.date.split('-').join('')
+        return first_start - second_start;
+      });
+      return NoOrdredList;
+    },
+    addAppointment (){
+      var currectTime = new Date()
+      var dateApp = currectTime.getFullYear() + '-' + (currectTime.getMonth() + 1) + '-' + currectTime.getDate();
+
+      this.dateApp = dateApp
+      this.timeApp = '08:00'
+      this.timeLApp = 15
+      this.color = 'teal darken-1'
+      this.hover = true
+    },
+    ShowSnackBar(message,color){
+      this.snackbarApp = true
+      this.snackbarColor = color
+      this.snackbarMessage = message
+    },
+    closeOverLay(){
+      this.hover = false
+      this.getPatientInfo()
+    },
   },
   created() {
     this.patientId = this.$route.params.id

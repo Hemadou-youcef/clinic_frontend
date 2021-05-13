@@ -126,7 +126,7 @@ export default {
     }
   },
   created() {
-
+    console.log('hello: ' + this.$store.state.navBarTitle.toUpperCase())
     if (this.getRole == 'doctor') {
       this.drawer_items.push({'item': 'Consultation', 'icon': 'mdi-heart-pulse', 'to': '/consultation'});
     }
