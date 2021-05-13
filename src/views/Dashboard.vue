@@ -121,10 +121,15 @@
               </v-chip>
             </template>
 
-            <template v-slot:item.action="">
-              <v-btn class="rounded-lg white--text" color="#3f51b5" elevation>
+            <template v-slot:item.action="{ item }">
+              <v-btn
+                  class="rounded-lg white--text"
+                  color="#3f51b5"
+                  :to="`/appointments/?date=${item.date}&time=${item.start.substr(0,5)}`"
+                  elevation>
                 DETAIL
               </v-btn>
+
             </template>
 
           </v-data-table>
@@ -283,7 +288,7 @@ export default {
         window.clearInterval(this.TakeUpIntervall)
       }else {
         var currectTime = new Date()
-        currectTime.setHours(10)
+
         var AppointmentFiltred = [];
         for(var i = 0;i < this.appointmentList.length;i++){
           var appointmentStartTime = this.CoverterSimpleDate(this.appointmentList[i].date + ' ' + this.appointmentList[i].start);

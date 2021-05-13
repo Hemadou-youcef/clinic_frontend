@@ -533,7 +533,6 @@ export default {
   created() {
     this.patientId = this.$route.params.id
     this.getPatientInfo()
-
   }
 }
 </script>

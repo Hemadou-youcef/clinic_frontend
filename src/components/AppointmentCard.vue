@@ -296,7 +296,6 @@ export default {
         window.clearInterval(this.TimeIntervall)
       }else{
         var currectTime = new Date()
-        currectTime.setHours(10)
 
         var appointmentStartTime = this.CoverterSimpleDate(await this.appointment.date + ' ' + await this.appointment.start + ':00');
         var appointmentEndTime = this.CoverterSimpleDate(await this.appointment.date + ' ' + await this.appointment.end + ':00');
@@ -325,7 +324,6 @@ export default {
     AppointmentTimeRemain (Start_Time,End_Time){
 
       var currectTime = new Date()
-      currectTime.setHours(10)
 
       var appointmentStartTime = this.CoverterSimpleDate(Start_Time);
       var appointmentEndTime = this.CoverterSimpleDate(End_Time);

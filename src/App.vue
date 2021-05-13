@@ -1,10 +1,10 @@
 <template>
 
   <v-app>
-    <NavBar v-if="authenticated" v-on:changeMode="modeChanger" :mode="mode"></NavBar>
+    <NavBar v-if="authenticated" v-on:changeMode="modeChanger" :mode="GetAppmode"></NavBar>
 
     <v-main>
-      <router-view :mode="mode"></router-view>
+      <router-view :mode="GetAppmode"></router-view>
     </v-main>
   </v-app>
 
@@ -21,23 +21,30 @@ export default {
   },
   data(){
     return {
-      mode: true
+      mode: JSON.parse(localStorage.getItem('mode'))
     }
   }
   ,
   methods: {
     modeChanger(){
-      if (this.mode){
+      console.log(this.mode)
+      if(this.mode){
         this.mode = false
       }else{
         this.mode = true
       }
+      localStorage.setItem('mode',this.mode)
+      this.$store.commit('setMode',this.mode)
     }
   },
   computed: {
     authenticated() {
       return  this.$store.state.authenticated;
+    },
+    GetAppmode(){
+      return JSON.parse(this.$store.state.mode)
     }
+
   }
   ,
   created() {

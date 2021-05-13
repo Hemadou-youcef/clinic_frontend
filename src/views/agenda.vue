@@ -116,7 +116,7 @@
             <template v-slot:day-header="{date,weekday}">
               <div
                   class=" pa-2 fill-height"
-                  :class="(weekday == 5 || weekday == 6)? 'grey lighten-2':''"
+                  :class="(Clinicweekdays.includes(weekday))? 'grey lighten-2':''"
               >
                 <div v-if="type != 'day'" class="d-flex flex-column justify-center">
                   <span style="text-align: center" class="mb-2">{{ daysInWeek[weekday]}}</span>
@@ -124,15 +124,12 @@
                   <v-btn
                       class="mx-auto text-caption white--text"
                       :class="{'white--text ': getFullDate() == date}"
-                      :color="(mode)?'#00b383':'primary'"
+                      :color="(getFullDate() == date)?(mode)?'#01664c':'primary darken-4':(mode)?'#00b383':'primary'"
                       @click="viewDay(date)"
                   >
                     {{date}}
                   </v-btn>
                 </div>
-
-
-
                 <div v-else>
                   <v-row>
                     <v-col>
@@ -153,15 +150,34 @@
               {{ CheckColorAppointment(event)}}
               <div @contextmenu="show" style="height: 100%;">
                 <h2 v-if="type == 'day'" class="white--text font-weight-bold align-center pa-1 pt-0" >
-                  {{ event.name}}
-                  From: {{ event.start.split(' ')[1]}}
-                  To: {{ event.end.split(' ')[1]}}
+                  <del v-if="CheckingDeadAppointment(event)">
+                    {{ event.name}}
+                    From: {{ event.start.split(' ')[1]}}
+                    To: {{ event.end.split(' ')[1]}}
+                  </del>
+                  <b v-else>
+                    {{ event.name}}
+                    From: {{ event.start.split(' ')[1]}}
+                    To: {{ event.end.split(' ')[1]}}
+                  </b>
+
                 </h2>
                 <h3  v-if="type == 'week'" class="white--text font-weight-bold align-center pa-1 pt-1" style="overflow: visible">
-                  {{event.start.split(' ')[1] + ' - ' + event.name}}
+                  {{ event.start.split(' ')[1] + ' - ' }}
+                  <del v-if="CheckingDeadAppointment(event)">
+                    {{event.name }}
+                  </del>
+                  <b v-else>
+                    {{event.name }}
+                  </b>
                 </h3>
                 <h3 v-if="type == 'month'" class="white--text font-weight-bold align-center pl-2">
-                  {{event.name.toString()}}
+                  <del v-if="CheckingDeadAppointment(event)">
+                    {{event.name }}
+                  </del>
+                  <b v-else>
+                    {{event.name }}
+                  </b>
                 </h3>
               </div>
 
@@ -181,6 +197,17 @@
                 </p>
               </div>
 
+            </template>
+            <template v-slot:interval="{weekday}">
+              <div v-if="Clinicweekdays.includes(weekday)"
+                   style="width: 100%;height: 100%;background-color: #f6f6f6">
+
+              </div>
+<!--              <div v-if="getFullDate() != date"-->
+<!--                   class="v-calendar-daily__day-interval"-->
+<!--                  style="width: 100%;height: 100%;background-color: #a7ccdd">-->
+
+<!--              </div>-->
             </template>
 
 
@@ -324,6 +351,7 @@ export default {
   data: () => ({
     focus: '',
     type: 'week',
+    Clinicweekdays : [5,6],
     daysInWeek : ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
     typeToLabel: {
       month: 'Month',

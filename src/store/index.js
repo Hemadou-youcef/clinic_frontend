@@ -6,12 +6,12 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     authenticated: localStorage.getItem('auth') ? true : false,
+    mode: JSON.parse(localStorage.getItem('mode')),
     role: localStorage.getItem('role')  || 'null',
     user: {},
     patientsSearch:[],
     navBarTitle: 'Dashboard',
-    localhost: 'http://localhost:8000'
-
+    localhost: 'http://localhost:8000',
 
   },
   getters: {
@@ -30,9 +30,12 @@ export default new Vuex.Store({
       },
       setPatientsSearch : (state,payload) =>{
           state.patientsSearch = payload
-    },
+      },
       setnavBarTitle(state, payload){
           state.navBarTitle = payload
+      },
+      setMode(state, payload){
+          state.mode =  payload
       }
   },
   actions: {
@@ -77,9 +80,7 @@ export default new Vuex.Store({
                       reject(err)
                   })
           })
-
-
-      }
+      },
   },
   modules: {
   },
