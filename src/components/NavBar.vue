@@ -66,7 +66,7 @@
               class="mx-4 mb-2 d-flex align-center justify-center rounded-lg"
               v-for="item in drawer_items" :key="item.item"
               link :to="item.to"
-              :class="($store.state.navBarTitle.toUpperCase() == item.item.toUpperCase())?(mode)?'secondary darken-1':'primary darken-3':''"
+              :class="( metaRoute.toUpperCase() == item.item.toUpperCase())?(mode)?'secondary darken-1':'primary darken-3':''"
               color="white"
           >
             <v-list-item-icon>
@@ -117,21 +117,27 @@ export default {
     getRole() {
       return this.$store.state.role;
     },
-
+    metaRoute(){
+      return this.$route.fullPath.split('/')[1]
+    },
     logo() {
       if (this.getRole == 'doctor') {
         return 'https://previews.123rf.com/images/yupiramos/yupiramos1607/yupiramos160705616/59613224-doctor-avatar-profile-isolated-icon-vector-illustration-graphic-.jpg'
       }
       return 'https://cdn1.iconfinder.com/data/icons/avatar-3/512/Secretary-512.png';
-    }
+    },
+    // Urlchecking(){
+    //   if(this.$store.state.navBarTitle.toUpperCase()
+    // }
   },
   created() {
-    console.log('hello: ' + this.$store.state.navBarTitle.toUpperCase())
+    console.log('hello: ' + this.$store.state.navBarTitle.toUpperCase() + ' ')
     if (this.getRole == 'doctor') {
       this.drawer_items.push({'item': 'Consultation', 'icon': 'mdi-heart-pulse', 'to': '/consultation'});
     }
-  }
 
+
+  },
 }
 </script>
 
