@@ -127,7 +127,7 @@
         <v-tab-item>
           <v-row justify="center" class="my-4">
             <v-col cols="10">
-              <v-sheet class="d-flex justify-end">
+              <v-sheet class="d-flex justify-center ma-3 ">
                 <v-btn
                     color="white"
                     :class="(mode)?'secondary darken-2':'primary darken-2'"
@@ -236,7 +236,7 @@
       </v-card>
     </v-dialog>
     <v-snackbar
-        color="primary"
+        :color="snackbarColor"
         v-model="snackbar"
     >
       {{ snackbarMessage }}
@@ -261,25 +261,9 @@
           :scrollable="false"
           @click:outside="closeOverLay(true)"
       >
-        <AddAppointment v-if="hover" v-on:ShowSnackBar="ShowSnackBar" v-on:HideOverLay="closeOverLay" :dateApp="dateApp" :timeApp="timeApp" :timeLApp="timeLApp" :revisitApp="revisit" :patientId="patientInfo.id" :appointmentId="``" :color="color"/>
+        <AddAppointment v-if="hover" @ShowSnackBar="showSnackBar(message,color)" :HideOverLay="closeOverLay" :dateApp="dateApp" :timeApp="timeApp" :timeLApp="timeLApp" :revisitApp="revisit" :patientId="patientInfo.id" :appointmentId="``" :color="color"/>
       </v-dialog>
-      <v-snackbar
-          :color="snackbarColor"
-          v-model="snackbarApp"
-      >
-        {{ message }}
 
-        <template v-slot:action="{ attrs }">
-          <v-btn
-              text
-              v-bind="attrs"
-              @click="snackbarApp = false"
-              class="white--text"
-          >
-            Close
-          </v-btn>
-        </template>
-      </v-snackbar>
     </div>
 
     <v-dialog width="400" v-model="deletePatientDialog">
@@ -427,8 +411,10 @@ export default {
       this.editPatientDialog = true
 
     },
-    showSnackBar(message) {
+    showSnackBar(message, color) {
+      console.log(`${message}  ${color}`)
       this.snackbarMessage = message
+      this.snackbarColor = color
       this.snackbar = true
     },
     showDeleteConfirmationDialog() {
@@ -442,7 +428,7 @@ export default {
             console.log('deleting user ' + this.patientInfo.id);
             this.deletePatientDialog = false
 
-            this.showSnackBar('Patient Deleted')
+            this.showSnackBar('Patient Deleted' , 'red')
             this.$router.push({name: 'patients'})
 
           })
@@ -520,11 +506,7 @@ export default {
       this.color = 'teal darken-1'
       this.hover = true
     },
-    ShowSnackBar(message,color){
-      this.snackbarApp = true
-      this.snackbarColor = color
-      this.snackbarMessage = message
-    },
+
     closeOverLay(){
       this.hover = false
       this.getPatientInfo()

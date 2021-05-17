@@ -18,21 +18,30 @@
               :loading="loadingInfo"
           >
           </v-overflow-btn>
-          <v-row>
+          <v-row justify="center">
             <v-col>
-              <v-switch
-                  v-model="picker_model"
-                  :label="(picker_model) ? 'Dated Model' : 'Duration Model'"
-              ></v-switch>
+              <v-row justify="center">
+                <v-switch
+                    v-model="picker_model"
+                    :label="(picker_model) ? 'Dated Model' : 'Duration Model'"
+                ></v-switch>
+              </v-row>
+
             </v-col>
             <v-col>
-              <v-switch
-                  v-model="revisit"
-                  color="primary"
-                  :class="{'custom-green': !revisit}"
-                  :loading="loadingInfo"
-                  :label="(!revisit) ? 'Consult' : 'revisite'"
-              ></v-switch>
+              <v-row justify="center">
+                <v-switch
+                    v-model="revisit"
+                    color="primary"
+                    :class="{'custom-green': !revisit}"
+                    :loading="loadingInfo"
+                    :label="(!revisit) ? 'Consult' : 'revisite'"
+                ></v-switch>
+              </v-row>
+
+
+              <v-spacer></v-spacer>
+
             </v-col>
           </v-row>
 
@@ -306,6 +315,7 @@ export default {
             }else {
               this.Submitloading = false;
               this.Editloading = false;
+              console.log('time already taken')
               this.$emit('ShowSnackBar','Time Already reserved !!!','red')
             }
           }).catch(

@@ -51,7 +51,7 @@ const routes = [
     component: () => import(/* webpackChunkName: "about" */ '../views/Dashboard.vue'),
     beforeEnter: (to ,from , next ) => {
      if(store.state.authenticated){
-         store.commit('setnavBarTitle' , 'Dashboard')
+         store.commit('setNavBarTitle' , 'Dashboard')
        next()
      }else{
          console.log('auth not OK')
@@ -68,7 +68,7 @@ const routes = [
         component: () => import(/* webpackChunkName: "about" */ '../views/agenda.vue'),
         beforeEnter: (to ,from , next ) => {
             if(store.state.authenticated){
-                store.commit('setnavBarTitle' , 'Appointments')
+                store.commit('setNavBarTitle' , 'Appointments')
                 next()
             }else{
                 console.log('auth not OK')
@@ -84,7 +84,7 @@ const routes = [
         beforeEnter: (to ,from , next ) => {
             if(store.state.authenticated){
                 next()
-                store.commit('setnavBarTitle' , 'Patients')
+                store.commit('setNavBarTitle' , 'Patients')
             }else{
                 console.log('auth not OK')
 
@@ -99,7 +99,7 @@ const routes = [
         component: () => import(/* webpackChunkName: "about" */ '../views/Patient.vue'),
         beforeEnter: (to ,from , next ) => {
             if(store.state.authenticated){
-                store.commit('setnavBarTitle' , 'Patient info')
+                store.commit('setNavBarTitle' , 'Patient info')
 
                 next()
             }else{
@@ -115,6 +115,7 @@ const routes = [
         component: () => import(/* webpackChunkName: "about" */ '../views/Medicines.vue'),
         beforeEnter: (to ,from , next ) => {
             if(store.state.authenticated){
+                store.commit('setNavBarTitle' , 'Medicines')
                 next()
             }else{
                 console.log('auth not OK')

@@ -31,7 +31,7 @@ export default new Vuex.Store({
       setPatientsSearch : (state,payload) =>{
           state.patientsSearch = payload
       },
-      setnavBarTitle(state, payload){
+      setNavBarTitle(state, payload){
           state.navBarTitle = payload
       },
       setMode(state, payload){
