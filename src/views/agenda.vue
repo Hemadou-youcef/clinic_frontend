@@ -108,9 +108,9 @@
               @click:date="viewDay"
               @mousedown:time="addAppointment"
               @mousedown:event="selectAppointment"
-              :first-interval= 32
-              :interval-minutes= 15
-              :interval-count= 36
+              :first-interval="32"
+              :interval-minutes="15"
+              :interval-count="36"
               :interval-height="40"
           >
             <template v-slot:day-header="{date,weekday}">
@@ -203,11 +203,11 @@
                    style="width: 100%;height: 100%;background-color: #f6f6f6">
 
               </div>
-<!--              <div v-if="getFullDate() != date"-->
-<!--                   class="v-calendar-daily__day-interval"-->
-<!--                  style="width: 100%;height: 100%;background-color: #a7ccdd">-->
+              <!--              <div v-if="getFullDate() != date"-->
+              <!--                   class="v-calendar-daily__day-interval"-->
+              <!--                  style="width: 100%;height: 100%;background-color: #a7ccdd">-->
 
-<!--              </div>-->
+              <!--              </div>-->
             </template>
 
 
@@ -244,7 +244,11 @@
                   </v-list-item-avatar>
 
                   <v-list-item-content>
-                    <v-list-item-title>{{ MenuPatient }}</v-list-item-title>
+                    <v-list-item-title >
+                      <router-link :to="`/patients/${selectedEvent.idpatient}`" style="text-decoration: none;    ;">
+                        {{ MenuPatient }}
+                      </router-link>
+                    </v-list-item-title>
                     <v-list-item-subtitle>
                       {{ MenuTimeLine }}
                     </v-list-item-subtitle>
@@ -312,6 +316,12 @@
                     @click="showMenu = false"
                 >
                   Cancel
+                </v-btn>
+                <v-btn
+                    text
+                    @click="showMenu = false"
+                >
+                  Consult
                 </v-btn>
               </v-card-actions>
             </v-card>
@@ -533,7 +543,7 @@ export default {
     editAppointment (){
       const event = this.selectedEvent
       if(this.timed) {
-        var fdate = new Date(event.start)
+        var fdate = this.CoverterSimpleDate(event.start)
         this.dateApp = fdate.getFullYear() + '-' + (fdate.getMonth() + 1) + '-' + fdate.getDate();
         this.timeApp = fdate.getHours().toString() + ':' + fdate.getMinutes().toString();
         this.AppointmentId = event.id

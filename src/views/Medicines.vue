@@ -2,8 +2,8 @@
   <div>
     <v-container fluid>
       <v-card class="pa-4 mt-4">
-        <v-row justify="center" class="my-4">
-          <v-btn color="primary" @click="addMedicineDialog = true">New <v-icon right>mdi-plus-box</v-icon></v-btn>
+        <v-row class="my-4 d-flex justify-end">
+          <v-btn color="primary" @click="addMedicineDialog = true" class="mr-4" outlined>New <v-icon right>mdi-plus-box</v-icon></v-btn>
         </v-row>
         <v-row v-if="!medicinesExist"  justify="center">
           <div class="text-h6 text--lighten-1 mb-4 red--text">No Medicines yet</div>

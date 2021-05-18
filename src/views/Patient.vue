@@ -127,16 +127,16 @@
         <v-tab-item>
           <v-row justify="center" class="my-4">
             <v-col cols="10">
-              <v-sheet class="d-flex justify-center ma-3 ">
+              <v-sheet class="d-flex justify-end ma-3 ">
                 <v-btn
-                    color="white"
-                    :class="(mode)?'secondary darken-2':'primary darken-2'"
-                    class="rounded-t-lg"
+                    :color="(mode)?'secondary darken-2':'primary darken-2'"
                     @click="addAppointment"
+                    outlined
                 >
-                  <v-icon color="white">
+                  <v-icon color="primary">
                     mdi-plus
                   </v-icon>
+                  ADD
                 </v-btn>
               </v-sheet>
               <div class="text-center py-5" v-if="appointments.items.length == 0">No appointments yet</div>
@@ -164,8 +164,8 @@
                 </template>
                 <template v-slot:item.link="{ item }">
                   <v-btn
-                  color="primary"
-                  :to="`/appointments/?date=${item.link.split(' ')[0]}&time=${item.link.split(' ')[1]}`"
+                      color="primary"
+                      :to="`/appointments/?date=${item.link.split(' ')[0]}&time=${item.link.split(' ')[1]}`"
                   >
                     <v-icon>
                       mdi-keyboard-tab
@@ -326,7 +326,7 @@ export default {
   },
   name: "Patient",
   props: [
-      'mode'
+    'mode'
   ],
   data: () => ({
     patientId: null,

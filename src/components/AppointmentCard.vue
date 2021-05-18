@@ -1,46 +1,70 @@
 <template>
-  <div class="mb-2" v-if="(missed && EndTime) || (!missed && !EndTime)">
-
-    <v-list-item
-        v-if="appointment"
-        class=" pa-2 px-5 py-0 pl-0 rounded-lg elevation-3 lighten-5"
-        :class="{'opacity-8': EndTime,'teal':appointment.type == 'consult','primary' : appointment.type == 'revisit'}"
-    >
-
+  <div class="mb-2">
+    <div v-if="(!missed)">
       <v-sheet
-          v-if="EndTime"
-          color="red"
-          height="120"
-          width="50"
-          class="pa-3 d-flex justify-center fill-height"
+          :color="`${(appointment.type == 'consult')?(progressDarken)?'#037e5d':'#00b383':(progressDarken)?'primary darken-3':'primary darken-5'}`"
+          class="pa-4 white--text font-weight-bold d-flex flex-row"
       >
-        <v-icon color="white">
-          mdi-clock-alert
-        </v-icon>
-
+              <span class="align-self-center">
+                Current Appointment
+              </span>
+        <v-spacer></v-spacer>
+        <v-btn v-if="EndTime" color="white" @click="missed = true" outlined icon>
+          <v-icon color="white">
+            mdi-close
+          </v-icon>
+        </v-btn>
       </v-sheet>
-      <v-sheet :color="(appointment.type == 'consult')? 'teal':'primary'"
-               height="120"
-               width="50"
-               class="pa-3 mr-2 d-flex justify-center fill-height "
+      <v-card
+          color="white"
+          class="black--text ma-0"
+          dark
+          tile
+          elevation="11"
       >
-        <span style="writing-mode: vertical-rl;text-align: center" class="font-weight-bold white--text text-lg-h6">
-          {{ appointment.type.toUpperCase() }}
-        </span>
-      </v-sheet>
 
-      <v-list-item-avatar class="rounded-lg mr-2" size="70">
-        <img
-            :src="$store.state.localhost+ appointment.image"
-        >
-      </v-list-item-avatar>
+        <div class="d-flex flex-no-wrap justify-space-around">
+          <v-avatar
+              class="ma-3 rounded-lg"
+              size="125"
+              style="border:2px solid grey"
+          >
+            <v-img :src="$store.state.localhost+ appointment.image"></v-img>
+          </v-avatar>
+          <div>
+            <v-card-title
+                class="text-h5"
+            >
+              {{ appointment.patient_firstname.toUpperCase() + ' ' + appointment.patient_lastname.toUpperCase()}}
+            </v-card-title>
 
-      <v-list-item-content>
-        <v-list-item-title class="font-weight-bold" style="color: #071a26">{{ appointment.patient_firstname.toUpperCase() + ' ' + appointment.patient_lastname.toUpperCase()}}</v-list-item-title>
-        <v-list-item-subtitle class="font-weight-bold" style="color: #2d3748">
-          From {{ appointment.start.substr(0,5) }} To {{ appointment.end.substr(0,5) }}
-        </v-list-item-subtitle>
-        <v-list-item-subtitle class="font-weight-bold" style="color: #2d3748">
+            <v-card-subtitle class="grey--text">
+              From {{ appointment.start.substr(0,5) }} To {{ appointment.end.substr(0,5) }}
+            </v-card-subtitle>
+
+            <v-btn
+                color="white"
+                dark
+                class="teal--text opacity-8  font-weight-bold"
+                :loading="CheckLoading"
+                elevation
+                outlined
+            >
+              <v-icon color="teal" class="mr-2" >
+                mdi-pencil-plus
+              </v-icon>
+              Consulte
+            </v-btn>
+            <v-btn
+                style="float: right"
+                icon
+                @click="CurrentAppointmentInfoShow = !CurrentAppointmentInfoShow"
+            >
+              <v-icon color="black">{{ CurrentAppointmentInfoShow ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+            </v-btn>
+          </div>
+        </div>
+        <v-card-subtitle>
           <v-chip
               :style="`border:2px solid ${(appointment.patient_gender == 'male')? '#2196f3':'#e91e63'}`"
               :class="`${(appointment.patient_gender == 'male')? 'primary':'pink'}--text rounded-lg pl-1`"
@@ -50,113 +74,152 @@
               mdi-gender-{{ appointment.patient_gender }}
             </v-icon>
             <span class="font-weight-bold">
-              {{ appointment.patient_gender }}
-            </span>
+                  {{ appointment.patient_gender }}
+                </span>
           </v-chip>
-        </v-list-item-subtitle>
-      </v-list-item-content>
 
-      <v-list-item-content class="pa-3">
-        <v-list-item-title class="font-weight-bold"  style="color: #2d3748">
-          <v-icon color="primary" class="mr-2">
-            mdi-phone
-          </v-icon>
-          {{ appointment.patient_phone }}
-        </v-list-item-title>
-<!--        <v-list-item-subtitle class="font-weight-bold" style="color: #2d3748">-->
-<!--          <v-chip-->
-<!--              class="ma-2 pl-1 white&#45;&#45;text font-weight-bold"-->
-<!--              color="red"-->
-<!--              label-->
-<!--          >-->
-<!--            <v-icon color="white" class="mr-1">-->
-<!--              mdi-water-->
-<!--            </v-icon>-->
-<!--            {{ appointment.patient_bloodType }}-->
-<!--          </v-chip>-->
-<!--        </v-list-item-subtitle>-->
-      </v-list-item-content>
-
-      <v-list-item-content class="mx-2">
-        <v-btn
-            color="white"
-            height="80"
-            dark
-            class="teal--text opacity-8 text-lg-h5 font-weight-bold"
-            :loading="CheckLoading"
-            elevation
-            outlined
-        >
-          <v-icon color="teal" class="mr-2" size="30">
-            mdi-pencil-plus
-          </v-icon>
-          Consulte
-        </v-btn>
-      </v-list-item-content>
-
-      <v-list-item-content>
-        <v-btn
-            color="white"
-            dark
-            class="red--text opacity-8 mb-2 "
-            :loading="MissLoading"
-            @click="MissAppointement()"
-            elevation
-            outlined
-        >
-          <v-icon color="red" class="mr-2">
-            mdi-calendar-remove-outline
-          </v-icon>
-          absent
-        </v-btn>
-        <v-btn
-            color="white"
-            dark
-            class="blue--text opacity-8"
-            @click="addAppointment"
-            elevation
-            outlined
-        >
-          <v-icon color="blue" class="mr-2">
-            mdi-calendar-refresh
-          </v-icon>
-          Revisit
-        </v-btn>
-      </v-list-item-content>
-
-      <v-list-item-content class="mx-2" v-if="EndTime">
-        <v-btn
-            color="white"
-            height="80"
-            dark
-            class="teal--text opacity-8 text-lg-h5 font-weight-bold"
-            :loading="CheckLoading"
-            @click="CheckAppointement()"
-            elevation
-            outlined
-        >
-          <v-icon color="teal" class="mr-2" size="30">
-            mdi-check
-          </v-icon>
-          Attended
-        </v-btn>
-      </v-list-item-content>
-
-      <div class="mx-5" v-if="!EndTime">
-        <v-progress-circular
-            :rotate="-90"
-            :size="90"
-            :width="15"
-            :value="time"
-            :color="(EndTime)?'red':'primary'"
-        >
-          <v-icon :color="(EndTime)?'red':'primary'" large>
+          <v-chip :color="(appointment.type == 'consult')? 'teal':'primary'" class="white--text rounded-lg pl-1 ml-2">
+            <v-icon color="white" class="mr-1">
+              mdi-calendar-{{ (appointment.type == 'consult')? 'plus':'refresh' }}
+            </v-icon>
+            <span class="font-weight-bold">
+                  {{ appointment.type }}
+                </span>
+          </v-chip>
+          <span  v-if="!this.EndTime" class="black--text" style="float: right;font-size: 30px">
             {{ AppointmentTimeRemain(appointment.date + ' ' + appointment.start,appointment.date + ' ' + appointment.end) }}
-          </v-icon>
-        </v-progress-circular>
-      </div>
+          </span>
 
-    </v-list-item>
+          <!--          <v-progress-circular-->
+          <!--              style="float: right;margin-top: -40px"-->
+          <!--              :rotate="-90"-->
+          <!--              :size="80"-->
+          <!--              :width="15"-->
+          <!--              :value="time"-->
+          <!--              :color="(EndTime)?'red':'primary'"-->
+
+          <!--          >-->
+          <!--          </v-progress-circular>-->
+        </v-card-subtitle>
+
+        <!--        <v-card-actions class="d-flex align-end">-->
+
+        <!--          <v-spacer></v-spacer>-->
+        <!--          <v-btn-->
+        <!--              icon-->
+        <!--              @click="CurrentAppointmentInfoShow = !CurrentAppointmentInfoShow"-->
+        <!--          >-->
+        <!--            <v-icon color="black">{{ CurrentAppointmentInfoShow ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>-->
+        <!--          </v-btn>-->
+        <!--        </v-card-actions>-->
+
+        <v-expand-transition>
+          <div v-show="CurrentAppointmentInfoShow">
+            <v-divider></v-divider>
+            <v-list color="grey lighten-3">
+              <v-list-item >
+                <v-list-item-content>
+                  <v-list-item-title class="font-weight-bold"  style="color: #645d54">
+                    Phone number:
+                    <v-icon color="primary" class="ml-1">
+                      mdi-phone
+                    </v-icon>
+                    {{ appointment.patient_phone }}
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title class="font-weight-bold" style="color: #645d54">
+                    Blood type:
+                    <v-chip color="red" class="white--text rounded-lg pl-1">
+                      <v-icon color="white" class="mr-1">
+                        mdi-water
+                      </v-icon>
+                      <span class="font-weight-bold">
+                      {{ appointment.patient_bloodType }}
+                    </span>
+                    </v-chip>
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item>
+                <v-list-item-content>
+                  <v-list-item-title class="font-weight-bold" style="color: #645d54">
+                    Address:
+                    <v-icon color="black" class="ml-1 pb-2">
+                      mdi-map-marker
+                    </v-icon>
+                    <span class="font-weight-bold">
+                      {{ appointment.patient_address }}
+                    </span>
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item>
+                <v-list-item-content class="mr-2">
+                  <v-btn
+                      color="#3f51b5"
+                      class="white--text"
+                      :loading="MissLoading"
+                      :to="`/appointments/?date=${appointment.date}&time=${appointment.start.substr(0,5)}`"
+                      elevation
+                  >
+                    <v-icon color="white" class="mr-2">
+                      mdi-alert-circle-outline
+                    </v-icon>
+                    DETAIL
+                  </v-btn>
+                </v-list-item-content>
+                <v-list-item-content class="mr-2">
+                  <v-btn
+                      color="red"
+                      dark
+                      class="white--text opacity-8"
+                      :loading="MissLoading"
+                      @click="MissAppointement()"
+                      elevation
+                  >
+                    <v-icon color="white" class="mr-2">
+                      mdi-calendar-remove-outline
+                    </v-icon>
+                    absent
+                  </v-btn>
+                </v-list-item-content>
+                <v-list-item-content>
+                  <v-btn
+                      color="blue"
+                      dark
+                      class="white--text opacity-8"
+                      @click="addAppointment"
+                      elevation
+                  >
+                    <v-icon color="white" class="mr-2">
+                      mdi-calendar-refresh
+                    </v-icon>
+                    Revisit
+                  </v-btn>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+
+          </div>
+        </v-expand-transition>
+
+      </v-card>
+      <v-progress-linear
+          v-model="time"
+          :color="`${(appointment.type == 'consult')? 'teal':'primary'}`"
+          height="10"
+          stream
+          striped
+      >
+        <!--        <template v-slot:default="">-->
+        <!--          {{ AppointmentTimeRemain(appointment.date + ' ' + appointment.start,appointment.date + ' ' + appointment.end) }}-->
+        <!--        </template>-->
+      </v-progress-linear>
+    </div>
+
     <div>
       <v-dialog
           v-model="hover"
@@ -205,6 +268,8 @@ export default {
     message: '',
 
     CurrentTimeAppointment: false,
+    CurrentAppointmentInfoShow: false,
+    progressDarken: false,
     EndTime: false,
     hover : false,
     snackbar : false,
@@ -228,7 +293,7 @@ export default {
     },
   }),
   props: [
-    'appointment','missed'
+    'appointment','missed','mode'
   ],
   computed: {
     heightbreackpoint () {
@@ -262,7 +327,7 @@ export default {
       this.CheckLoading = true
 
       this.axios.post('/appointment/edit', Object.assign(this.form, this.AppointmentForm)).then( () => {
-        this.$emit('reloadAppointment',this.appointment)
+        // this.$emit('reloadAppointment',this.appointment)
         this.$emit('missedCall',true)
         this.CheckLoading = false
       }).catch(
@@ -296,6 +361,7 @@ export default {
         window.clearInterval(this.TimeIntervall)
       }else{
         var currectTime = new Date()
+        currectTime.setHours('13')
 
         var appointmentStartTime = this.CoverterSimpleDate(await this.appointment.date + ' ' + await this.appointment.start + ':00');
         var appointmentEndTime = this.CoverterSimpleDate(await this.appointment.date + ' ' + await this.appointment.end + ':00');
@@ -306,40 +372,34 @@ export default {
         if(this.time <= 0){
 
           this.EndTime = true
-          if((this.missed && this.EndTime)){
-            this.$emit('missedCall')
-          }
-          if(!this.missed && this.CurrentTimeAppointment){
-            this.CheckAppointement()
-            this.this.CurrentTimeAppointment = false
-          }
+          this.CheckAppointement()
           window.clearInterval(this.TimeIntervall)
         }else {
+          this.progressDarken = !this.progressDarken
           if(!this.missed && !this.EndTime){
             this.CurrentTimeAppointment = true
           }
         }
+
       }
     },
     AppointmentTimeRemain (Start_Time,End_Time){
 
       var currectTime = new Date()
+      currectTime.setHours('13')
 
-      var appointmentStartTime = this.CoverterSimpleDate(Start_Time);
+      // var appointmentStartTime = this.CoverterSimpleDate(Start_Time);
       var appointmentEndTime = this.CoverterSimpleDate(End_Time);
+      var timeremain =((appointmentEndTime.getTime() - currectTime.getTime()) / (1000))
+      var getHour =  (parseInt(timeremain) / 3600).toString().split('.')
+      var getMinute = (parseFloat('0.' + getHour[1]) * 60).toString().split('.')
+      var getSecond = (parseFloat('0.' + getMinute[1]) * 60).toString().split('.')
+      console.log(getHour)
+      console.log(getMinute)
+      console.log(getSecond)
+      console.log(this.TimeDesign(getHour[0] + ':' +  getMinute[0] + ':' + getSecond[0]))
+      return this.TimeDesign(getHour[0] + ':' +  getMinute[0] + ':' + getSecond[0])
 
-      var unitAppointment = (appointmentEndTime.getTime() - appointmentStartTime.getTime()) / 6
-      for(var i = 6;i > 0;i--){
-        if(currectTime.getTime() <= (appointmentStartTime.getTime() + (unitAppointment * i))
-            &&
-            currectTime.getTime() >= (appointmentStartTime.getTime() + (unitAppointment * (i - 1)))){
-          if(i == 6 && currectTime.getTime() >= (appointmentStartTime.getTime() + (unitAppointment * i))) return 'mdi-hexagon-outline'
-          return 'mdi-hexagon-slice-' + (7 - i);
-
-        }
-      }
-
-      return 'mdi-hexagon-outline'
     },
     CoverterSimpleDate(sdate){
       var date = new Date();
@@ -353,6 +413,13 @@ export default {
       date.setMinutes(TimeArray[1])
       date.setSeconds(TimeArray[2])
       return date;
+    },
+    TimeDesign (time){
+      var TimeArray = time.split(':')
+      if(TimeArray[0].length == 1) TimeArray[0] = '0' + TimeArray[0].toString()
+      if(TimeArray[1].length == 1) TimeArray[1] = '0' + TimeArray[1].toString()
+      if(TimeArray[2].length == 1) TimeArray[2] = '0' + TimeArray[2].toString()
+      return TimeArray.join(':')
     },
     addAppointment (){
       this.fillForm('Ready')
@@ -371,10 +438,11 @@ export default {
       this.hover = false;
       this.$emit('reloadAppointment',this.appointment)
     },
+
   },
   created() {
-      this.updateTime()
-      this.TimeIntervall = setInterval(()=> this.updateTime(),   1000)
+    this.updateTime()
+    this.TimeIntervall = setInterval(()=> this.updateTime(),   1000)
 
   }
 }

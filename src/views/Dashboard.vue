@@ -1,41 +1,58 @@
 <template>
   <v-container fluid>
-<!--    <v-row class="mb-2">-->
-<!--      <v-col>-->
-<!--        <CardInfo :message="`Todays Patients`" :number="43" :icon="`mdi-human-queue`"/>-->
-<!--      </v-col>-->
-<!--      <v-col>-->
-<!--        <CardInfo :message="`Todays Consultation`" :number="23" :icon="`mdi-human-queue`"/>-->
-<!--      </v-col>-->
-<!--      <v-col>-->
-<!--        <CardInfo :message="`Todays Patients`" :number="43" :icon="`mdi-human-queue`"/>-->
-<!--      </v-col>-->
-<!--    </v-row>-->
-    <v-card class="mb-0" color="transparent" flat>
-      <v-list color="transparent" class="white-text" v-if="checkedAppointment.length > 0">
-        <v-subheader
-            class="font-weight-bold text-lg-h6"
-        >
-          Current Appointment
-        </v-subheader>
-          <AppointmentCard v-on:missedCall="MissedAppointmentNumber" v-on:reloadAppointment="getCheckedAppointment" v-for="(appointment) in checkedAppointment" :key="appointment.id + 'C'" :appointment="appointment" :missed="false"/>
-        <v-subheader
-            style="cursor: pointer"
-            class="font-weight-bold text-lg-h6"
-            @click="(showMissed)?showMissed = false:showMissed = true"
-        >
-          Missed Appointment Today ({{ MissedNumber }}) {{ (showMissed)?'-':'+'}}
-        </v-subheader>
-        <v-expand-transition >
-          <div v-show="showMissed">
-            <AppointmentCard v-on:missedCall="MissedAppointmentNumber" v-on:reloadAppointment="getCheckedAppointment" v-for="appointment in checkedAppointment" :key="appointment.id + 'M'" :appointment="appointment" :missed="true"/>
-          </div>
-        </v-expand-transition>
-      </v-list>
-    </v-card>
+    <!--    <v-row class="mb-2">-->
+    <!--      <v-col>-->
+    <!--        <CardInfo :message="`Todays Patients`" :number="43" :icon="`mdi-human-queue`"/>-->
+    <!--      </v-col>-->
+    <!--      <v-col>-->
+    <!--        <CardInfo :message="`Todays Consultation`" :number="23" :icon="`mdi-human-queue`"/>-->
+    <!--      </v-col>-->
+    <!--      <v-col>-->
+    <!--        <CardInfo :message="`Todays Patients`" :number="43" :icon="`mdi-human-queue`"/>-->
+    <!--      </v-col>-->
+    <!--    </v-row>-->
+
     <v-row>
+      <v-col :cols="12 - heightbreackpoint">
+        <v-card class="mb-0" color="transparent" flat>
+          <v-list color="transparent" class="white-text ma-0 pa-0" v-if="checkedAppointment.length > 0">
+
+            <AppointmentCard v-on:missedCall="MissedAppointmentNumber" v-on:reloadAppointment="getCheckedAppointment" v-for="(appointment) in checkedAppointment" :key="appointment.id + 'C'" :appointment="appointment" :missed="false"/>
+            <!--            <v-subheader-->
+            <!--                style="cursor: pointer"-->
+            <!--                class="font-weight-bold text-lg-h6 red white&#45;&#45;text"-->
+            <!--                @click="(showMissed)?showMissed = false:showMissed = true"-->
+            <!--                v-if="MissedNumber != 0"-->
+            <!--            >-->
+
+            <!--              Missed Appointment Today ({{ MissedNumber }}) {{ (showMissed)?'-':'+'}}-->
+            <!--            </v-subheader>-->
+            <!--            <v-expand-transition >-->
+            <!--              <div v-show="showMissed">-->
+            <!--                <AppointmentCard v-on:missedCall="MissedAppointmentNumber" v-on:reloadAppointment="getCheckedAppointment" v-for="appointment in checkedAppointment" :key="appointment.id + 'M'" :appointment="appointment" :missed="true"/>-->
+            <!--              </div>-->
+            <!--            </v-expand-transition>-->
+          </v-list>
+          <v-sheet
+              :color="(mode)?'#00b383':'primary darken-3'"
+              class="pa-4 white--text font-weight-bold d-flex flex-row"
+          >
+            Consultation today
+          </v-sheet>
+          <v-list>
+            <v-list-item>
+              <v-list-item-avatar class="rounded-lg mr-2" size="70">
+
+              </v-list-item-avatar>
+              <v-list-item-content>
+                <v-list-item-title>Consultation of: Youcef Hemadou</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-card>
+      </v-col>
       <v-col :cols="heightbreackpoint">
-        <v-card class="BoxShadowCard mt-0 rounded-sm">
+        <v-card class="BoxShadowCard mt-0 rounded-sm" elevation="11">
           <v-sheet
               :color="(mode)?'#00b383':'primary darken-3'"
               class="pa-4 white--text font-weight-bold d-flex flex-row"
@@ -65,32 +82,56 @@
               </v-icon>
             </v-btn>
           </v-sheet>
+
+          <v-bottom-navigation
+              v-if="!nextAppointmentLoading"
+              :value="(showMissed)?1:2"
+              color="white"
+              :background-color="`${(showMissed)?'red darken-4':(mode)?'#017e5e':'primary darken-4'}`"
+              shift
+          >
+            <v-btn @click="showMissed = false">
+              <span>Waiting</span>
+
+              <v-icon>mdi-calendar-clock</v-icon>
+            </v-btn>
+            <v-btn @click="showMissed = true">
+              <span>Missed</span>
+
+              <v-icon>mdi-clock-alert</v-icon>
+            </v-btn>
+          </v-bottom-navigation>
           <v-data-table
-              :headers="headers"
-              :items="appointmentList"
+              :headers="(showMissed)?Missedheaders:Upcomingheaders"
+              :items="(showMissed)?missedAppointment:appointmentList"
               :items-per-page="5"
-              class="elevation-1 text-lg-h2"
+              :class="`elevation-1 ${(showMissed)?'grey lighten-4':''}`"
               disable-sort
               disable-pagination
               hide-default-footer
+
           >
-            <template v-slot:item.name="{ item }">
+            <template v-slot:item.image="{ item }">
               <div class="d-flex align-center">
                 <img :src="$store.state.localhost+ item.image"
                      width="40"
                      height="40"
-                     class="rounded-lg mr-3 patient-avatar"
+                     class="rounded-lg mr-3"
                 >
-                <span class="text-lg-h6">
+              </div>
+            </template>
+            <template v-slot:item.name="{ item }">
+              <div class="d-flex align-center">
+                <span style="font-size: 20px">
                 {{ item.patient_firstname + ' ' + item.patient_lastname}}
                 </span>
               </div>
             </template>
 
-            <template v-slot:item.time="{ item }">
+            <template v-slot:item.start="{ item }">
               <span class="font-weight-bold text-lg-h6">{{ item.start.substr(0,5) }}</span>
-
-              <span class="font-weight-bold text-lg-h6">-</span>
+            </template>
+            <template v-slot:item.end="{ item }">
               <span class="font-weight-bold text-lg-h6">{{ item.end.substr(0,5) }}</span>
             </template>
 
@@ -123,12 +164,44 @@
 
             <template v-slot:item.action="{ item }">
               <v-btn
+                  v-if="!showMissed"
                   class="rounded-lg white--text"
                   color="#3f51b5"
                   :to="`/appointments/?date=${item.date}&time=${item.start.substr(0,5)}`"
                   elevation>
                 DETAIL
               </v-btn>
+              <div v-else>
+                <v-btn
+
+                    color="white"
+                    dark
+                    class="teal--text opacity-8font-weight-bold"
+                    :loading="CheckLoading"
+                    @click="CheckAppointement()"
+                    elevation
+                    outlined
+                >
+                  <v-icon color="teal" class="mr-2">
+                    mdi-check
+                  </v-icon>
+                  Attended
+                </v-btn>
+                <v-btn
+                    color="white"
+                    dark
+                    class="red--text opacity-8 ml-2"
+                    :loading="MissLoading"
+                    @click="MissAppointement()"
+                    elevation
+                    outlined
+                >
+                  <v-icon color="red" class="mr-2">
+                    mdi-calendar-remove-outline
+                  </v-icon>
+                  absent
+                </v-btn>
+              </div>
 
             </template>
 
@@ -136,25 +209,28 @@
 
         </v-card>
       </v-col>
-      <v-col :cols="12 - heightbreackpoint">
-        <v-sheet
-            :color="(mode)?'#00b383':'primary darken-3'"
-            class="pa-4 white--text font-weight-bold d-flex flex-row"
-        >
-          Consultation today
-        </v-sheet>
-        <v-list>
-          <v-list-item>
-            <v-list-item-avatar class="rounded-lg mr-2" size="70">
 
-            </v-list-item-avatar>
-            <v-list-item-content>
-              <v-list-item-title>Consultation of: Youcef Hemadou</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
-      </v-col>
     </v-row>
+    <!--    <v-row>-->
+    <!--      <v-col>-->
+    <!--        <v-sheet-->
+    <!--            :color="(mode)?'#00b383':'primary darken-3'"-->
+    <!--            class="pa-4 white&#45;&#45;text font-weight-bold d-flex flex-row"-->
+    <!--        >-->
+    <!--          Consultation today-->
+    <!--        </v-sheet>-->
+    <!--        <v-list>-->
+    <!--          <v-list-item>-->
+    <!--            <v-list-item-avatar class="rounded-lg mr-2" size="70">-->
+
+    <!--            </v-list-item-avatar>-->
+    <!--            <v-list-item-content>-->
+    <!--              <v-list-item-title>Consultation of: Youcef Hemadou</v-list-item-title>-->
+    <!--            </v-list-item-content>-->
+    <!--          </v-list-item>-->
+    <!--        </v-list>-->
+    <!--      </v-col>-->
+    <!--    </v-row>-->
     <div>
       <v-dialog
           v-model="hover"
@@ -163,7 +239,7 @@
           :scrollable="false"
           @click:outside="closeOverLay(true)"
       >
-        <AddAppointment v-if="hover" v-on:ShowSnackBar="ShowSnackBar" v-on:HideOverLay="closeOverLay" :dateApp="dateApp" :timeApp="timeApp" :timeLApp="timeLApp" :appointmentId="``" :color="color"/>
+        <AddAppointment v-if="hover" v-on:ShowSnackBar="ShowSnackBar" v-on:HideOverLay="closeOverLay" :dateApp="dateApp" :timeApp="timeApp" :timeLApp="timeLApp" :appointmentId="``" :color="`teal`"/>
       </v-dialog>
       <v-snackbar
           :color="snackbarColor"
@@ -195,7 +271,7 @@ export default {
   // eslint-disable-next-line vue/no-unused-components
   components: {AddAppointment, AppointmentCard, CardInfo},
   props: [
-      'mode'
+    'mode'
   ],
   data : () => ({
     MissedNumber: 0,
@@ -215,13 +291,23 @@ export default {
     TakeUpIntervall: '',
 
     checkedAppointment: [],
+    missedAppointment: [],
     appointmentList: [],
-    headers: [
-      { text: '#  Full Name', value: 'name'},
-      { text: 'Time', value: 'time'},
+    Upcomingheaders: [
+      { text: '# ', value: 'image'},
+      { text: 'Full Name', value: 'name'},
+      { text: 'Start time', value: 'start'},
+      { text: 'End time', value: 'end'},
       { text: 'Gender', value: 'patient_gender' },
       { text: 'Type', value: 'type' },
       { text: 'Detail', value: 'action' },
+    ],
+    Missedheaders: [
+      { text: '# ', value: 'image'},
+      { text: 'Full Name', value: 'name'},
+      { text: 'Start time', value: 'start'},
+      { text: 'End time', value: 'end'},
+      { text: 'Option', value: 'action' },
     ],
   }),
   computed: {
@@ -232,9 +318,9 @@ export default {
         case 'xl': return 6
       }
       return 12
-    // case 'xs': return 12
-    // case 'sm': return 12
-    // case 'md': return 12
+      // case 'xs': return 12
+      // case 'sm': return 12
+      // case 'md': return 12
 
     },
   },
@@ -288,15 +374,17 @@ export default {
         window.clearInterval(this.TakeUpIntervall)
       }else {
         var currectTime = new Date()
+        currectTime.setHours('13')
 
         var AppointmentFiltred = [];
         for(var i = 0;i < this.appointmentList.length;i++){
           var appointmentStartTime = this.CoverterSimpleDate(this.appointmentList[i].date + ' ' + this.appointmentList[i].start);
 
-          // var appointmentEndTime = this.CoverterSimpleDate(this.appointmentList[i].date + ' ' + this.appointmentList[i].end);
+          var appointmentEndTime = this.CoverterSimpleDate(this.appointmentList[i].date + ' ' + this.appointmentList[i].end);
           // && currectTime.getTime() < appointmentEndTime.getTime()
 
-          if (currectTime.getTime() >= appointmentStartTime.getTime()) {
+          if (currectTime.getTime() >= appointmentStartTime.getTime()
+              && currectTime.getTime() < appointmentEndTime.getTime()) {
             var checkerSameAppointment = false
             for(var j = 0;j < this.checkedAppointment.length;j++){
               if(this.appointmentList[i].id == this.checkedAppointment[j].id){
@@ -312,14 +400,32 @@ export default {
             AppointmentFiltred.push(this.appointmentList[i])
 
           }
+          if (currectTime.getTime() >= appointmentEndTime.getTime()) {
+            checkerSameAppointment = false
+            for(j = 0;j < this.missedAppointment.length;j++){
+              if(this.appointmentList[i].id == this.missedAppointment[j].id){
+                checkerSameAppointment = true
+              }
+            }
+
+            if(!checkerSameAppointment) {
+              this.missedAppointment.push(this.appointmentList[i])
+              this.missedAppointment = this.orderly(this.missedAppointment)
+            }
+
+            AppointmentFiltred.push(this.appointmentList[i])
+
+          }
+
+
         }
 
-          this.appointmentList = this.appointmentList.filter(function(value){
-            if(AppointmentFiltred.includes(value)) {
-              return false
-            }
-            return true
-          });
+        this.appointmentList = this.appointmentList.filter(function(value){
+          if(AppointmentFiltred.includes(value)) {
+            return false
+          }
+          return true
+        });
 
       }
     },
@@ -391,17 +497,13 @@ export default {
 /**{*/
 /*  background-color: #f5f5f5;*/
 /*}*/
-  .v-data-table-header {
-    background-color: #f5f5f5;
-  }
-  .v-data-table tbody tr td{
-    padding: 10px !important;
-  }
-  .BoxShadowCard {
-    box-shadow: 0px 0px 2px grey
-  }
-  .patient-avatar {
-    outline: 3px solid #a5afb8;
-    padding: 2px;
-  }
+.v-data-table-header {
+  background-color: #f5f5f5;
+}
+.v-data-table tbody tr td{
+  padding: 10px !important;
+}
+.BoxShadowCard {
+  box-shadow: 0px 0px 2px grey
+}
 </style>
