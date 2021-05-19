@@ -18,6 +18,7 @@
               :items="items"
               :items-per-page="20"
               class="elevation-1 table"
+
           >
             <template v-slot:top>
               <v-row justify="center" class="px-4">

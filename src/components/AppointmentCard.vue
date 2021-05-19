@@ -1,44 +1,85 @@
 <template>
-  <div class="mb-2">
-    <div v-if="(!missed)">
+  <div class="mb-2 rounded-lg" :class="{'mt-6':EndTime}" v-if="showAppointement">
+    <div v-if="(!missed)" >
       <v-sheet
-          :color="`${(appointment.type == 'consult')?(progressDarken)?'#037e5d':'#00b383':(progressDarken)?'primary darken-3':'primary darken-5'}`"
-          class="pa-4 white--text font-weight-bold d-flex flex-row"
+          :color="`${(appointment.type == 'consult')?'#00b383':'primary darken-5'}`"
+          class="pa-4 white--text font-weight-bold d-flex flex-row rounded-t-lg"
       >
-              <span class="align-self-center">
-                Current Appointment
-              </span>
+<!--        :color="`${(appointment.type == 'consult')?'#00b383':'primary darken-5'}`"-->
+<!--        :color="`${(appointment.type == 'consult')?(progressDarken)?'#037e5d':'#00b383':(progressDarken)?'primary darken-3':'primary darken-5'}`"-->
+        <v-icon v-if="EndTime" color="white">
+          mdi-clock-check
+        </v-icon>
+        <span class="align-self-center">
+          {{ (EndTime)?'Past':'Current'}} Appointment
+        </span>
         <v-spacer></v-spacer>
-        <v-btn v-if="EndTime" color="white" @click="missed = true" outlined icon>
-          <v-icon color="white">
+
+        <v-btn v-if="EndTime" class="white" style="margin-top: -30px;margin-right: -30px" color="black" @click="showAppointement = false" small icon>
+          <v-icon color="black" small>
             mdi-close
           </v-icon>
         </v-btn>
+
+<!--        <v-progress-linear-->
+<!--            v-else-->
+<!--            indeterminate-->
+<!--            color="cyan"-->
+<!--        ></v-progress-linear>-->
       </v-sheet>
-      <v-card
-          color="white"
-          class="black--text ma-0"
-          dark
-          tile
-          elevation="11"
+      <v-progress-linear
+          v-if="false"
+          v-model="time"
+          :color="`${(appointment.type == 'consult')? 'teal':'primary'}`"
+          class="rounded-lg"
+          height="40"
+          striped
       >
+        <template v-slot:default="">
+          <div class="d-flex justify-start pl-4" style="width: 100%">
+            <span class="align-self-center font-weight-bold white--text">
+              Current Appointment
+            </span>
+          </div>
+        </template>
+      </v-progress-linear>
 
+      <v-card
+          :color="`${(appointment.type == 'consult')?'teal lighten-5':'primary lighten-5'}`"
+          class="black--text ma-0 rounded-b-lg rounded-t-0"
+          style="border: 2px solid grey"
+      >
+        <v-progress-circular
+            style="float: right;margin-top: -40px;position: absolute;right: 5px;top:-10px"
+            v-if="!EndTime"
+            :rotate="-90"
+            :size="40"
+            :width="20"
+            :value="time"
+            :color="`${(time <= 15)?(progressDarken)?'red lighten-2':'red':(appointment.type == 'consult')?(progressDarken)?'#037e5d':'#00b383':(progressDarken)?'primary darken-3':'primary darken-5'}`"
+        >
+
+        </v-progress-circular>
         <div class="d-flex flex-no-wrap justify-space-around">
-          <v-avatar
-              class="ma-3 rounded-lg"
-              size="125"
-              style="border:2px solid grey"
-          >
-            <v-img :src="$store.state.localhost+ appointment.image"></v-img>
-          </v-avatar>
-          <div>
-            <v-card-title
-                class="text-h5"
+          <router-link :to="`/patients/${appointment.patient_id}`" style="text-decoration: none;    ;">
+            <v-avatar
+                class="ma-3 rounded-lg"
+                size="125"
+                style="border:2px solid grey"
             >
-              {{ appointment.patient_firstname.toUpperCase() + ' ' + appointment.patient_lastname.toUpperCase()}}
-            </v-card-title>
 
-            <v-card-subtitle class="grey--text">
+              <v-img :src="$store.state.localhost+ appointment.image"></v-img>
+            </v-avatar>
+          </router-link>
+          <div>
+              <v-card-title
+                  class="text-h5 font-weight-bold"
+              >
+                <router-link :to="`/patients/${appointment.patient_id}`" style="text-decoration: none;">
+                  {{ appointment.patient_firstname.toUpperCase() + ' ' + appointment.patient_lastname.toUpperCase()}}
+                </router-link>
+              </v-card-title>
+            <v-card-subtitle class="grey--text  font-weight-bold">
               From {{ appointment.start.substr(0,5) }} To {{ appointment.end.substr(0,5) }}
             </v-card-subtitle>
 
@@ -86,20 +127,11 @@
                   {{ appointment.type }}
                 </span>
           </v-chip>
-          <span  v-if="!this.EndTime" class="black--text" style="float: right;font-size: 30px">
+          <span  v-if="!this.EndTime" class="black--text font-weight-bold" style="float: right;font-size: 30px">
             {{ AppointmentTimeRemain(appointment.date + ' ' + appointment.start,appointment.date + ' ' + appointment.end) }}
           </span>
 
-          <!--          <v-progress-circular-->
-          <!--              style="float: right;margin-top: -40px"-->
-          <!--              :rotate="-90"-->
-          <!--              :size="80"-->
-          <!--              :width="15"-->
-          <!--              :value="time"-->
-          <!--              :color="(EndTime)?'red':'primary'"-->
 
-          <!--          >-->
-          <!--          </v-progress-circular>-->
         </v-card-subtitle>
 
         <!--        <v-card-actions class="d-flex align-end">-->
@@ -116,7 +148,7 @@
         <v-expand-transition>
           <div v-show="CurrentAppointmentInfoShow">
             <v-divider></v-divider>
-            <v-list color="grey lighten-3">
+            <v-list color="white">
               <v-list-item >
                 <v-list-item-content>
                   <v-list-item-title class="font-weight-bold"  style="color: #645d54">
@@ -161,7 +193,6 @@
                   <v-btn
                       color="#3f51b5"
                       class="white--text"
-                      :loading="MissLoading"
                       :to="`/appointments/?date=${appointment.date}&time=${appointment.start.substr(0,5)}`"
                       elevation
                   >
@@ -207,19 +238,7 @@
         </v-expand-transition>
 
       </v-card>
-      <v-progress-linear
-          v-model="time"
-          :color="`${(appointment.type == 'consult')? 'teal':'primary'}`"
-          height="10"
-          stream
-          striped
-      >
-        <!--        <template v-slot:default="">-->
-        <!--          {{ AppointmentTimeRemain(appointment.date + ' ' + appointment.start,appointment.date + ' ' + appointment.end) }}-->
-        <!--        </template>-->
-      </v-progress-linear>
     </div>
-
     <div>
       <v-dialog
           v-model="hover"
@@ -241,16 +260,14 @@
               text
               v-bind="attrs"
               @click="snackbar = false"
-              class="white--text"
+              class="white--text "
           >
             Close
           </v-btn>
         </template>
       </v-snackbar>
     </div>
-
   </div>
-
 </template>
 
 <script>
@@ -267,6 +284,7 @@ export default {
     snackbarColor: '',
     message: '',
 
+    showAppointement: true,
     CurrentTimeAppointment: false,
     CurrentAppointmentInfoShow: false,
     progressDarken: false,
@@ -328,7 +346,6 @@ export default {
 
       this.axios.post('/appointment/edit', Object.assign(this.form, this.AppointmentForm)).then( () => {
         // this.$emit('reloadAppointment',this.appointment)
-        this.$emit('missedCall',true)
         this.CheckLoading = false
       }).catch(
           err => {
@@ -338,15 +355,13 @@ export default {
       )
     },
     async MissAppointement (){
-      this.fillForm('miss')
+      this.fillForm('missed')
 
       this.MissLoading = true
 
-      this.axios.post('/appointment/edit', Object.assign(this.form, this.AppointmentForm)).then( (res) => {
-        this.appointment.state = 'check'
-        console.log(res)
+      this.axios.post('/appointment/edit', Object.assign(this.form, this.AppointmentForm)).then( () => {
+        this.appointment.state = 'missed'
         this.$emit('reloadAppointment',this.appointment)
-        if(this.EndTime) this.$emit('missedCall',true)
 
         this.MissLoading = false
       }).catch(
@@ -361,7 +376,6 @@ export default {
         window.clearInterval(this.TimeIntervall)
       }else{
         var currectTime = new Date()
-        currectTime.setHours('13')
 
         var appointmentStartTime = this.CoverterSimpleDate(await this.appointment.date + ' ' + await this.appointment.start + ':00');
         var appointmentEndTime = this.CoverterSimpleDate(await this.appointment.date + ' ' + await this.appointment.end + ':00');
@@ -386,20 +400,16 @@ export default {
     AppointmentTimeRemain (Start_Time,End_Time){
 
       var currectTime = new Date()
-      currectTime.setHours('13')
 
       // var appointmentStartTime = this.CoverterSimpleDate(Start_Time);
       var appointmentEndTime = this.CoverterSimpleDate(End_Time);
       var timeremain =((appointmentEndTime.getTime() - currectTime.getTime()) / (1000))
       var getHour =  (parseInt(timeremain) / 3600).toString().split('.')
       var getMinute = (parseFloat('0.' + getHour[1]) * 60).toString().split('.')
-      var getSecond = (parseFloat('0.' + getMinute[1]) * 60).toString().split('.')
-      console.log(getHour)
-      console.log(getMinute)
-      console.log(getSecond)
-      console.log(this.TimeDesign(getHour[0] + ':' +  getMinute[0] + ':' + getSecond[0]))
-      return this.TimeDesign(getHour[0] + ':' +  getMinute[0] + ':' + getSecond[0])
+      return this.TimeDesign(getHour[0] + ':' +  getMinute[0])
 
+      // var getSecond = (parseFloat('0.' + getMinute[1]) * 60).toString().split('.')
+      // return this.TimeDesign(getHour[0] + ':' +  getMinute[0] + ':' + getSecond[0])
     },
     CoverterSimpleDate(sdate){
       var date = new Date();
@@ -418,7 +428,6 @@ export default {
       var TimeArray = time.split(':')
       if(TimeArray[0].length == 1) TimeArray[0] = '0' + TimeArray[0].toString()
       if(TimeArray[1].length == 1) TimeArray[1] = '0' + TimeArray[1].toString()
-      if(TimeArray[2].length == 1) TimeArray[2] = '0' + TimeArray[2].toString()
       return TimeArray.join(':')
     },
     addAppointment (){
@@ -448,15 +457,12 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 /*.CardInfoSheet{*/
 /*  !*background-image: linear-gradient(270deg,#71b280,#134e5e);*!*/
 /*  background-color: #ffffff*/
 /*}*/
-.opacity-8 {
-  opacity: 0.9;
-}
-.opacity-8:hover{
-  opacity: 1;
+.v-progress-circular__underlay{
+  stroke:rgb(236, 240, 244);
 }
 </style>

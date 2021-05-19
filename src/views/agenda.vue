@@ -86,7 +86,7 @@
                 <v-list-item @click="type = 'day'">
                   <v-list-item-title>Day</v-list-item-title>
                 </v-list-item>
-                <v-list-item @click="type = 'week'">
+                <v-list-item @click="type = 'custom-daily'">
                   <v-list-item-title>Week</v-list-item-title>
                 </v-list-item>
                 <v-list-item @click="type = 'month'">
@@ -104,6 +104,8 @@
               :events="appointmentInfo"
               :event-color="getEventColor"
               :type="type"
+              :start="startDate"
+              :end="endDate"
               @click:more="viewDay"
               @click:date="viewDay"
               @mousedown:time="addAppointment"
@@ -117,18 +119,17 @@
               <div
                   class=" pa-2 fill-height"
                   :class="(Clinicweekdays.includes(weekday))? 'grey lighten-2':''"
+                  @click="viewDay(date)"
+                  style="cursor: pointer"
               >
                 <div v-if="type != 'day'" class="d-flex flex-column justify-center">
                   <span style="text-align: center" class="mb-2">{{ daysInWeek[weekday]}}</span>
                   <v-spacer></v-spacer>
-                  <v-btn
-                      class="mx-auto text-caption white--text"
-                      :class="{'white--text ': getFullDate() == date}"
-                      :color="(getFullDate() == date)?(mode)?'#01664c':'primary darken-4':(mode)?'#00b383':'primary'"
-                      @click="viewDay(date)"
-                  >
+                  <span style="text-align: center" class="mb-2 pa-2 white--text rounded-lg font-weight-bold"
+                        :class="(getFullDate() == date)?(mode)?'teal darken-4':'primary darken-4':(mode)?'teal':'primary'">
                     {{date}}
-                  </v-btn>
+                  </span>
+
                 </div>
                 <div v-else>
                   <v-row>
@@ -162,7 +163,7 @@
                   </b>
 
                 </h2>
-                <h3  v-if="type == 'week'" class="white--text font-weight-bold align-center pa-1 pt-1" style="overflow: visible">
+                <h3  v-if="type == 'custom-daily'" class="white--text font-weight-bold align-center pa-1 pt-1" style="overflow: visible">
                   {{ event.start.split(' ')[1] + ' - ' }}
                   <del v-if="CheckingDeadAppointment(event)">
                     {{event.name }}
@@ -360,12 +361,14 @@ export default {
   ],
   data: () => ({
     focus: '',
-    type: 'week',
+    type: 'custom-daily',
+    startDate: '',
+    endDate: '',
     Clinicweekdays : [5,6],
     daysInWeek : ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
     typeToLabel: {
       month: 'Month',
-      week: 'Week',
+      'custom-daily': 'week',
       day: 'Day',
     },
     AppointmentForm : {
@@ -410,6 +413,15 @@ export default {
     this.ready = true
     this.scrollToTime()
     this.updateTime()
+  },
+  watch:{
+    focus(v){
+        this.startDate = v
+        var endDate = this.CoverterSimpleDate(this.startDate + ': 00:00')
+        endDate.setDate(endDate.getDate() + 7)
+        this.endDate = this.TimeDesignDate(endDate.getFullYear() + '-' + (endDate.getMonth() + 1) + '-' + endDate.getDate())
+
+    }
   },
   methods: {
     getAppointment (){
@@ -610,13 +622,45 @@ export default {
       return event.color
     },
     setToday () {
-      this.focus = ''
+      var today = new Date()
+      var todaySimpleDate = this.TimeDesignDate(today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate())
+      if(this.type == 'custom-daily'){
+        var endDate = this.CoverterSimpleDate(todaySimpleDate + ': 00:00')
+        endDate.setDate(endDate.getDate() + 7)
+
+        this.startDate = todaySimpleDate
+        this.endDate = this.TimeDesignDate(endDate.getFullYear() + '-' + (endDate.getMonth() + 1) + '-' + endDate.getDate())
+      }else{
+        this.focus = todaySimpleDate
+      }
     },
     prev () {
-      this.$refs.calendar.prev()
+      if(this.type == 'custom-daily'){
+        var startDate = this.CoverterSimpleDate(this.startDate + ': 00:00')
+        var endDate = this.CoverterSimpleDate(this.endDate + ': 00:00')
+
+        startDate.setDate(startDate.getDate() - 7)
+        endDate.setDate(endDate.getDate() - 7)
+
+        this.startDate = this.TimeDesignDate(startDate.getFullYear() + '-' + (startDate.getMonth() + 1) + '-' + startDate.getDate())
+        this.endDate = this.TimeDesignDate(endDate.getFullYear() + '-' + (endDate.getMonth() + 1) + '-' + endDate.getDate())
+
+      }else{
+        this.$refs.calendar.prev()
+      }
     },
     next () {
-      this.$refs.calendar.next()
+      if(this.type == 'custom-daily'){
+        var startDate = this.CoverterSimpleDate(this.startDate + ': 00:00')
+        var endDate = this.CoverterSimpleDate(this.endDate + ': 00:00')
+        startDate.setDate(startDate.getDate() + 7)
+        endDate.setDate(endDate.getDate() + 7)
+
+        this.startDate = this.TimeDesignDate(startDate.getFullYear() + '-' + (startDate.getMonth() + 1) + '-' + startDate.getDate())
+        this.endDate = this.TimeDesignDate(endDate.getFullYear() + '-' + (endDate.getMonth() + 1) + '-' + endDate.getDate())
+      }else{
+        this.$refs.calendar.next()
+      }
     },
     longeur (first,second) {
       var firstD = new Date(first)
@@ -680,6 +724,7 @@ export default {
     },
   },
   created() {
+    this.setToday()
     this.getAppointment();
   },
 }

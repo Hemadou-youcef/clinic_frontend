@@ -12,20 +12,21 @@
 
       <v-btn @click="$emit('changeMode')" icon>
           <v-icon color="white">
-            mdi-cog-outline
+            mdi-format-color-fill
           </v-icon>
       </v-btn>
-      <v-btn icon>
-        <v-badge color="red" bottom left overlap>
-          <v-icon color="white">
-            mdi-forum
-          </v-icon>
-          <template v-slot:badge>
-            <div>
-              5
-            </div>
-          </template>
-        </v-badge>
+      <v-btn @click="logout" icon>
+<!--        <v-badge color="red" bottom left overlap>-->
+<!--          <v-icon color="white">-->
+<!--            mdi-forum-->
+<!--          </v-icon>-->
+<!--          <template v-slot:badge>-->
+<!--            <div>-->
+<!--              5-->
+<!--            </div>-->
+<!--          </template>-->
+<!--        </v-badge>-->
+        <v-icon color="white">mdi-export</v-icon>
       </v-btn>
 
 

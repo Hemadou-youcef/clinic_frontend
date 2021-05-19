@@ -47,7 +47,7 @@
 
                   <v-layout justify-space-between>
                     <v-spacer></v-spacer>
-                    <v-btn @click="submit" :disabled="!valid" color="secondary"  :class=" { 'white--text' : valid, 'disabled': !valid }">Login</v-btn>
+                    <v-btn @keyup.enter="submit" @click="submit" :disabled="!valid" color="secondary"  :class=" { 'white--text' : valid, 'disabled': !valid }">Login</v-btn>
 
                     <v-spacer></v-spacer>
 

@@ -1,20 +1,32 @@
 <template>
   <v-container fluid>
-    <!--    <v-row class="mb-2">-->
-    <!--      <v-col>-->
-    <!--        <CardInfo :message="`Todays Patients`" :number="43" :icon="`mdi-human-queue`"/>-->
-    <!--      </v-col>-->
-    <!--      <v-col>-->
-    <!--        <CardInfo :message="`Todays Consultation`" :number="23" :icon="`mdi-human-queue`"/>-->
-    <!--      </v-col>-->
-    <!--      <v-col>-->
-    <!--        <CardInfo :message="`Todays Patients`" :number="43" :icon="`mdi-human-queue`"/>-->
-    <!--      </v-col>-->
-    <!--    </v-row>-->
+        <v-row class="mb-0">
+          <v-col>
+            <CardInfo :message="`Todays Appointment`"
+                      :number="appointmentNumber"
+                      :icon="`mdi-calendar`"
+                      :firstColor="`1976d2`"
+                      :secondColor="`33ccff`"/>
+          </v-col>
+          <v-col>
+            <CardInfo :message="`Todays Consultation`"
+                      :number="0"
+                      :icon="`mdi-heart-pulse`"
+                      :firstColor="`00cc66`"
+                      :secondColor="`66ff33`"/>
+          </v-col>
+          <v-col>
+            <CardInfo :message="`Missed Appointment`"
+                      :number="missedAppointment.length"
+                      :icon="`mdi-clock-alert`"
+                      :firstColor="`ff0000`"
+                      :secondColor="`cc0000`"/>
+          </v-col>
+        </v-row>
 
-    <v-row>
-      <v-col :cols="12 - heightbreackpoint">
-        <v-card class="mb-0" color="transparent" flat>
+    <v-row class="mt-0 pt-0">
+      <v-col :cols="12 - heightbreackpoint" class="pt-0">
+        <v-card class="mb-0" color="transparent" elevation="0" >
           <v-list color="transparent" class="white-text ma-0 pa-0" v-if="checkedAppointment.length > 0">
 
             <AppointmentCard v-on:missedCall="MissedAppointmentNumber" v-on:reloadAppointment="getCheckedAppointment" v-for="(appointment) in checkedAppointment" :key="appointment.id + 'C'" :appointment="appointment" :missed="false"/>
@@ -33,16 +45,20 @@
             <!--              </div>-->
             <!--            </v-expand-transition>-->
           </v-list>
+        </v-card>
+        <v-card class=" rounded-lg">
           <v-sheet
+
               :color="(mode)?'#00b383':'primary darken-3'"
               class="pa-4 white--text font-weight-bold d-flex flex-row"
+              :class="{'mt-5':(checkedAppointment.length > 0)}"
           >
             Consultation today
           </v-sheet>
           <v-list>
             <v-list-item>
               <v-list-item-avatar class="rounded-lg mr-2" size="70">
-
+                <v-img :src="`http://localhost:8000/images/1620506681.Youcef-Hemadou.jpg`"></v-img>
               </v-list-item-avatar>
               <v-list-item-content>
                 <v-list-item-title>Consultation of: Youcef Hemadou</v-list-item-title>
@@ -51,14 +67,14 @@
           </v-list>
         </v-card>
       </v-col>
-      <v-col :cols="heightbreackpoint">
-        <v-card class="BoxShadowCard mt-0 rounded-sm" elevation="11">
+      <v-col :cols="heightbreackpoint" class="pt-0">
+        <v-card class="BoxShadowCard mt-0 rounded-lg" elevation="11">
           <v-sheet
               :color="(mode)?'#00b383':'primary darken-3'"
               class="pa-4 white--text font-weight-bold d-flex flex-row"
           >
             <span class="align-self-center">
-              Upcoming Appointment
+              Appointment
             </span>
             <v-spacer></v-spacer>
             <v-btn
@@ -88,17 +104,18 @@
               :value="(showMissed)?1:2"
               color="white"
               :background-color="`${(showMissed)?'red darken-4':(mode)?'#017e5e':'primary darken-4'}`"
-              shift
+              grow
           >
             <v-btn @click="showMissed = false">
-              <span>Waiting</span>
+              <span>Upcoming</span>
 
               <v-icon>mdi-calendar-clock</v-icon>
             </v-btn>
             <v-btn @click="showMissed = true">
               <span>Missed</span>
-
               <v-icon>mdi-clock-alert</v-icon>
+
+
             </v-btn>
           </v-bottom-navigation>
           <v-data-table
@@ -113,18 +130,23 @@
           >
             <template v-slot:item.image="{ item }">
               <div class="d-flex align-center">
-                <img :src="$store.state.localhost+ item.image"
-                     width="40"
-                     height="40"
-                     class="rounded-lg mr-3"
-                >
+                <router-link :to="`/patients/${item.patient_id}`" style="text-decoration: none;    ;">
+                  <img :src="$store.state.localhost+ item.image"
+                       width="40"
+                       height="40"
+                       class="rounded-lg mr-3"
+                  >
+                </router-link>
               </div>
             </template>
             <template v-slot:item.name="{ item }">
               <div class="d-flex align-center">
-                <span style="font-size: 20px">
-                {{ item.patient_firstname + ' ' + item.patient_lastname}}
-                </span>
+                <router-link :to="`/patients/${item.patient_id}`" style="text-decoration: none;    ;">
+                  <span style="font-size: 20px">
+                    {{ item.patient_firstname + ' ' + item.patient_lastname}}
+                  </span>
+                </router-link>
+
               </div>
             </template>
 
@@ -166,19 +188,21 @@
               <v-btn
                   v-if="!showMissed"
                   class="rounded-lg white--text"
-                  color="#3f51b5"
+
+                  :color="(mode)?'secondary darken-2':'primary darken-2'"
                   :to="`/appointments/?date=${item.date}&time=${item.start.substr(0,5)}`"
-                  elevation>
+                  outlined>
                 DETAIL
+                <v-icon :color="(mode)?'secondary darken-2':'primary darken-2'">
+                  mdi-open-in-new
+                </v-icon>
               </v-btn>
               <div v-else>
                 <v-btn
-
                     color="white"
                     dark
                     class="teal--text opacity-8font-weight-bold"
-                    :loading="CheckLoading"
-                    @click="CheckAppointement()"
+                    @click="StatusEditAppointment(item,'check')"
                     elevation
                     outlined
                 >
@@ -191,8 +215,7 @@
                     color="white"
                     dark
                     class="red--text opacity-8 ml-2"
-                    :loading="MissLoading"
-                    @click="MissAppointement()"
+                    @click="StatusEditAppointment(item,'missed')"
                     elevation
                     outlined
                 >
@@ -274,7 +297,7 @@ export default {
     'mode'
   ],
   data : () => ({
-    MissedNumber: 0,
+    appointmentNumber: 0,
     dateApp : '',
     timeApp : '08:00',
     timeLApp : 15,
@@ -293,6 +316,20 @@ export default {
     checkedAppointment: [],
     missedAppointment: [],
     appointmentList: [],
+
+
+    form : {
+      patient_id: '',
+      date: '',
+      start_time: '',
+      end_time: '',
+      type: '',
+      state: '',
+    },
+    AppointmentForm : {
+      id: '',
+      confirme: 'yes'
+    },
     Upcomingheaders: [
       { text: '# ', value: 'image'},
       { text: 'Full Name', value: 'name'},
@@ -325,6 +362,17 @@ export default {
     },
   },
   methods:{
+    fillForm(appointment,state){
+      this.form.patient_id = appointment.patient_id
+      this.form.date = appointment.date
+      this.form.start_time = appointment.start
+      this.form.end_time = appointment.end
+      this.form.type = appointment.type
+      this.form.state = state
+
+      this.AppointmentForm.id  = appointment.id
+    },
+
     GetTodayAppointment(){
       this.nextAppointmentLoading = true
       var currectTime = new Date()
@@ -341,8 +389,10 @@ export default {
           todate: dateApp} })
           .then((res) => {
             this.appointmentList = this.orderly(res.data.data)
+            this.appointmentNumber = this.appointmentList.length
+            this.missedAppointment = []
             this.appointmentList = this.appointmentList.filter(function(value){
-              if(value.state == 'miss' || value.state == 'check') {
+              if(value.state == 'missed' || value.state == 'check') {
                 return false
               }
               return true
@@ -374,7 +424,6 @@ export default {
         window.clearInterval(this.TakeUpIntervall)
       }else {
         var currectTime = new Date()
-        currectTime.setHours('13')
 
         var AppointmentFiltred = [];
         for(var i = 0;i < this.appointmentList.length;i++){
@@ -429,9 +478,24 @@ export default {
 
       }
     },
-    MissedAppointmentNumber(reverse = false){
-      if(reverse) this.MissedNumber--
-      else this.MissedNumber++
+
+    async StatusEditAppointment(appointment,status){
+      this.fillForm(appointment,status)
+
+      this.axios.post('/appointment/edit', Object.assign(this.form, this.AppointmentForm)).then( () => {
+        this.missedAppointment = this.missedAppointment.filter(function(value){
+          if(value.id == appointment.id ) {
+            return false
+          }
+          return true
+        });
+        // this.GetTodayAppointment()
+      }).catch(
+          err => {
+            this.errors = err.response.data.errors
+            console.log(this.errors)
+          }
+      )
     },
     CoverterSimpleDate(sdate){
       var date = new Date();

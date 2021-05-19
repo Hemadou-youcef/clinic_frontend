@@ -1,7 +1,5 @@
 <template>
   <div >
-
-
           <v-toolbar height="80" class="pt-5 grey" color="secondary">
 
             <v-row>
@@ -244,7 +242,7 @@ export default {
 
             console.log('create new patient request')
             console.log(res)
-
+            this.clear()
             this.snackbar = true;
             if (this.patientImage.image){
               this.updateImage(res.data.id)

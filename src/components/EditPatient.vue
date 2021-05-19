@@ -254,7 +254,7 @@ export default {
         if (this.patientImage.image){
           this.updateImage()
         }else {
-
+          this.clear()
           this.$emit('closeDialog' , 'Patient Updated' );
         }
 

@@ -164,11 +164,12 @@
                 </template>
                 <template v-slot:item.link="{ item }">
                   <v-btn
-                      color="primary"
                       :to="`/appointments/?date=${item.link.split(' ')[0]}&time=${item.link.split(' ')[1]}`"
+                      outlined
+                      :color="(mode)?'secondary darken-2':'primary darken-2'"
                   >
-                    <v-icon>
-                      mdi-keyboard-tab
+                    <v-icon :color="(mode)?'secondary darken-2':'primary darken-2'">
+                      mdi-open-in-new
                     </v-icon>
                   </v-btn>
                 </template>
