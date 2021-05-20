@@ -29,7 +29,7 @@
         <v-card class="mb-0" color="transparent" elevation="0" >
           <v-list color="transparent" class="white-text ma-0 pa-0" v-if="checkedAppointment.length > 0">
 
-            <AppointmentCard v-on:missedCall="MissedAppointmentNumber" v-on:reloadAppointment="getCheckedAppointment" v-for="(appointment) in checkedAppointment" :key="appointment.id + 'C'" :appointment="appointment" :missed="false"/>
+            <AppointmentCard v-on:reloadAppointment="getCheckedAppointment" v-for="(appointment) in checkedAppointment" :key="appointment.id + 'C'" :appointment="appointment" :missed="false"/>
             <!--            <v-subheader-->
             <!--                style="cursor: pointer"-->
             <!--                class="font-weight-bold text-lg-h6 red white&#45;&#45;text"-->
@@ -231,6 +231,7 @@
           </v-data-table>
 
         </v-card>
+
       </v-col>
 
     </v-row>
@@ -289,10 +290,11 @@
 import CardInfo from "../components/CardInfo";
 import AppointmentCard from "../components/AppointmentCard";
 import AddAppointment from "../components/AddAppointment";
+import StatistiqueAppointment from "../components/statistiqueAppointments";
 export default {
   name: "Dashboard",
   // eslint-disable-next-line vue/no-unused-components
-  components: {AddAppointment, AppointmentCard, CardInfo},
+  components: {StatistiqueAppointment, AddAppointment, AppointmentCard, CardInfo},
   props: [
     'mode'
   ],
@@ -304,6 +306,7 @@ export default {
     color : 'teal darken-1',
     snackbarColor: '',
     message: '',
+
 
     showMissed:false,
     hover : false,
@@ -377,14 +380,14 @@ export default {
       this.nextAppointmentLoading = true
       var currectTime = new Date()
 
-      currectTime.setHours('8')
+      currectTime.setHours('00')
       currectTime.setMinutes('00')
 
       var dateApp = currectTime.getFullYear() + '-' + (currectTime.getMonth() + 1) + '-' + currectTime.getDate();
       var timeApp = currectTime.getHours().toString() + ':' + currectTime.getMinutes().toString();
       this.axios.get('/appointments/range',{
         params: { fromtime : timeApp,
-          totime: '18:00',
+          totime: '24:00',
           fromdate: dateApp,
           todate: dateApp} })
           .then((res) => {

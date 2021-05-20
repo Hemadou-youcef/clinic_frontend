@@ -106,6 +106,7 @@ export default {
       {'item': 'Appointments', 'icon': 'mdi-calendar-check', 'to': '/appointments'},
       {'item': 'Patients', 'icon': 'mdi-account-supervisor', 'to': '/patients'},
       {'item': 'Medicines', 'icon': 'mdi-pill', 'to': '/medicines'},
+      {'item': 'statistics', 'icon': 'mdi-chart-areaspline', 'to': '/statistics'},
 
     ]
   }),
