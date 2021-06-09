@@ -1,6 +1,16 @@
 <template>
   <div>
     <v-container fluid>
+      <v-subheader>
+        <router-link :to="`/dashboard`" style="text-decoration: none;    ;">
+          <v-icon :color="`${(mode)?'#017e5e':'primary darken-4'}`" class="mr-2">
+            mdi-home
+          </v-icon>
+        </router-link>
+        <span>
+          / Medicines
+        </span>
+      </v-subheader>
       <v-card class="pa-4 mt-4">
         <v-row class="my-4 d-flex justify-end">
           <v-btn color="primary" @click="addMedicineDialog = true" class="mr-4" outlined>New <v-icon right>mdi-plus-box</v-icon></v-btn>

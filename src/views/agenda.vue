@@ -1,5 +1,15 @@
 <template>
   <v-container fluid class=" pa-2 blue-grey lighten-5 fill-height" style="width: auto !important;">
+    <v-subheader>
+      <router-link :to="`/dashboard`" style="text-decoration: none;    ;">
+        <v-icon :color="`${(mode)?'#017e5e':'primary darken-4'}`" class="mr-2">
+          mdi-home
+        </v-icon>
+      </router-link>
+      <span>
+          / Calendar
+        </span>
+    </v-subheader>
     <v-row>
       <v-col>
         <v-sheet height="64"  dark>

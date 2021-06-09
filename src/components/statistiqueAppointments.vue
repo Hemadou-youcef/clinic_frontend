@@ -4,7 +4,7 @@
       <areachart v-if="ChartType == 'line' && !changed" :chartData="SendData" :option="chartOption"/>
       <pie-chart  v-else-if="ChartType == 'pie'&& !changed" :height="300" :chartData="SendData" :option="chartOption"  class="my-3"/>
       <bar-chart  v-else-if="ChartType == 'bar' && !changed" :chartData="SendData" :option="chartOption"/>
-      <v-sheet :class="`${option.backgroundColor?'white':'transparent'}`"  height="400px" v-else>
+      <v-sheet class="d-flex justify-center" :class="`${option.backgroundColor?'white':'transparent'}`"  height="400px" v-else>
         <v-progress-linear
             v-if="ChartType != 'pie'"
             color="primary"
@@ -12,6 +12,14 @@
             rounded
             height="6"
         ></v-progress-linear>
+        <v-progress-circular
+            v-else
+            :size="200"
+            :width="30"
+            color="primary"
+            class="align-self-center"
+            indeterminate
+        ></v-progress-circular>
       </v-sheet>
     </v-card>
 
@@ -34,12 +42,70 @@ export default {
     months : ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
     DAYS_IN_MONTH : [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31],
 
+    xAxisPlace :0,
+    yAxisPlace:0,
+
     statistiqueResult: [],
     changed:false,
 
     chartOption:{
       responsive: true,
-      maintainAspectRatio: false
+      maintainAspectRatio: false,
+      pointHoverBackgroundColor: 'red',
+
+      title: {
+        display: true,
+        text: 'Halo'
+      },
+      tooltips: {
+        callbacks: {
+          title: function() {
+            // return data['labels'][tooltipItem[0]['index']];
+            return "DATA"
+          },
+          label: function(tooltipItem, data) {
+            // console.log('..//');
+            // console.log(tooltipItem);
+            // console.log(data);
+            console.log('test')
+            var StatLabel = data['datasets'][tooltipItem.datasetIndex].label
+            return StatLabel + " " + data['datasets'][tooltipItem.datasetIndex]['data'][tooltipItem['index']];
+          },
+          labelColor: function(tooltipItem, data) {
+            return {
+              borderColor: 'white',
+              backgroundColor: data['data']['datasets'][tooltipItem.datasetIndex].backgroundColor
+            }
+          }
+        },
+        backgroundColor: '#FFF',
+        titleFontSize: 16,
+        titleFontColor: '#0066ff',
+        bodyFontColor: '#000',
+        bodyFontSize: 20,
+        xPadding: 10,
+        yPadding: 10,
+        mode: 'index',
+        borderColor: 'rgb(0, 0, 0)',
+        borderWidth: 0.3,
+        cornerRadius: 0,
+        caretSize: 0,
+        titleFontFamily: 'Roboto',
+        bodyFontFamily: 'Roboto',
+        stepped:true,
+
+      },
+
+      scales: {
+        yAxes: [{
+          ticks: {
+            min: 0,
+            suggestedMax: 10,
+            beginAtZero: true
+          },
+
+        }]
+      },
     },
     SendData: {}
   }),
@@ -157,6 +223,40 @@ export default {
             }
           }
         }
+        this.statistiqueResult = cuttedInformation
+        currentDate = timeline
+        cuttedInformation = []
+        Layout = -1
+        while(Layout <= 6){
+          var currentDateCheck = this.CoverterSimpleDate(currentDate + ' 00:00:00')
+          currentDateCheck.setDate(currentDateCheck.getDate() + 1)
+          var NextCurrentDate = this.DateDesign(currentDateCheck.getFullYear() + '-' + (currentDateCheck.getMonth() + 1) + '-' + currentDateCheck.getDate())
+          var NotFound = true
+          var FoundAt = 0
+          for(var j = 0;j < this.statistiqueResult.length;j++){
+            if(currentDate == this.statistiqueResult[j].date){
+              NotFound = false
+              FoundAt = j
+            }
+          }
+          if(NotFound){
+            cuttedInformation.push({
+              date:currentDate,
+              consult: 0,
+              revisit: 0
+            })
+            Layout++
+            currentDate = NextCurrentDate
+          }else{
+            cuttedInformation.push({
+              date:currentDate,
+              consult: this.statistiqueResult[FoundAt].consult,
+              revisit: this.statistiqueResult[FoundAt].revisit
+            })
+            Layout++
+            currentDate = NextCurrentDate
+          }
+        }
       }
       else if (this.timeLine == 'month') {
         for (i = 0; i < this.statistiqueResult.length; i++) {
@@ -199,12 +299,12 @@ export default {
         cuttedInformation = []
         Layout = -1
         while(Layout <= 29){
-          var currentDateCheck = this.CoverterSimpleDate(currentDate + ' 00:00:00')
+          currentDateCheck = this.CoverterSimpleDate(currentDate + ' 00:00:00')
           currentDateCheck.setDate(currentDateCheck.getDate() + 1)
-          var NextCurrentDate = this.DateDesign(currentDateCheck.getFullYear() + '-' + (currentDateCheck.getMonth() + 1) + '-' + currentDateCheck.getDate())
-          var NotFound = true
-          var FoundAt = 0
-          for(var j = 0;j < this.statistiqueResult.length;j++){
+          NextCurrentDate = this.DateDesign(currentDateCheck.getFullYear() + '-' + (currentDateCheck.getMonth() + 1) + '-' + currentDateCheck.getDate())
+          NotFound = true
+          FoundAt = 0
+          for(j = 0;j < this.statistiqueResult.length;j++){
             if(currentDate == this.statistiqueResult[j].date){
               NotFound = false
               FoundAt = j
@@ -384,8 +484,6 @@ export default {
         consult += this.statistiqueResult[i].consult
         revisit += this.statistiqueResult[i].revisit
       }
-      console.log(consult)
-      console.log(revisit)
       this.$emit('callback',{
         total: consult + revisit,
         values:[
@@ -934,6 +1032,17 @@ export default {
 
     },
 
+    // ChartOptionFiller(){
+    //   let Xplace = []
+    //   for(let i = 0;i < this.SendData.datasetsdata.length;i++){
+    //     if(i == this.xAxisPlace){
+    //       Xplace.push(5)
+    //     }else{
+    //       Xplace.push(0)
+    //     }
+    //   }
+    //   return Xplace
+    // },
     orderly(list){
       var NoOrdredList = list
       NoOrdredList.sort(function(a, b) {

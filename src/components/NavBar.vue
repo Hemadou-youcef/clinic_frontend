@@ -42,7 +42,11 @@
         <v-icon color="white" large>
           mdi-hospital-building
         </v-icon>
-        Clinic Management System
+        <span :class="`text-subtitle-${(MiniLogo)?'2':'1'}`">
+          Clinic Management System
+        </span>
+<!--        {{ (MiniLogo)?'CLINIC-MS':'Clinic Management System'}}-->
+
       </v-card>
       <v-list-item class="pa-2">
 
@@ -106,7 +110,7 @@ export default {
       {'item': 'Appointments', 'icon': 'mdi-calendar-check', 'to': '/appointments'},
       {'item': 'Patients', 'icon': 'mdi-account-supervisor', 'to': '/patients'},
       {'item': 'Medicines', 'icon': 'mdi-pill', 'to': '/medicines'},
-      {'item': 'statistics', 'icon': 'mdi-chart-areaspline', 'to': '/statistics'},
+
 
     ]
   }),
@@ -128,14 +132,27 @@ export default {
       }
       return 'https://cdn1.iconfinder.com/data/icons/avatar-3/512/Secretary-512.png';
     },
+    MiniLogo () {
+      switch (this.$vuetify.breakpoint.name) {
+        case 'md': return true
+        case 'lg': return true
+        case 'xl': return false
+      }
+      return true
+      // case 'xs': return 12
+      // case 'sm': return 12
+      // case 'md': return 12
+
+    },
     // Urlchecking(){
     //   if(this.$store.state.navBarTitle.toUpperCase()
     // }
   },
   created() {
     if (this.getRole == 'doctor') {
-      this.drawer_items.push({'item': 'Consultation', 'icon': 'mdi-heart-pulse', 'to': '/consultation'});
+      this.drawer_items.push({'item': 'Consultations', 'icon': 'mdi-heart-pulse', 'to': '/consultations'});
     }
+    this.drawer_items.push({'item': 'statistics', 'icon': 'mdi-chart-areaspline', 'to': '/statistics'},);
 
 
   },

@@ -1,5 +1,15 @@
 <template>
     <v-container class="ma-3 mt-2 pa-0 " style="width: auto !important;" fluid>
+      <v-subheader>
+        <router-link :to="`/dashboard`" style="text-decoration: none;    ;">
+          <v-icon :color="`${(mode)?'#017e5e':'primary darken-4'}`" class="mr-2">
+            mdi-home
+          </v-icon>
+        </router-link>
+        <span>
+          / Statistics
+        </span>
+      </v-subheader>
 
 
 <!--      <v-sheet>-->

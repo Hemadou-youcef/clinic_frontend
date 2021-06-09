@@ -125,6 +125,38 @@ const routes = [
         }
     },
     {
+        path: '/consultations',
+        name: 'consultations',
+        component: () => import(/* webpackChunkName: "about" */ '../views/Consultations.vue'),
+        beforeEnter: (to ,from , next ) => {
+            if(store.state.authenticated){
+                store.commit('setNavBarTitle' , 'Consultations')
+                next()
+            }else{
+                console.log('auth not OK')
+
+                next({name : 'login'})
+            }
+        }
+    },
+    {
+        path: '/consultations/:id',
+        name: 'consultation',
+
+        component: () => import(/* webpackChunkName: "about" */ '../views/Consultation.vue'),
+        beforeEnter: (to ,from , next ) => {
+            if(store.state.authenticated){
+                store.commit('setNavBarTitle' , 'Consultation')
+
+                next()
+            }else{
+                console.log('auth not OK')
+
+                next({name : 'login'})
+            }
+        }
+    },
+    {
         path: '/statistics',
         name: 'statistics',
         component: () => import(/* webpackChunkName: "about" */ '../views/Statistics.vue'),

@@ -26,7 +26,7 @@
 
     <v-row class="mt-0 pt-0">
       <v-col :cols="12 - heightbreackpoint" class="pt-0">
-        <v-card class="mb-0" color="transparent" elevation="0" >
+        <v-card :class="`${(checkedAppointment.length > 0)?'mb-2':'mb-0'}`" color="transparent" elevation="0" >
           <v-list color="transparent" class="white-text ma-0 pa-0" v-if="checkedAppointment.length > 0">
 
             <AppointmentCard v-on:reloadAppointment="getCheckedAppointment" v-for="(appointment) in checkedAppointment" :key="appointment.id + 'C'" :appointment="appointment" :missed="false"/>
@@ -51,17 +51,16 @@
 
               :color="(mode)?'#00b383':'primary darken-3'"
               class="pa-4 white--text font-weight-bold d-flex flex-row"
-              :class="{'mt-5':(checkedAppointment.length > 0)}"
           >
             Consultation today
           </v-sheet>
           <v-list>
             <v-list-item>
               <v-list-item-avatar class="rounded-lg mr-2" size="70">
-                <v-img :src="`http://localhost:8000/images/1620506681.Youcef-Hemadou.jpg`"></v-img>
+                <v-img :src="`http://localhost:8000/images/patients/male/1.jpg`"></v-img>
               </v-list-item-avatar>
               <v-list-item-content>
-                <v-list-item-title>Consultation of: Youcef Hemadou</v-list-item-title>
+                <v-list-item-title>Consultation of: Phillip Patton</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
           </v-list>

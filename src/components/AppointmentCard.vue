@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-2 rounded-lg" :class="{'mt-6':EndTime}" v-if="showAppointement">
+  <div class="rounded-lg" :class="{'mt-6':EndTime}" v-if="showAppointement">
     <div v-if="(!missed)" >
       <v-sheet
           :color="`${(appointment.type == 'consult')?'#00b383':'primary darken-5'}`"
@@ -404,9 +404,10 @@ export default {
       // var appointmentStartTime = this.CoverterSimpleDate(Start_Time);
       var appointmentEndTime = this.CoverterSimpleDate(End_Time);
       var timeremain =((appointmentEndTime.getTime() - currectTime.getTime()) / (1000))
-      var getHour =  (parseInt(timeremain) / 3600).toString().split('.')
-      var getMinute = (parseFloat('0.' + getHour[1]) * 60).toString().split('.')
-      return this.TimeDesign(getHour[0] + ':' +  getMinute[0])
+      // var getHour =  (parseInt(timeremain) / 3600).toString().split('.')
+      // var getMinute = (parseFloat('0.' + getHour[1]) * 60).toString().split('.')
+      var getMinute = (timeremain / 60).toString().split('.')[0]
+      return getMinute + ' min left'
 
       // var getSecond = (parseFloat('0.' + getMinute[1]) * 60).toString().split('.')
       // return this.TimeDesign(getHour[0] + ':' +  getMinute[0] + ':' + getSecond[0])

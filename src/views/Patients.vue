@@ -1,5 +1,15 @@
 <template>
   <div>
+    <v-subheader>
+      <router-link :to="`/dashboard`" style="text-decoration: none;    ;">
+        <v-icon :color="`${(mode)?'#017e5e':'primary darken-4'}`" class="mr-2">
+          mdi-home
+        </v-icon>
+      </router-link>
+      <span>
+          / Patients
+        </span>
+    </v-subheader>
     <v-container>
 
       <v-card class="pa-4">

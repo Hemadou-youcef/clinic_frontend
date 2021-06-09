@@ -4,7 +4,7 @@
       <areachart v-if="ChartType == 'line' && !changed"  :chartData="SendData" :option="chartOption"/>
       <pie-chart  v-else-if="ChartType == 'pie'&& !changed" :height="300" :chartData="SendData" :option="chartOption" class="my-3"/>
       <bar-chart  v-else-if="ChartType == 'bar' && !changed" :chartData="SendData" :option="chartOption"/>
-      <v-sheet color="white" height="400px" v-else>
+      <v-sheet class="d-flex justify-center" color="white" height="400px" v-else>
         <v-progress-linear
             v-if="ChartType != 'pie'"
             color="primary"
@@ -12,6 +12,14 @@
             rounded
             height="6"
         ></v-progress-linear>
+        <v-progress-circular
+            v-else
+            :size="200"
+            :width="30"
+            color="primary"
+            class="align-self-center"
+            indeterminate
+        ></v-progress-circular>
       </v-sheet>
     </v-card>
 
@@ -39,7 +47,62 @@ export default {
 
     chartOption:{
       responsive: true,
-      maintainAspectRatio: false
+      maintainAspectRatio: false,
+      pointHoverBackgroundColor: 'red',
+
+      title: {
+        display: true,
+        text: 'Halo'
+      },
+      tooltips: {
+        callbacks: {
+          title: function() {
+            // return data['labels'][tooltipItem[0]['index']];
+            return "DATA"
+          },
+          label: function(tooltipItem, data) {
+            // console.log('..//');
+            // console.log(tooltipItem);
+            // console.log(data);
+            console.log('test')
+            var StatLabel = data['datasets'][tooltipItem.datasetIndex].label
+            return StatLabel + " " + data['datasets'][tooltipItem.datasetIndex]['data'][tooltipItem['index']];
+          },
+          labelColor: function(tooltipItem, data) {
+            return {
+              borderColor: 'white',
+              backgroundColor: data['data']['datasets'][tooltipItem.datasetIndex].backgroundColor
+            }
+          }
+        },
+        backgroundColor: '#FFF',
+        titleFontSize: 16,
+        titleFontColor: '#0066ff',
+        bodyFontColor: '#000',
+        bodyFontSize: 20,
+        xPadding: 10,
+        yPadding: 10,
+        mode: 'index',
+        borderColor: 'rgb(0, 0, 0)',
+        borderWidth: 0.3,
+        cornerRadius: 0,
+        caretSize: 0,
+        titleFontFamily: 'Roboto',
+        bodyFontFamily: 'Roboto',
+        stepped:true,
+
+      },
+
+      scales: {
+        yAxes: [{
+          ticks: {
+            min: 0,
+            suggestedMax: 10,
+            beginAtZero: true
+          },
+
+        }]
+      },
     },
     SendData: {}
   }),

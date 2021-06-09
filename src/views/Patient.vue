@@ -1,7 +1,21 @@
 <template>
   <div>
     <v-container fluid>
-
+      <v-subheader>
+        <router-link :to="`/dashboard`" style="text-decoration: none;    ;">
+          <v-icon :color="`${(mode)?'#017e5e':'primary darken-4'}`" class="mr-2">
+            mdi-home
+          </v-icon>
+        </router-link>
+        <router-link :to="`/patients`" style="text-decoration: none;    ;">
+        <span class="mr-2">
+          / Patients
+        </span>
+        </router-link>
+        <span>
+          / Patient
+        </span>
+      </v-subheader>
       <v-tabs centered grow>
         <v-tabs-slider></v-tabs-slider>
         <v-tab>info</v-tab>
