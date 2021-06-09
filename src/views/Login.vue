@@ -1,21 +1,22 @@
 <template>
-  <div>
+  <div class="main">
     <v-container fluid fill-height class="loginOverlay pt-10">
-      <v-layout flex align-center justify-center>
-        <v-flex xs12 md6 sm8 elevation-6>
-          <v-toolbar color="secondary" height="80" class="pt-5 grey ">
-              <v-spacer></v-spacer>
+      <v-layout  flex align-center justify-left>
+        <div   class="loginBox">
+          <v-toolbar  color="secondary" height="120" class="pt-5 grey loginHeader">
+            <v-row justify="center" >
+
+              <div class="white--text mb-10 " style="font-size: 1.5em;">
+                <v-icon size="50" color="white">mdi-account-arrow-right-outline</v-icon>
+              </div>
+            </v-row>
 
 
-                  <div class="white--text mb-10 " style="font-size: 1.5em;">
 
-                    <v-icon size="50" color="white">mdi-account-arrow-right-outline</v-icon>
-
-                  </div>
-              <v-spacer></v-spacer>
           </v-toolbar>
-          <v-card class="rounded-0">
-            <v-card-text class="pt-4">
+          <v-card class="rounded-0 loginCard">
+            <div class="welcome">Welcome back</div>
+            <v-card-text class="pt-8">
               <div>
                 <v-form v-model="valid" ref="form">
 
@@ -39,7 +40,7 @@
                       min="8"
                       :rules="passwordRules"
                       required
-                      class="mb-3"
+                      class="mb-3 mt-6"
                       @focus="errors.password = ''"
 
                   ></v-text-field>
@@ -47,7 +48,7 @@
 
                   <v-layout justify-space-between>
                     <v-spacer></v-spacer>
-                    <v-btn @keyup.enter="submit" @click="submit" :disabled="!valid" color="secondary"  :class=" { 'white--text' : valid, 'disabled': !valid }">Login</v-btn>
+                    <v-btn @keyup.enter="submit" @click="submit" :disabled="!valid" color="secondary"  :class=" { 'white--text' : valid, 'disabled': !valid }" class="button mt-4">Login</v-btn>
 
                     <v-spacer></v-spacer>
 
@@ -56,7 +57,7 @@
               </div>
             </v-card-text>
           </v-card>
-        </v-flex>
+        </div>
       </v-layout>
     </v-container>
   </div>
@@ -120,5 +121,55 @@ export default {
 </script>
 
 <style scoped>
+.loginHeader{
+  background-color: #0e6f60 !important;
+}
+.welcome{
+  text-align: center;
+  font-size: 1.75em;
 
+  padding-top: 10px;
+  margin-bottom: -20px;
+  font-family: "Century Schoolbook";
+}
+.loginBox{
+  margin-top: -60px;
+  width: 400px !important;
+}
+@media all and (min-width: 1290px) {
+  .loginBox{
+    margin-left: 200px;
+    width: 400px !important;
+
+  }
+}
+@media all and (min-width: 701px) and (max-width: 1289px)  {
+
+  .loginBox{
+    margin: 50px;
+    width: 400px !important;
+
+  }
+}
+@media all and (max-width: 700px)  {
+  .loginBox{
+
+    width: 95% !important;
+
+  }
+}
+.loginCard{
+  height: 350px;
+
+}
+.main{
+  background: url("../assets/wallpaper.jpg") no-repeat;
+  width: 100%;
+  height: 100%;
+  background-position: top;
+  background-size: cover;
+}
+.button{
+  background-color: rgba(16,132,116 , 0.8) !important;
+}
 </style>
