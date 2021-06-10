@@ -437,6 +437,7 @@ export default {
     getAppointment (){
       this.axios.get('/appointments/all').then((res) => {
         this.appointmentInfo = [];
+        console.log(res.data)
         for (let i = 0; i < res.data.data.length; i++) {
           const name =  `${res.data.data[i].patient_firstname} ${res.data.data[i].patient_lastname}`
           const image = res.data.data[i].image

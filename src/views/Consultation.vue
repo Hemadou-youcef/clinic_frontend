@@ -58,7 +58,7 @@
               <v-icon class="mr-2">
                 mdi-clipboard-pulse-outline
               </v-icon>
-              Cause consultation
+              Reasons
             </v-card-title>
             <v-chip-group
 
@@ -78,7 +78,7 @@
               <v-icon class="mr-2">
                 mdi-emoticon-sick-outline
               </v-icon>
-              syndrome consultation
+              Detail
             </v-card-title>
 
             <v-textarea
@@ -86,7 +86,7 @@
                 color="white"
                 name="input-7-4"
                 label="Detail"
-                value="The Woodman set to work at once, and so sharp was his axe that the tree was soon chopped nearly through."
+                value="The patient suffered from severe pain in the abdomen."
                 outlined
                 auto-grow
                 hide-details
@@ -104,7 +104,7 @@
                 background-color="grey lighten-4"
                 color="white"
                 name="input-7-4"
-                value="The Woodman set to work at once, and so sharp was his axe that the tree was soon chopped nearly through."
+                value="Additional analyzes were requested; while waiting for the results, stop the treatment administered the last time,."
                 solo
                 outlined
                 auto-grow
@@ -141,7 +141,20 @@
 
                 <v-list-item-content>
                   <v-list-item-title>
-                    58 Kg
+                    70 Kg
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+              <v-list-item style="border-bottom: 2px solid #ccc" class="rounded-b-lg">
+                <v-list-item-content>
+                  <v-list-item-title>
+                    length
+                  </v-list-item-title>
+                </v-list-item-content>
+
+                <v-list-item-content>
+                  <v-list-item-title>
+                    186 cm
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
@@ -161,11 +174,11 @@
             <v-list>
               <v-list-item>
                 <v-list-item-avatar class="rounded-lg mr-2" size="100">
-                  <v-img :src="`http://localhost:8000/images/1620506681.Youcef-Hemadou.jpg`"></v-img>
+                  <v-img :src="`http://localhost:8000/images/patients/male/2.jpg`"></v-img>
                 </v-list-item-avatar>
                 <v-list-item-content>
                   <v-list-item-title class="font-weight-bold text-h6" style="text-align: center">
-                    Hemadou Youcef
+                    Ryan Quitzon
                   </v-list-item-title>
 
                 </v-list-item-content>
@@ -203,28 +216,18 @@
         </v-card>
       </v-col>
     </v-row>
-    <v-dialog
-        v-model="hover"
-        transition="dialog-bottom-transition"
-        max-width="800"
-        :scrollable="false"
-    >
-      <AddConsultation/>
-    </v-dialog>
+
   </v-container>
 </template>
 
 <script>
-import AddConsultation from "../components/AddConsultation";
+
 export default {
   name: "Consultation",
-  components: {AddConsultation},
   data: ()=>({
-    hover: true,
+
     tags: [
-      'pain in chest',
-      'headache',
-      'Fever',
+      'Abdominal pain '
     ],
   })
 }
