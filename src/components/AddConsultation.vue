@@ -19,6 +19,7 @@
                     :items="PatientList"
                     :rules="requireField"
                     :loading="PatientLoading"
+                    :disabled="edit"
                     label="patient"
                 >
                 </v-overflow-btn>
@@ -32,6 +33,7 @@
                     v-model="appointmentID"
                     :items="patientInfo.appointments"
                     :loading="AppointmentLoading"
+                    :disabled="edit"
                     label="appointment"
                 >
                 </v-overflow-btn>
@@ -157,7 +159,7 @@
 
           <v-layout justify-space-between>
             <v-spacer></v-spacer>
-            <v-btn v-if="edit|| true" @click="submit(true)" :loading="Submitloading" :disabled="!valid"  :class=" { 'blue darken-1 white--text' : valid, 'disabled': !valid }">
+            <v-btn v-if="!edit" @click="submit(true)" :loading="Submitloading" :disabled="!valid"  :class=" { 'blue darken-1 white--text' : valid, 'disabled': !valid }">
               ADD CONSULTATION
               <v-icon color="white" class="pl-2">mdi-plus-box</v-icon>
             </v-btn>
@@ -178,7 +180,7 @@
 export default {
   name: "AddAppointment",
   props: [
-    'edit'
+    'edit','mode','PatientInfo','AppointmentInfo','motive','detail','treatment','type','examinations','id'
   ],
   data:()=>({
     Types: [
@@ -206,7 +208,8 @@ export default {
       Treatment: '',
       Type: '',
       idPatient: null,
-      idAppointment: null
+      idAppointment: null,
+      id:null
     },
 
     requireField: [
@@ -231,6 +234,7 @@ export default {
       }
     },
     addConsultation(){
+      this.Submitloading = true
       this.axios.post('/consultation/add' ,
           this.form,
       ).
@@ -238,22 +242,24 @@ export default {
           console.log(res.data)
           this.$emit('HideOverLay')
           this.$emit('ShowSnackBar','consultation Added','primary')
+          this.Submitloading = false
       }).catch(err => {
         this.formErrors = err.response.data.errors
         console.log(err)
       })
     },
     editConsultation(){
-      this.axios.post('/consultation/edit' ,
-          this.form,
-      ).
-      then(res => {
-        console.log(res.data)
-
-      }).catch(err => {
-        this.formErrors = err.response.data.errors
-        console.log(err)
-      })
+      this.Editloading = true;
+      this.axios.post('/consultation/edit',this.form).then(() => {
+        this.Editloading = false;
+        this.$emit('HideOverLay')
+        this.$emit('ShowSnackBar', 'appointment Edited','green')
+      }).catch(
+          err => {
+            this.errors = err.response.data.errors
+            console.log(this.errors)
+          }
+      )
     },
     getPatients() {
       console.log('patients request')
@@ -277,6 +283,7 @@ export default {
       this.axios.get(`/patient/${this.patientID}?with_appointments=1`).then(res => {
         var This = this
         console.log(res.data.appointments)
+        This.patientInfo.appointments = []
         res.data.appointments.forEach(function (item) {
             This.patientInfo.appointments.push({
               text : `${item.date_appointment} ${item.start_time_appointment.substr(0, 5)}`,
@@ -301,7 +308,27 @@ export default {
     },
   },
   created() {
-    this.getPatients()
+    if(!this.edit){
+      this.getPatients()
+    }else{
+      this.form.id = this.id
+      this.form.Reason = this.motive
+      this.form.Detail = this.detail
+      this.form.Treatment = this.treatment
+      this.Examination = JSON.parse(this.examinations)
+      this.form.Type = this.type
+      this.PatientList = [{
+        text : this.PatientInfo.fullName,
+        value: this.PatientInfo.id
+      }]
+      this.patientID = this.PatientInfo.id
+      this.patientInfo.appointments = [{
+        text : this.AppointmentInfo.text,
+        value: this.AppointmentInfo.id
+      }]
+      this.appointmentID = this.AppointmentInfo.id
+    }
+
   }
 }
 </script>

@@ -61,7 +61,7 @@
 
         </v-progress-circular>
         <div class="d-flex flex-no-wrap justify-space-around">
-          <router-link :to="`/patients/${appointment.patient_id}`" style="text-decoration: none;    ;">
+          <router-link :to="`/patients/${appointment.patient_id}`" style="text-decoration: none;">
             <v-avatar
                 class="ma-3 rounded-lg"
                 size="125"
