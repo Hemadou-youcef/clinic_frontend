@@ -233,7 +233,61 @@
             >
               <AddAppointment v-if="hover" v-on:ShowSnackBar="ShowSnackBar" v-on:HideOverLay="closeOverLay" :dateApp="dateApp" :timeApp="timeApp" :timeLApp="timeLApp" :timed="timed" :patientId="PatientId" :appointmentId="AppointmentId" :color="color"/>
             </v-dialog>
+            <v-dialog
+                v-model="consoltHover"
+                transition="dialog-bottom-transition"
+                max-width="800"
+                :scrollable="false"
+                @click:outside="closeOverLay(true)"
+            >
+              <AddConsultation v-if="consoltHover" v-on:ShowSnackBar="ShowSnackBar" v-on:HideOverLay="closeOverLay"
+                               :edit="false" :info="true"
+                               :PatientInfo="{id:selectedEvent.idpatient,fullName:MenuPatient}"
+                               :AppointmentInfo="{id: selectedEvent.id,text: MenuSelectedEvent.start}"
+                               :mode="mode"/>
+            </v-dialog>
+            <v-dialog width="400" v-model="deleteConsultationDialog">
+              <v-card style="overflow: hidden !important;" width="400" height="150">
+                <div class="text-caption text-center pt-6 red--text" style="font-size: 16px !important; ">Are you sure you want
+                  to delete this appointment
+                </div>
 
+                <v-card-text>
+                  <v-row class="mt-5" justify="center">
+
+                    <v-spacer></v-spacer>
+
+                    <v-tooltip bottom>
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn @click="deleteAppointment" :loading="Deleteloading" v-on="on" v-bind="attrs" outlined icon large color="red">
+                          <v-icon color="red">mdi-check</v-icon>
+                        </v-btn>
+
+                      </template>
+                      <span>Are you sure!</span>
+                    </v-tooltip>
+
+                    <v-spacer></v-spacer>
+                    <v-tooltip bottom>
+
+                      <template v-slot:activator="{ on, attrs }">
+                        <v-btn @click="deleteConsultationDialog = false" v-on="on" v-bind="attrs" outlined icon large color="green">
+                          <v-icon color="green">mdi-close</v-icon>
+                        </v-btn>
+
+                      </template>
+                      <span>Cancel</span>
+
+                    </v-tooltip>
+
+                    <v-spacer></v-spacer>
+
+                  </v-row>
+                </v-card-text>
+
+
+              </v-card>
+            </v-dialog>
           </div>
           <v-menu
               v-model="showMenu"
@@ -278,8 +332,7 @@
                   <v-list-item-action>
                     <v-btn
                         class="red"
-                        :loading="Deleteloading"
-                        @click="deleteAppointment"
+                        @click="deleteConsultationDialog = true"
                     >
                       <v-icon color="white">mdi-delete</v-icon>
                     </v-btn>
@@ -328,12 +381,23 @@
                 >
                   Cancel
                 </v-btn>
-                <v-btn
-                    text
-                    @click="showMenu = false"
-                >
-                  Consult
-                </v-btn>
+                <div v-if="getRole == 'doctor'">
+                  <v-btn
+                      text
+                      :to="`/consultations/${MenuSelectedEvent.idconsultation}`"
+                      v-if="MenuSelectedEvent.consult == 'true'"
+                  >
+                    go to consultation
+                  </v-btn>
+                  <v-btn
+                      text
+                      @click="consoltHover = true"
+                      v-else
+                  >
+                    Consult
+                  </v-btn>
+                </div>
+
               </v-card-actions>
             </v-card>
           </v-menu>
@@ -363,9 +427,10 @@
 
 <script>
 import AddAppointment from "../components/AddAppointment";
+import AddConsultation from "../components/AddConsultation";
 export default {
   name: "agenda",
-  components: {AddAppointment},
+  components: {AddAppointment,AddConsultation},
   props: [
     'mode'
   ],
@@ -401,7 +466,9 @@ export default {
     MenuTimeLine: '',
     x: 0,
     y: 0,
+
     hover : false,
+    consoltHover : false,
     showMenu : false,
     ready: false,
     AlreadyselectedEvent: false,
@@ -409,6 +476,7 @@ export default {
     timed: false,
     Deleteloading: false,
     snackbar: false,
+    deleteConsultationDialog: false,
   }),
   computed: {
     cal () {
@@ -416,6 +484,9 @@ export default {
     },
     nowY () {
       return this.cal ? this.cal.timeToY(this.cal.times.now) + 'px' : '-10px'
+    },
+    getRole() {
+      return this.$store.state.role;
     },
   },
   mounted () {
@@ -426,10 +497,10 @@ export default {
   },
   watch:{
     focus(v){
-        this.startDate = v
-        var endDate = this.CoverterSimpleDate(this.startDate + ': 00:00')
-        endDate.setDate(endDate.getDate() + 7)
-        this.endDate = this.TimeDesignDate(endDate.getFullYear() + '-' + (endDate.getMonth() + 1) + '-' + endDate.getDate())
+      this.startDate = v
+      var endDate = this.CoverterSimpleDate(this.startDate + ': 00:00')
+      endDate.setDate(endDate.getDate() + 7)
+      this.endDate = this.TimeDesignDate(endDate.getFullYear() + '-' + (endDate.getMonth() + 1) + '-' + endDate.getDate())
 
     }
   },
@@ -446,6 +517,8 @@ export default {
           const start = res.data.data[i].date + ' ' + res.data.data[i].start.substr(0,5)
           const end = res.data.data[i].date + ' ' + res.data.data[i].end.substr(0,5)
           const color = (res.data.data[i].type == 'consult')? 'teal': 'primary'
+          const consult = res.data.data[i].has_consultation
+          const idConsultation = res.data.data[i].consult
 
           this.appointmentInfo.push({
             name: name,
@@ -456,7 +529,9 @@ export default {
             color:color,
             dead: false,
             realcolor: color,
-            image : image
+            image : image,
+            consult:consult,
+            idconsultation:idConsultation
           })
         }
         var dateScroll = this.$route.query.date
@@ -472,6 +547,7 @@ export default {
               this.MenuPatient = this.appointmentInfo[i].name
               this.MenuPatientImage = this.appointmentInfo[i].image
               this.MenuTimeLine = `From ${this.appointmentInfo[i].start.split(' ')[1]} To: ${this.appointmentInfo[i].end.split(' ')[1]}`
+              this.timed = true
             }
           }
         }
@@ -493,6 +569,7 @@ export default {
         setTimeout(function (){
           ThStat.Deleteloading = false
           ThStat.showMenu = false
+          ThStat.deleteConsultationDialog = false
           ThStat.getAppointment()
           ThStat.ShowSnackBar('appointment Deleted','red')
         },500);
@@ -681,6 +758,7 @@ export default {
     },
     closeOverLay(NormalClose){
       this.hover = false;
+      this.consoltHover = false;
       if(!NormalClose) this.getAppointment()
     },
     CoverterSimpleDate(sdate){

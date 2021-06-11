@@ -63,30 +63,30 @@
           <v-list-item class="py-0 px-2 mb-2 rounded-lg grey lighten-4 elevation-2" style="border: 1px solid #1565c0">
             <v-list-item-avatar>
               <v-icon color="grey" large>
-                mdi-medical-bag
+                mdi-account-circle
               </v-icon>
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title class="font-weight-bold grey--text">
-               Patient
+               PATIENT
               </v-list-item-title>
             </v-list-item-content>
 
             <v-list-item-content>
               <v-list-item-title class="font-weight-bold grey--text">
-                  syndrome
+                SYNDROME
               </v-list-item-title>
             </v-list-item-content>
 
             <v-list-item-content>
               <v-list-item-title class="font-weight-bold grey--text">
-                Date
+                DATE
               </v-list-item-title>
             </v-list-item-content>
 
             <v-list-item-action style="width: 110px;text-align: center">
               <v-list-item-title class="font-weight-bold grey--text">
-                Action
+                DETAIL
               </v-list-item-title>
             </v-list-item-action>
           </v-list-item>

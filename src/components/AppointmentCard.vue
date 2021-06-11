@@ -5,8 +5,8 @@
           :color="`${(appointment.type == 'consult')?'#00b383':'primary darken-5'}`"
           class="pa-4 white--text font-weight-bold d-flex flex-row rounded-t-lg"
       >
-<!--        :color="`${(appointment.type == 'consult')?'#00b383':'primary darken-5'}`"-->
-<!--        :color="`${(appointment.type == 'consult')?(progressDarken)?'#037e5d':'#00b383':(progressDarken)?'primary darken-3':'primary darken-5'}`"-->
+        <!--        :color="`${(appointment.type == 'consult')?'#00b383':'primary darken-5'}`"-->
+        <!--        :color="`${(appointment.type == 'consult')?(progressDarken)?'#037e5d':'#00b383':(progressDarken)?'primary darken-3':'primary darken-5'}`"-->
         <v-icon v-if="EndTime" color="white">
           mdi-clock-check
         </v-icon>
@@ -21,11 +21,11 @@
           </v-icon>
         </v-btn>
 
-<!--        <v-progress-linear-->
-<!--            v-else-->
-<!--            indeterminate-->
-<!--            color="cyan"-->
-<!--        ></v-progress-linear>-->
+        <!--        <v-progress-linear-->
+        <!--            v-else-->
+        <!--            indeterminate-->
+        <!--            color="cyan"-->
+        <!--        ></v-progress-linear>-->
       </v-sheet>
       <v-progress-linear
           v-if="false"
@@ -72,22 +72,30 @@
             </v-avatar>
           </router-link>
           <div>
-              <v-card-title
-                  class="text-h5 font-weight-bold"
-              >
-                <router-link :to="`/patients/${appointment.patient_id}`" style="text-decoration: none;">
-                  {{ appointment.patient_firstname.toUpperCase() + ' ' + appointment.patient_lastname.toUpperCase()}}
-                </router-link>
-              </v-card-title>
+            <v-card-title
+                class="text-h6 font-weight-bold"
+            >
+              <router-link :to="`/patients/${appointment.patient_id}`" style="text-decoration: none;">
+                {{ (appointment.patient_firstname.toUpperCase() + ' ' + appointment.patient_lastname.toUpperCase())}}
+              </router-link>
+            </v-card-title>
             <v-card-subtitle class="grey--text  font-weight-bold">
               From {{ appointment.start.substr(0,5) }} To {{ appointment.end.substr(0,5) }}
             </v-card-subtitle>
-
+            <v-btn
+                style="float: right"
+                icon
+                @click="CurrentAppointmentInfoShow = !CurrentAppointmentInfoShow"
+            >
+              <v-icon color="black">{{ CurrentAppointmentInfoShow ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+            </v-btn>
             <v-btn
                 color="white"
                 dark
-                class="teal--text opacity-8  font-weight-bold"
+                class="teal--text opacity-8  font-weight-bold float-right"
                 :loading="CheckLoading"
+                @click="consoltHover = true"
+                v-if="getRole == 'doctor' && appointment.has_consultation != 'true'"
                 elevation
                 outlined
             >
@@ -97,12 +105,17 @@
               Consulte
             </v-btn>
             <v-btn
-                style="float: right"
-                icon
-                @click="CurrentAppointmentInfoShow = !CurrentAppointmentInfoShow"
+                class="teal--text opacity-8  font-weight-bold float-right"
+                color="white"
+                dark
+                elevation
+                outlined
+                :to="`consultations/${appointment.consult}`"
+                v-else-if="getRole == 'doctor' && appointment.has_consultation == 'true'"
             >
-              <v-icon color="black">{{ CurrentAppointmentInfoShow ? 'mdi-chevron-up' : 'mdi-chevron-down' }}</v-icon>
+              go to consultation
             </v-btn>
+
           </div>
         </div>
         <v-card-subtitle>
@@ -127,9 +140,9 @@
                   {{ appointment.type }}
                 </span>
           </v-chip>
-          <span  v-if="!this.EndTime" class="black--text font-weight-bold" style="float: right;font-size: 30px">
+          <v-chip color="white" v-if="!this.EndTime" class="black--text font-weight-bold" style="float: right">
             {{ AppointmentTimeRemain(appointment.date + ' ' + appointment.start,appointment.date + ' ' + appointment.end) }}
-          </span>
+          </v-chip>
 
 
         </v-card-subtitle>
@@ -208,7 +221,7 @@
                       dark
                       class="white--text opacity-8"
                       :loading="MissLoading"
-                      @click="MissAppointement()"
+                      @click="deleteConsultationDialog = true"
                       elevation
                   >
                     <v-icon color="white" class="mr-2">
@@ -249,50 +262,89 @@
       >
         <AddAppointment v-if="hover" v-on:ShowSnackBar="ShowSnackBar" v-on:HideOverLay="closeOverLay" :dateApp="dateApp" :timeApp="timeApp" :timeLApp="timeLApp" :revisitApp="revisit" :patientId="form.patient_id" :appointmentId="``" :color="color"/>
       </v-dialog>
-      <v-snackbar
-          :color="snackbarColor"
-          v-model="snackbar"
+      <v-dialog
+          v-model="consoltHover"
+          transition="dialog-bottom-transition"
+          max-width="800"
+          :scrollable="false"
+          @click:outside="closeOverLay(true)"
       >
-        {{ message }}
+        <AddConsultation v-if="consoltHover" v-on:ShowSnackBar="ShowSnackBar" v-on:HideOverLay="closeOverLay"
+                         :edit="false" :info="true"
+                         :PatientInfo="{id:appointment.patient_id,fullName:appointment.patient_firstname + ' ' + appointment.patient_lastname}"
+                         :AppointmentInfo="{id: appointment.id,text: appointment.date + ' ' + appointment.start}"
+                         :mode="mode"/>
+      </v-dialog>
+      <v-dialog width="400" v-model="deleteConsultationDialog">
+        <v-card style="overflow: hidden !important;" width="400" height="150">
+          <div class="text-caption text-center pt-6 red--text" style="font-size: 16px !important; ">Are you sure this patient is absent??
+          </div>
 
-        <template v-slot:action="{ attrs }">
-          <v-btn
-              text
-              v-bind="attrs"
-              @click="snackbar = false"
-              class="white--text "
-          >
-            Close
-          </v-btn>
-        </template>
-      </v-snackbar>
+          <v-card-text>
+            <v-row class="mt-5" justify="center">
+
+              <v-spacer></v-spacer>
+
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn @click="MissAppointement" :loading="Deleteloading" v-on="on" v-bind="attrs" outlined icon large color="red">
+                    <v-icon color="red">mdi-check</v-icon>
+                  </v-btn>
+
+                </template>
+                <span>Are you sure!</span>
+              </v-tooltip>
+
+              <v-spacer></v-spacer>
+              <v-tooltip bottom>
+
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn @click="deleteConsultationDialog = false" v-on="on" v-bind="attrs" outlined icon large color="green">
+                    <v-icon color="green">mdi-close</v-icon>
+                  </v-btn>
+
+                </template>
+                <span>Cancel</span>
+
+              </v-tooltip>
+
+              <v-spacer></v-spacer>
+
+            </v-row>
+          </v-card-text>
+
+
+        </v-card>
+      </v-dialog>
     </div>
   </div>
 </template>
 
 <script>
 import AddAppointment from "./AddAppointment";
+import AddConsultation from "../components/AddConsultation";
 export default {
   name: "AppointmentCard",
-  components: {AddAppointment},
+  components: {AddAppointment,AddConsultation},
   data : () => ({
     time: 100,
     dateApp : '',
     timeApp : '08:00',
     timeLApp : 15,
     color : 'teal darken-1',
-    snackbarColor: '',
     message: '',
 
     showAppointement: true,
     CurrentTimeAppointment: false,
     CurrentAppointmentInfoShow: false,
+    deleteConsultationDialog : false,
     progressDarken: false,
     EndTime: false,
     hover : false,
-    snackbar : false,
+    consoltHover: false,
     CheckLoading: false,
     MissLoading: false,
+    Deleteloading: false,
     revisit : true,
 
     TimeIntervall: '',
@@ -324,7 +376,9 @@ export default {
       // case 'xs': return 12
       // case 'sm': return 12
       // case 'md': return 12
-
+    },
+    getRole() {
+      return this.$store.state.role;
     },
   },
   methods: {
@@ -439,21 +493,22 @@ export default {
       this.color = 'teal darken-1'
       this.hover = true
     },
-    ShowSnackBar(message,color){
-      this.snackbar = true
-      this.snackbarColor = color
-      this.message = message
+    ShowConsultation(message,color){
+      this.$emit('ShowSnackBar',message,color)
     },
-    closeOverLay(){
+    ShowSnackBar(message,color){
+      this.$emit('ShowSnackBar',message,color)
+    },
+    closeOverLay(NormalClose){
       this.hover = false;
-      this.$emit('reloadAppointment',this.appointment)
+      this.consoltHover = false;
+      if(!NormalClose) this.$emit('reloadAppointment',this.appointment)
     },
 
   },
   created() {
     this.updateTime()
     this.TimeIntervall = setInterval(()=> this.updateTime(),   1000)
-
   }
 }
 </script>

@@ -197,7 +197,7 @@
                 EDIT APPOINTMENT
                 <v-icon color="white" class="pl-2">mdi-pencil</v-icon>
               </v-btn>
-              <v-btn @click="deleteAppointment" :loading="Deleteloading" :disabled="!valid" color="red" class="ml-2" :class=" { ' white--text' : valid}">
+              <v-btn @click="deleteConsultationDialog = true" :loading="Deleteloading" :disabled="!valid" color="red" class="ml-2" :class=" { ' white--text' : valid}">
                 DELETE
                 <v-icon color="white" class="pl-2">mdi-delete-outline</v-icon>
               </v-btn>
@@ -210,6 +210,48 @@
         </v-form>
       </div>
     </v-card-text>
+    <v-dialog width="400" v-model="deleteConsultationDialog">
+      <v-card style="overflow: hidden !important;" width="400" height="150">
+        <div class="text-caption text-center pt-6 red--text" style="font-size: 16px !important; ">Are you sure you want
+          to delete this appointment
+        </div>
+
+        <v-card-text>
+          <v-row class="mt-5" justify="center">
+
+            <v-spacer></v-spacer>
+
+            <v-tooltip bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn @click="deleteAppointment" :loading="Deleteloading" v-on="on" v-bind="attrs" outlined icon large color="red">
+                  <v-icon color="red">mdi-check</v-icon>
+                </v-btn>
+
+              </template>
+              <span>Are you sure!</span>
+            </v-tooltip>
+
+            <v-spacer></v-spacer>
+            <v-tooltip bottom>
+
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn @click="deletePatientDialog = false" v-on="on" v-bind="attrs" outlined icon large color="green">
+                  <v-icon color="green">mdi-close</v-icon>
+                </v-btn>
+
+              </template>
+              <span>Cancel</span>
+
+            </v-tooltip>
+
+            <v-spacer></v-spacer>
+
+          </v-row>
+        </v-card-text>
+
+
+      </v-card>
+    </v-dialog>
   </v-card>
 </template>
 
@@ -231,6 +273,7 @@ export default {
       Submitloading: false,
       Editloading: false,
       Deleteloading: false,
+      deleteConsultationDialog: false,
       valid: false,
       time: this.TimeDesign(this.timeApp),
       time_model: false,
@@ -239,6 +282,7 @@ export default {
       time_model2: false,
       date: new Date(this.dateApp + ' 01:00:00').toISOString().substr(0, 10),
       date_model: false,
+
       patientRule: [
         (v) => !!v || 'Patient is required',
       ],

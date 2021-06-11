@@ -83,6 +83,7 @@
               <v-chip
                   v-for="(motive,index) in ConsultationInfo.motive.split(',')"
                   color="red"
+                  style="border-radius: 5px"
                   class="font-weight-bold white--text"
                   :key="index"
               >
@@ -97,15 +98,15 @@
             </v-card-title>
 
             <v-textarea
-                class="mb-5 pa-3 elevation-2"
+                class="mb-5 pa-0 elevation-0 txtArea"
                 color="white"
                 name="input-7-4"
                 :value="ConsultationInfo.detail"
                 solo
-                outlined
                 auto-grow
                 hide-details
                 readonly
+                flat
             ></v-textarea>
 
             <v-card-title class="px-0 py-2">
@@ -115,13 +116,12 @@
               treatment
             </v-card-title>
             <v-textarea
-                class="mb-5 elevation-0 rounded-0 font-weight-bold"
-                background-color="grey lighten-4"
+                class="mb-5 elevation-0 font-weight-bold txtArea"
+                background-color=" lighten-4"
                 color="white"
                 name="input-7-4"
                 :value="ConsultationInfo.treatment"
                 solo
-                outlined
                 auto-grow
                 hide-details
                 readonly
@@ -133,7 +133,7 @@
               Examinations
             </v-card-title>
             <v-list>
-              <v-list-item class="primary rounded-t-lg font-weight-bold">
+              <v-list-item class="primary rounded-lg font-weight-bold mb-2">
                 <v-list-item-content>
                   <v-list-item-title class="white--text">
                     Examination
@@ -147,7 +147,7 @@
                 </v-list-item-content>
               </v-list-item>
 
-              <v-list-item style="border-bottom: 2px solid #ccc" class="rounded-b-lg" v-for="(exam,index) in extamination" :key="index">
+              <v-list-item style="border: 2px solid #ccc" class="rounded-lg mb-2" v-for="(exam,index) in extamination" :key="index">
                 <v-list-item-content>
                   <v-list-item-title>
                     {{ exam.exam }}
@@ -166,6 +166,11 @@
       </v-col>
       <v-col cols="4">
         <v-card class="rounded-lg mb-2">
+          <v-card-text class="text-h5 font-weight-bold" style="text-align: center !important">
+            Type: {{ ConsultationInfo.type }}
+          </v-card-text>
+        </v-card>
+        <v-card class="rounded-lg mb-2">
           <v-card-title>
             <v-icon class="mr-2">
               mdi-account
@@ -173,7 +178,8 @@
             Patient info
           </v-card-title>
           <v-card-text>
-            <v-list>
+            <router-link :to="`/patients/${ConsultationInfo.patient.id}`"  style="text-decoration: none;">
+            <v-list class="linkPatientAppointment">
               <v-list-item>
                 <router-link :to="`/patients/${ConsultationInfo.patient.id}`" style="text-decoration: none;">
                   <v-list-item-avatar class="rounded-lg mr-2" size="100">
@@ -191,6 +197,7 @@
                 </router-link>
               </v-list-item>
             </v-list>
+            </router-link>
           </v-card-text>
         </v-card>
         <v-card class="rounded-lg">
@@ -211,15 +218,17 @@
             </v-btn>
           </v-card-title>
           <v-card-text>
-            <v-list>
-              <v-list-item>
-                <v-list-item-content>
-                  <v-list-item-title class="font-weight-bold text-h6" style="text-align: center">
-                    {{ ConsultationInfo.appointment.date_appointment + ' ' + ConsultationInfo.appointment.start_time_appointment.substr(0,5) }}
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list>
+            <router-link :to="`/appointments/?date=${ConsultationInfo.appointment.date_appointment}&time=${ConsultationInfo.appointment.start_time_appointment}`" style="text-decoration: none;">
+              <v-list class="linkPatientAppointment">
+                <v-list-item>
+                  <v-list-item-content>
+                    <v-list-item-title class="font-weight-bold text-h6" style="text-align: center">
+                      {{ ConsultationInfo.appointment.date_appointment + ' ' + ConsultationInfo.appointment.start_time_appointment.substr(0,5) }}
+                    </v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list>
+            </router-link>
           </v-card-text>
         </v-card>
       </v-col>
@@ -438,5 +447,11 @@ export default {
 </script>
 
 <style scoped>
-
+  .txtArea {
+    outline: 1px solid black !important;
+  }
+  .linkPatientAppointment:hover{
+    background-color: #cdcdcd !important;
+    border-radius: 10px;
+  }
 </style>

@@ -15,20 +15,20 @@
 
       <v-list-item-content>
         <v-list-item-title>
-          <v-chip color="red" class="font-weight-bold white--text ml-2" v-for="(motive,index) in motives.split(',')" :key="index">
+          <v-chip color="red" style="border-radius: 5px" class="font-weight-bold white--text ml-2" v-for="(motive,index) in motives.split(',')" :key="index">
             {{ motive }}
           </v-chip>
         </v-list-item-title>
       </v-list-item-content>
 
       <v-list-item-content>
-        <v-list-item-title>
+        <v-list-item-title class="font-weight-bold">
           <v-icon color="primary">
-            mdi-clock-time-one
+            mdi-calendar-range
           </v-icon>
           {{ time }}
         </v-list-item-title>
-        <v-list-item-subtitle>
+        <v-list-item-subtitle class="font-weight-bold">
           {{ date }}
         </v-list-item-subtitle>
       </v-list-item-content>
@@ -36,7 +36,7 @@
       <v-list-item-action>
         <v-btn color="primary" :to="`/consultations/${id}`" outlined>
           <v-icon class="mr-2">
-            mdi-eye-outline
+            mdi-alert-circle-outline
           </v-icon>
           Detail
         </v-btn>

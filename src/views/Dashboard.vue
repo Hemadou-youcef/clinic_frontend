@@ -1,35 +1,35 @@
 <template>
   <v-container fluid>
-        <v-row justify="around" class="mb-0">
-          <v-col >
-            <CardInfo :message="`Todays Appointment`"
-                      :number="appointmentNumber"
-                      :icon="`mdi-calendar`"
-                      :firstColor="`1976d2`"
-                      :secondColor="`33ccff`"/>
-          </v-col>
-          <v-col >
-            <CardInfo :message="`Todays Consultation`"
-                      :number="0"
-                      :icon="`mdi-heart-pulse`"
-                      :firstColor="`00cc66`"
-                      :secondColor="`66ff33`"/>
-          </v-col>
-          <v-col >
-            <CardInfo :message="`Missed Appointment`"
-                      :number="missedAppointment.length"
-                      :icon="`mdi-clock-alert`"
-                      :firstColor="`ff0000`"
-                      :secondColor="`cc0000`"/>
-          </v-col>
-        </v-row>
+    <v-row class="mb-0">
+      <v-col>
+        <CardInfo :message="`Todays Appointment`"
+                  :number="appointmentNumber"
+                  :icon="`mdi-calendar`"
+                  :firstColor="`1976d2`"
+                  :secondColor="`33ccff`"/>
+      </v-col>
+      <v-col>
+        <CardInfo :message="`Todays Consultation`"
+                  :number="0"
+                  :icon="`mdi-heart-pulse`"
+                  :firstColor="`00cc66`"
+                  :secondColor="`66ff33`"/>
+      </v-col>
+      <v-col>
+        <CardInfo :message="`Missed Appointment`"
+                  :number="missedAppointment.length"
+                  :icon="`mdi-clock-alert`"
+                  :firstColor="`ff0000`"
+                  :secondColor="`cc0000`"/>
+      </v-col>
+    </v-row>
 
     <v-row class="mt-0 pt-0">
       <v-col :cols="12 - heightbreackpoint" class="pt-0">
         <v-card :class="`${(checkedAppointment.length > 0)?'mb-2':'mb-0'}`" color="transparent" elevation="0" >
           <v-list color="transparent" class="white-text ma-0 pa-0" v-if="checkedAppointment.length > 0">
 
-            <AppointmentCard v-on:reloadAppointment="getCheckedAppointment" v-for="(appointment) in checkedAppointment" :key="appointment.id + 'C'" :appointment="appointment" :missed="false"/>
+            <AppointmentCard  v-on:ShowSnackBar="ShowSnackBar" v-on:reloadAppointment="getCheckedAppointment" v-for="(appointment) in checkedAppointment" :key="appointment.id + 'C'" :appointment="appointment" :missed="false"/>
             <!--            <v-subheader-->
             <!--                style="cursor: pointer"-->
             <!--                class="font-weight-bold text-lg-h6 red white&#45;&#45;text"-->
@@ -197,32 +197,62 @@
                 </v-icon>
               </v-btn>
               <div v-else>
-                <v-btn
-                    color="white"
-                    dark
-                    class="teal--text opacity-8font-weight-bold"
-                    @click="StatusEditAppointment(item,'check')"
-                    elevation
-                    outlined
-                >
-                  <v-icon color="teal" class="mr-2">
-                    mdi-check
-                  </v-icon>
+
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on }">
+                    <v-btn
+                        v-on="on"
+                        color="white"
+                        dark
+                        class="teal--text opacity-8font-weight-bold"
+                        @click="fillForm(item,'check');StatusEditAppointment()"
+                        elevation
+                        outlined
+                    >
+                      <v-icon color="teal">
+                        mdi-check
+                      </v-icon>
+                    </v-btn>
+                  </template>
                   Attended
-                </v-btn>
-                <v-btn
-                    color="white"
-                    dark
-                    class="red--text opacity-8 ml-2"
-                    @click="StatusEditAppointment(item,'missed')"
-                    elevation
-                    outlined
-                >
-                  <v-icon color="red" class="mr-2">
-                    mdi-calendar-remove-outline
-                  </v-icon>
+                </v-tooltip>
+                <v-tooltip bottom>
+                  <template v-slot:activator="{ on }">
+                    <v-btn
+                        v-on="on"
+                        color="white"
+                        dark
+                        class="red--text opacity-8 ml-2"
+                        @click="fillForm(item,'missed');deleteConsultationDialog = true;"
+                        elevation
+                        outlined
+                    >
+                      <v-icon color="red">
+                        mdi-calendar-remove-outline
+                      </v-icon>
+                    </v-btn>
+                  </template>
                   absent
-                </v-btn>
+                </v-tooltip>
+                <v-tooltip v-show="getRole == 'doctor' && item.has_consultation != 'true'" bottom>
+                  <template v-slot:activator="{ on }">
+                    <v-btn
+                        v-on="on"
+                        color="white"
+                        dark
+                        class="teal--text opacity-8  font-weight-bold float-right"
+                        @click="fillForm(item,'waiting');consoltHover = true"
+                        v-if="getRole == 'doctor' && item.has_consultation != 'true'"
+                        elevation
+                        outlined
+                    >
+                      <v-icon color="teal">
+                        mdi-pencil-plus
+                      </v-icon>
+                    </v-btn>
+                  </template>
+                  consulte
+                </v-tooltip>
               </div>
 
             </template>
@@ -264,6 +294,60 @@
       >
         <AddAppointment v-if="hover" v-on:ShowSnackBar="ShowSnackBar" v-on:HideOverLay="closeOverLay" :dateApp="dateApp" :timeApp="timeApp" :timeLApp="timeLApp" :appointmentId="``" :color="`teal`"/>
       </v-dialog>
+      <v-dialog
+          v-model="consoltHover"
+          transition="dialog-bottom-transition"
+          max-width="800"
+          :scrollable="false"
+          @click:outside="closeOverLay(true)"
+      >
+        <AddConsultation v-if="consoltHover" v-on:ShowSnackBar="ShowSnackBar" v-on:HideOverLay="closeOverLay"
+                         :edit="false" :info="true"
+                         :PatientInfo="{id:form.patient_id,fullName:''}"
+                         :AppointmentInfo="{id: AppointmentForm.id,text: form.date + ' ' + form.start_time}"
+                         :mode="mode"/>
+      </v-dialog>
+      <v-dialog width="400" v-model="deleteConsultationDialog">
+        <v-card style="overflow: hidden !important;" width="400" height="150">
+          <div class="text-caption text-center pt-6 red--text" style="font-size: 16px !important; ">Are you sure this patient is absent??
+          </div>
+
+          <v-card-text>
+            <v-row class="mt-5" justify="center">
+
+              <v-spacer></v-spacer>
+
+              <v-tooltip bottom>
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn @click="StatusEditAppointment" :loading="Deleteloading" v-on="on" v-bind="attrs" outlined icon large color="red">
+                    <v-icon color="red">mdi-check</v-icon>
+                  </v-btn>
+
+                </template>
+                <span>Are you sure!</span>
+              </v-tooltip>
+
+              <v-spacer></v-spacer>
+              <v-tooltip bottom>
+
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn @click="deleteConsultationDialog = false" v-on="on" v-bind="attrs" outlined icon large color="green">
+                    <v-icon color="green">mdi-close</v-icon>
+                  </v-btn>
+
+                </template>
+                <span>Cancel</span>
+
+              </v-tooltip>
+
+              <v-spacer></v-spacer>
+
+            </v-row>
+          </v-card-text>
+
+
+        </v-card>
+      </v-dialog>
       <v-snackbar
           :color="snackbarColor"
           v-model="snackbar"
@@ -290,10 +374,12 @@ import CardInfo from "../components/CardInfo";
 import AppointmentCard from "../components/AppointmentCard";
 import AddAppointment from "../components/AddAppointment";
 import StatistiqueAppointment from "../components/statistiqueAppointments";
+import AddConsultation from "../components/AddConsultation";
+
 export default {
   name: "Dashboard",
   // eslint-disable-next-line vue/no-unused-components
-  components: {StatistiqueAppointment, AddAppointment, AppointmentCard, CardInfo},
+  components: {StatistiqueAppointment, AddAppointment, AppointmentCard, CardInfo, AddConsultation},
   props: [
     'mode'
   ],
@@ -310,8 +396,11 @@ export default {
     showMissed:false,
     hover : false,
     snackbar : false,
+    Deleteloading : false,
     revisit : true,
     nextAppointmentLoading: false,
+    deleteConsultationDialog:false,
+    consoltHover: false,
 
     TakeUpIntervall: '',
 
@@ -362,6 +451,9 @@ export default {
       // case 'md': return 12
 
     },
+    getRole() {
+      return this.$store.state.role;
+    },
   },
   methods:{
     fillForm(appointment,state){
@@ -390,7 +482,9 @@ export default {
           fromdate: dateApp,
           todate: dateApp} })
           .then((res) => {
+            console.log(res.data)
             this.appointmentList = this.orderly(res.data.data)
+
             this.appointmentNumber = this.appointmentList.length
             this.missedAppointment = []
             this.appointmentList = this.appointmentList.filter(function(value){
@@ -481,16 +575,19 @@ export default {
       }
     },
 
-    async StatusEditAppointment(appointment,status){
-      this.fillForm(appointment,status)
-
+    async StatusEditAppointment(){
+      this.snackbar = false
+      this.Deleteloading = true
       this.axios.post('/appointment/edit', Object.assign(this.form, this.AppointmentForm)).then( () => {
+        var This = this
         this.missedAppointment = this.missedAppointment.filter(function(value){
-          if(value.id == appointment.id ) {
+          if(value.id == This.AppointmentForm.id ) {
             return false
           }
           return true
         });
+        this.Deleteloading = false
+        this.deleteConsultationDialog = false
         // this.GetTodayAppointment()
       }).catch(
           err => {
@@ -547,6 +644,7 @@ export default {
     },
     closeOverLay(){
       this.hover = false;
+      this.consoltHover = false;
       this.GetTodayAppointment()
     },
 

@@ -8,39 +8,42 @@
       <div>
         <v-form v-model="valid" ref="form">
           <v-list class="my-2 pa-0">
-            <v-list-item class="pa-0 font-weight-bold rounded-0" style="text-align: center">
+            <v-list-item class="pa-0 font-weight-bold rounded-0">
               <v-list-item-content class="pa-0">
                 <v-overflow-btn
-                    class="my-0"
+                    class="elevation-0 ma-0 mr-1 ml-1"
                     editable
                     hide-details
+                    prepend-icon="mdi-account-circle"
                     background-color="white"
                     v-model="patientID"
                     :items="PatientList"
                     :rules="requireField"
                     :loading="PatientLoading"
-                    :disabled="edit"
+                    :disabled="edit || info"
                     label="patient"
+                    outlined
                 >
                 </v-overflow-btn>
               </v-list-item-content>
-              <v-list-item-content class="pa-0">
+              <v-list-item-content class="pa-0 ma-0 ml-6">
                 <v-overflow-btn
-                    class="my-0"
+                    class="my-0 elevation-0"
                     editable
                     hide-details
                     background-color="white"
                     v-model="appointmentID"
                     :items="patientInfo.appointments"
                     :loading="AppointmentLoading"
-                    :disabled="edit"
+                    :disabled="edit || info"
                     label="appointment"
+                    outlined
                 >
                 </v-overflow-btn>
               </v-list-item-content>
             </v-list-item>
           </v-list>
-
+              <hr class="ma-0 mb-2 ml-9 grey lighten-4" >
           <v-row>
             <v-col>
               <!--            <v-sheet color="primary" class="pa-2 white&#45;&#45;text font-weight-bold text-h5">-->
@@ -49,7 +52,6 @@
               <!--                  </span>-->
               <!--            </v-sheet>-->
               <v-sheet class="elevation-0 pa-1 rounded-lg" >
-
                 <v-text-field
                     background-color="white"
                     label="Reasons"
@@ -93,20 +95,19 @@
                   v-model="form.Type"
                   :items="Types"
                   :rules="requireField"
-                  label="type"
-                  class="mb-2"
+                  class="mb-2 rounded-lg mt-1"
                   hide-details
-                  solo
+                  outlined
               ></v-select>
-              <v-sheet class="elevation-1 pa-0 rounded-lg" >
+              <v-sheet class=" pa-0" >
                 <v-list class="py-0">
-                  <v-list-item class="primary font-weight-bold" style="text-align: center">
+                  <v-list-item class="primary font-weight-bold rounded-lg mb-2" style="text-align: center">
                     <v-list-item-content>
                       <v-list-item-title class="white--text text-h6">
                         Examination
                       </v-list-item-title>
                     </v-list-item-content>
-                    <v-list-item-action>
+                    <v-list-item-action class="pa-0 ma-0">
                       <v-btn
                           color="white"
                           @click="Examination.push({exam:'',value:''})"
@@ -118,14 +119,18 @@
                     </v-list-item-action>
                   </v-list-item>
 
-                  <v-list-item class="pa-2" v-for="(exam,index) in Examination" :key="index">
-                    <v-list-item-content class=" ma-0 pa-1">
+                  <v-list-item class="pa-1 elevation-0 mb-2 rounded-lg" v-for="(exam,index) in Examination" :key="index">
+
+                    <v-list-item-content class="ma-0 pa-1">
                       <v-text-field
                           hide-details
+                          color="purple"
+                          class="pa-0 elevation-0"
                           placeholder="exam"
-                          class="rounded-0"
                           v-model="exam.exam"
                           :rules="requireField"
+                          height="20px"
+                          dense
                           outlined
                       ></v-text-field>
                     </v-list-item-content>
@@ -133,20 +138,23 @@
                     <v-list-item-content class="ma-0 pa-1">
                       <v-text-field
                           hide-details
+                          class="pa-0 elevation-0"
                           placeholder="result"
-                          class="rounded-0"
                           v-model="exam.value"
                           :rules="requireField"
+                          height="40px"
+                          dense
                           outlined
                       ></v-text-field>
                     </v-list-item-content>
                     <v-list-item-action class="ma-0 ml-1 fill-height">
                       <v-btn
-                          class="fill-height"
+                          class="fill-height elevation-0"
                           @click="Examination.splice(index, 1)"
-                          color="red">
-                        <v-icon color="white">
-                          mdi-minus
+                          color="white"
+                          icon>
+                        <v-icon color="red">
+                          mdi-close-thick
                         </v-icon>
                       </v-btn>
                     </v-list-item-action>
@@ -180,11 +188,11 @@
 export default {
   name: "AddAppointment",
   props: [
-    'edit','mode','PatientInfo','AppointmentInfo','motive','detail','treatment','type','examinations','id'
+    'info','edit','mode','PatientInfo','AppointmentInfo','motive','detail','treatment','type','examinations','id'
   ],
   data:()=>({
     Types: [
-        'consultation','surgery','check'
+      'consultation','surgery','check'
     ],
     PatientList: [],
     patientInfo: {
@@ -206,7 +214,7 @@ export default {
       Detail: '',
       Examination :'',
       Treatment: '',
-      Type: '',
+      Type: 'consultation',
       idPatient: null,
       idAppointment: null,
       id:null
@@ -239,10 +247,26 @@ export default {
           this.form,
       ).
       then(res => {
-          console.log(res.data)
+        console.log(res.data)
+        this.axios.post('/appointment/edit', {
+          id : this.form.idAppointment,
+          patient_id: 'fix',
+          date: 'fix',
+          start_time: 'fix',
+          end_time: 'fix',
+          type: 'fix',
+          state: 'check',
+        }).then( () => {
           this.$emit('HideOverLay')
           this.$emit('ShowSnackBar','consultation Added','primary')
           this.Submitloading = false
+        }).catch(
+            err => {
+              this.errors = err.response.data.errors
+              console.log(this.errors)
+            }
+        )
+
       }).catch(err => {
         this.formErrors = err.response.data.errors
         console.log(err)
@@ -285,10 +309,10 @@ export default {
         console.log(res.data.appointments)
         This.patientInfo.appointments = []
         res.data.appointments.forEach(function (item) {
-            This.patientInfo.appointments.push({
-              text : `${item.date_appointment} ${item.start_time_appointment.substr(0, 5)}`,
-              value: item.id
-            })
+          This.patientInfo.appointments.push({
+            text : `${item.date_appointment} ${item.start_time_appointment.substr(0, 5)}`,
+            value: item.id
+          })
         })
         this.AppointmentLoading = false
       }).catch(err => {
@@ -308,27 +332,32 @@ export default {
     },
   },
   created() {
-    if(!this.edit){
+    if(this.info){
       this.getPatients()
-    }else{
-      this.form.id = this.id
-      this.form.Reason = this.motive
-      this.form.Detail = this.detail
-      this.form.Treatment = this.treatment
-      this.Examination = JSON.parse(this.examinations)
-      this.form.Type = this.type
-      this.PatientList = [{
-        text : this.PatientInfo.fullName,
-        value: this.PatientInfo.id
-      }]
       this.patientID = this.PatientInfo.id
-      this.patientInfo.appointments = [{
-        text : this.AppointmentInfo.text,
-        value: this.AppointmentInfo.id
-      }]
       this.appointmentID = this.AppointmentInfo.id
+    }else{
+      if(!this.edit){
+        this.getPatients()
+      }else{
+        this.form.id = this.id
+        this.form.Reason = this.motive
+        this.form.Detail = this.detail
+        this.form.Treatment = this.treatment
+        this.Examination = JSON.parse(this.examinations)
+        this.form.Type = this.type
+        this.PatientList = [{
+          text : this.PatientInfo.fullName,
+          value: this.PatientInfo.id
+        }]
+        this.patientID = this.PatientInfo.id
+        this.patientInfo.appointments = [{
+          text : this.AppointmentInfo.text,
+          value: this.AppointmentInfo.id
+        }]
+        this.appointmentID = this.AppointmentInfo.id
+      }
     }
-
   }
 }
 </script>
@@ -336,5 +365,11 @@ export default {
 <style>
 .custom-green .v-input--selection-controls__input div {
   color: #009688 !important;
+}
+.v-input__append-inner{
+  margin-top: 0px !important;
+}
+.v-overflow-btn .v-select__slot{
+  height: auto !important;
 }
 </style>
