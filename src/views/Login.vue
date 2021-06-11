@@ -48,7 +48,7 @@
 
                   <v-layout justify-space-between>
                     <v-spacer></v-spacer>
-                    <v-btn @keyup.enter="submit" @click="submit" :disabled="!valid" color="secondary"  :class=" { 'white--text' : valid, 'disabled': !valid }" class="button mt-4">Login</v-btn>
+                    <v-btn @keyup.enter="submit" outlined @click="submit" :disabled="!valid"   :class=" { 'white--text' : valid, 'disabled': !valid }" class="button mt-4">Login</v-btn>
 
                     <v-spacer></v-spacer>
 
@@ -123,10 +123,11 @@ export default {
 <style scoped>
 .loginHeader{
   background-color: #0e6f60 !important;
+  border-radius: 5px;
 }
 .welcome{
   text-align: center;
-  font-size: 1.75em;
+  font-size: 1.7em;
 
   padding-top: 10px;
   margin-bottom: -20px;
@@ -135,6 +136,7 @@ export default {
 .loginBox{
   margin-top: -60px;
   width: 400px !important;
+  border-radius: 20px !important;
 }
 @media all and (min-width: 1290px) {
   .loginBox{

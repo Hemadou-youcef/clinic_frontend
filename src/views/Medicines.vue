@@ -32,7 +32,7 @@
           >
             <template v-slot:top>
               <v-row justify="center" class="px-4">
-                <v-col cols="8" sm="12">
+                <v-col cols="8" SM="12">
 
                   <v-text-field clearable  prepend-inner-icon="mdi-text-search" label="Search Medicine" v-model="search"
                                 ></v-text-field>

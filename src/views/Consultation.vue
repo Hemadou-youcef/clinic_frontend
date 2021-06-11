@@ -21,11 +21,24 @@
         <v-btn
             color="primary"
             outlined
+            v-if="ConsultationInfo.prescription_id == null"
+            :to= "`/prescription/${ConsultationInfo.patient.id}/${ConsultationInfo.id}`"
         >
           <v-icon color="primary">
             mdi-file-settings
           </v-icon>
           ADD PRESCRIPTION
+        </v-btn>
+        <v-btn
+            color="primary"
+            outlined
+            v-if="ConsultationInfo.prescription_id != null"
+            @click="viewPrescription"
+        >
+          <v-icon color="primary">
+            mdi-file-settings
+          </v-icon>
+          VIEW PRESCRIPTION
         </v-btn>
         <v-btn
             color="teal"
@@ -87,19 +100,19 @@
                 class="mb-5 pa-3 elevation-2"
                 color="white"
                 name="input-7-4"
-                label="Detail"
                 :value="ConsultationInfo.detail"
+                solo
                 outlined
                 auto-grow
                 hide-details
-                disabled
+                readonly
             ></v-textarea>
 
             <v-card-title class="px-0 py-2">
               <v-icon class="mr-2">
                 mdi-stethoscope
               </v-icon>
-              traitement
+              treatment
             </v-card-title>
             <v-textarea
                 class="mb-5 elevation-0 rounded-0 font-weight-bold"
@@ -263,7 +276,7 @@
             <v-tooltip bottom>
 
               <template v-slot:activator="{ on, attrs }">
-                <v-btn @click="deletePatientDialog = false" v-on="on" v-bind="attrs" outlined icon large color="green">
+                <v-btn @click="deleteConsultationDialog = false" v-on="on" v-bind="attrs" outlined icon large color="green">
                   <v-icon color="green">mdi-close</v-icon>
                 </v-btn>
 
@@ -297,12 +310,19 @@
         </v-btn>
       </template>
     </v-snackbar>
+
+
+
+
+
+
   </v-container>
 </template>
 
 <script>
 
 import AddConsultation from "../components/AddConsultation";
+import {jsPDF} from "jspdf";
 export default {
   name: "Consultation",
   components: {AddConsultation},
@@ -356,6 +376,59 @@ export default {
       this.hover = false;
       if(!NormalClose) this.getConsultationDetail()
     },
+    viewPrescription(){
+        let medicines= []
+        this.axios.get(`/prescription/${this.ConsultationInfo.prescription_id}`).then(res => {
+          res.data.forEach(item => {
+            medicines.push({name : item.trade_name , dose : item.pivot.dose} )
+          })
+          this.downloadPDF(medicines)
+        }).catch (err => {
+          console.log(err)
+        })
+    },
+    downloadPDF(medicines) {
+      var today = new Date();
+      var dd = String(today.getDate()).padStart(2, '0');
+      var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+      var yyyy = today.getFullYear();
+      today = mm + '/' + dd + '/' + yyyy;
+      let doc = new jsPDF({
+        orientation: "landscape",
+
+      });
+      doc.setFontSize(40)
+      doc.text('Prescription', 110, 30)
+      doc.setFontSize(20)
+      doc.setFont('normal')
+      let age = this.getAge(this.ConsultationInfo.patient.birthday)
+
+      doc.text(`Doctor : ${this.$store.state.user.firstname}  ${this.$store.state.user.lastname}`, 20, 50)
+      doc.text(`Patient name : ${this.ConsultationInfo.patient.firstname} ${this.ConsultationInfo.patient.lastname}`, 20, 70)
+      doc.text(`Age : ${age}`, 20, 80)
+      doc.text(`Date : ${today}`, 220, 70)
+      doc.setFontSize(30)
+      doc.text(`Medicines list `, 115, 100)
+      var y = 105;
+      doc.setFontSize(25)
+
+      medicines.forEach(item => {
+        y += 15
+        doc.text(`${item.name}       ${item.dose}`, 105, y)
+      })
+
+      doc.save(`${this.ConsultationInfo.patient.firstname}-${this.ConsultationInfo.patient.lastname}-${this.$route.params.id}`)
+    },
+    getAge(dateString) {
+      var today = new Date();
+      var birthDate = new Date(dateString);
+      var age = today.getFullYear() - birthDate.getFullYear();
+      var m = today.getMonth() - birthDate.getMonth();
+      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+      }
+      return age;
+    }
   },
   created() {
     this.idConsultation = this.$route.params.id

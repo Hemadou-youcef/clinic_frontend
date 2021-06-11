@@ -164,7 +164,7 @@
 
       <v-container>
         <v-card
-            class="mt-2 rounded-lg pa-3"
+            class="mt-2 rounded-lg px-3"
             color="white d-flex">
           <span class="align-self-center text-h5 font-weight-bold">
             {{ TimeLineText.toUpperCase() }}

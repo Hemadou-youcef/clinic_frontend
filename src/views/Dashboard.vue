@@ -1,21 +1,21 @@
 <template>
   <v-container fluid>
-        <v-row class="mb-0">
-          <v-col>
+        <v-row justify="around" class="mb-0">
+          <v-col >
             <CardInfo :message="`Todays Appointment`"
                       :number="appointmentNumber"
                       :icon="`mdi-calendar`"
                       :firstColor="`1976d2`"
                       :secondColor="`33ccff`"/>
           </v-col>
-          <v-col>
+          <v-col >
             <CardInfo :message="`Todays Consultation`"
                       :number="0"
                       :icon="`mdi-heart-pulse`"
                       :firstColor="`00cc66`"
                       :secondColor="`66ff33`"/>
           </v-col>
-          <v-col>
+          <v-col >
             <CardInfo :message="`Missed Appointment`"
                       :number="missedAppointment.length"
                       :icon="`mdi-clock-alert`"

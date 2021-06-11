@@ -170,6 +170,22 @@ const routes = [
             }
         }
     },
+
+    {
+        path: '/prescription/:patientId/:consultationId',
+        name: 'prescription',
+        component: () => import(/* webpackChunkName: "about" */ '../views/Prescription.vue'),
+        beforeEnter: (to ,from , next ) => {
+            if(store.state.authenticated){
+
+                next()
+            }else{
+                console.log('auth not OK')
+
+                next({name : 'login'})
+            }
+        }
+    },
     {
         path: '/*',
         name: 'Notfound',
