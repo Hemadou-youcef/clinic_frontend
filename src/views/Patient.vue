@@ -202,7 +202,7 @@
 
         <v-tab>Consultation</v-tab>
         <v-tab-item>
-          <div class="text-center py-5" v-if="consultations.items.length == 0">No appointments yet</div>
+          <div class="text-center py-5" v-if="consultations.items.length == 0">No consultation yet</div>
           <v-data-table
               :headers="consultations.headers"
               :items="consultations.items"

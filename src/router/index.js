@@ -130,8 +130,17 @@ const routes = [
         component: () => import(/* webpackChunkName: "about" */ '../views/Consultations.vue'),
         beforeEnter: (to ,from , next ) => {
             if(store.state.authenticated){
-                store.commit('setNavBarTitle' , 'Consultations')
-                next()
+                if (store.state.user.role == 'doctor'){
+                    if (store.state.user.role == 'doctor'){
+                        store.commit('setNavBarTitle' , 'Consultation')
+
+                        next()
+                    }else{
+                        router.push('/dashboard')
+                    }
+                }else{
+                    router.push('/dashboard')
+                }
             }else{
                 console.log('auth not OK')
 
@@ -146,9 +155,14 @@ const routes = [
         component: () => import(/* webpackChunkName: "about" */ '../views/Consultation.vue'),
         beforeEnter: (to ,from , next ) => {
             if(store.state.authenticated){
-                store.commit('setNavBarTitle' , 'Consultation')
+                if (store.state.user.role == 'doctor'){
+                    store.commit('setNavBarTitle' , 'Consultation')
 
-                next()
+                    next()
+                }else{
+                    router.push('/dashboard')
+                }
+
             }else{
                 console.log('auth not OK')
 
@@ -162,6 +176,7 @@ const routes = [
         component: () => import(/* webpackChunkName: "about" */ '../views/Statistics.vue'),
         beforeEnter: (to ,from , next ) => {
             if(store.state.authenticated){
+                store.commit('setNavBarTitle' , 'Statistics')
                 next()
             }else{
                 console.log('auth not OK')
@@ -178,7 +193,13 @@ const routes = [
         beforeEnter: (to ,from , next ) => {
             if(store.state.authenticated){
 
-                next()
+                if (store.state.user.role == 'doctor'){
+                    store.commit('setNavBarTitle' , 'Prescription')
+
+                    next()
+                }else{
+                    router.push('/dashboard')
+                }
             }else{
                 console.log('auth not OK')
 
