@@ -25,39 +25,36 @@
           </v-icon>
           ADD
         </v-btn>
-        <v-menu  offset-y>
-          <template v-slot:activator="">
+        <v-menu offset-y>
+          <template v-slot:activator="{ on, attrs }">
             <v-btn
                 color="black"
-                class="ml-2"
                 outlined
+                v-bind="attrs"
+                v-on="on"
+                class="ml-3"
             >
-              <v-icon color="black">
-                mdi-sort-variant
-              </v-icon>
-              SORT
+              Sort by
             </v-btn>
           </template>
+
           <v-list>
-            <v-list-item
-                v-for="n in 3"
-                :key="n"
-            >
-              <v-list-item-title>BY Patient</v-list-item-title>
+            <v-list-item @click="sortby='desc'; getConsultations()">
+              <v-list-item-title>DESC</v-list-item-title>
+              <v-icon>mdi-arrow-down</v-icon>
             </v-list-item>
+            <v-list-item @click="sortby='asc'; getConsultations()">
+              <v-list-item-title>ASC</v-list-item-title>
+              <v-icon>mdi-arrow-up</v-icon>
+            </v-list-item>
+
           </v-list>
         </v-menu>
 
+
       </v-card-title>
-      <v-card-title >
-        <v-text-field
-            label="Search"
-            solo
-            hide-details="false"
-            outlined
-            flat
-        ></v-text-field>
-      </v-card-title>
+      <div v-if="pagination.pagesCount == 0"  class="text-center text--darken-3 text-h4 py-4">No result</div>
+
       <v-card-text>
         <v-list>
           <v-list-item class="py-0 px-2 mb-2 rounded-lg grey lighten-4 elevation-2" style="border: 1px solid #1565c0">
@@ -68,7 +65,7 @@
             </v-list-item-avatar>
             <v-list-item-content>
               <v-list-item-title class="font-weight-bold grey--text">
-               PATIENT
+                PATIENT
               </v-list-item-title>
             </v-list-item-content>
 
@@ -77,12 +74,18 @@
                 SYNDROME
               </v-list-item-title>
             </v-list-item-content>
-
             <v-list-item-content>
               <v-list-item-title class="font-weight-bold grey--text">
                 DATE
               </v-list-item-title>
             </v-list-item-content>
+
+            <v-list-item-content>
+              <v-list-item-title class="font-weight-bold grey--text">
+                APPOINTMENT DATE
+              </v-list-item-title>
+            </v-list-item-content>
+
 
             <v-list-item-action style="width: 110px;text-align: center">
               <v-list-item-title class="font-weight-bold grey--text">
@@ -114,24 +117,30 @@
               ></v-skeleton-loader>
             </v-col>
           </v-row>
+
           <consultation-card v-for="consultation in consultationsInfo"
                              :key="consultation.id"
                              :fullName="consultation.PatientFullName"
                              :motives="consultation.motive"
                              :date="consultation.date"
                              :time="consultation.time"
+                             :consultation_date="consultation.consultation_date"
                              :id="consultation.id"
                              :patientid="consultation.PatientID"
                              :image="consultation.PatientImage"
           ></consultation-card>
         </v-list>
       </v-card-text>
-      <v-pagination
-          :length="1"
-          disabled
-          prev-icon="mdi-menu-left"
-          next-icon="mdi-menu-right"
-      ></v-pagination>
+      <div v-if="pagination.pagesCount > 0" class="text-center mb-8">
+        <v-pagination
+
+            color="secondary"
+            v-model="pagination.currentPage"
+            :length=" pagination.pagesCount"
+        ></v-pagination>
+
+
+      </div>
     </v-card>
     <v-dialog
         v-model="hover"
@@ -140,7 +149,7 @@
         :scrollable="false"
         @click:outside="closeOverLay(true)"
     >
-      <AddConsultation v-on:ShowSnackBar="ShowSnackBar" v-on:HideOverLay="closeOverLay" :edit="false"  :mode="mode"/>
+      <AddConsultation v-on:ShowSnackBar="ShowSnackBar" v-on:HideOverLay="closeOverLay" :edit="false" :mode="mode"/>
     </v-dialog>
     <v-snackbar
         :color="snackbarColor"
@@ -148,7 +157,7 @@
     >
       {{ message }}
 
-      <template v-slot:action="{ attrs }">
+      <template v-slot:action="{ on ,attrs }">
         <v-btn
             text
             v-bind="attrs"
@@ -165,26 +174,33 @@
 <script>
 import ConsultationCard from "../components/ConsultationCard";
 import AddConsultation from "../components/AddConsultation";
+
 export default {
-name: "Consultations",
-  components: {ConsultationCard,AddConsultation},
+  name: "Consultations",
+  components: {ConsultationCard, AddConsultation},
   props: [
     'mode'
   ],
-  data: ()=>({
+  data: () => ({
     consultationsInfo: [],
 
+    pagination: {
+      currentPage: 1,
+      pagesCount: '0'
+    },
     skeletonLoader: false,
     hover: false,
     snackbar: false,
 
     message: '',
-    snackbarColor: ''
+    snackbarColor: '',
+    sortby: 'desc'
   }),
   methods: {
-    getConsultations(){
+    getConsultations( page =1) {
       this.skeletonLoader = true
-      this.axios.get('/consultation/all').then((res) => {
+      this.axios.get(`/consultation/all?s=${this.sortby}&page=${page}`).then((res) => {
+        this.pagination.pagesCount = res.data.last_page
         this.consultationsInfo = res.data.data;
         console.log(this.consultationsInfo)
         this.skeletonLoader = false
@@ -196,20 +212,24 @@ name: "Consultations",
       )
 
 
-
     },
-    ShowSnackBar(message,color){
+    ShowSnackBar(message, color) {
       this.snackbar = true
       this.snackbarColor = color
       this.message = message
     },
-    closeOverLay(NormalClose){
+    closeOverLay(NormalClose) {
       this.hover = false;
-      if(!NormalClose) this.getConsultations()
+      if (!NormalClose) this.getConsultations()
     },
   },
   created() {
     this.getConsultations()
+  },
+  watch:{
+    'pagination.currentPage': function (newPage) {
+      this.getConsultations(newPage)
+    },
   }
 }
 </script>

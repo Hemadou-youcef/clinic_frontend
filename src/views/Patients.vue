@@ -290,8 +290,6 @@ export default {
       })
     },
     handerResponse(res){
-      console.log('handling response ')
-      console.log(res)
       this.pagination.currentPage = res.data.current_page
       if (res.data.total == 0){
         this.noResultMessage = true

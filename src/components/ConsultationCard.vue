@@ -26,12 +26,26 @@
           <v-icon color="primary">
             mdi-calendar-range
           </v-icon>
+          {{ consultation_date.slice(11,16) }}
+        </v-list-item-title>
+        <v-list-item-subtitle class="font-weight-bold">
+          {{ consultation_date.slice(0,10) }}
+        </v-list-item-subtitle>
+      </v-list-item-content>
+
+      <v-list-item-content>
+        <v-list-item-title class="font-weight-bold">
+          <v-icon color="primary">
+            mdi-calendar-range
+          </v-icon>
           {{ time }}
         </v-list-item-title>
         <v-list-item-subtitle class="font-weight-bold">
           {{ date }}
         </v-list-item-subtitle>
       </v-list-item-content>
+
+
 
       <v-list-item-action>
         <v-btn color="primary" :to="`/consultations/${id}`" outlined>
@@ -48,7 +62,7 @@
 export default {
   name: "ConsultationCard",
   props:[
-      'fullName','motives','date','time','id','patientid','image'
+      'fullName','motives','date','time','id','patientid','image','consultation_date'
   ],
 }
 </script>
