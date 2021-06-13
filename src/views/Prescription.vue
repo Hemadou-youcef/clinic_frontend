@@ -16,8 +16,18 @@
           <v-card class="pa-4">
 
             <v-card-title>Enter prescription medicines</v-card-title>
-            <div  class="ml-4 text-caption">Consultation Id #{{ConsultationInfo.id}}  </div>
-            <div class="ml-4 text-caption">Patient: {{patientInfo.firstname}} {{patientInfo.lastname}} </div>
+            <v-row>
+              <v-col>
+                <div  class="ml-4 text-caption">Consultation Id #{{ConsultationInfo.id}}  </div>
+                <div class="ml-4 text-caption">Patient: {{patientInfo.firstname}} {{patientInfo.lastname}} </div>
+
+              </v-col>
+              <v-spacer></v-spacer>
+              <v-col >
+
+                <v-btn color="green" outlined @click="addMedicineDialog=true">ADD NEW MEDICINE <v-icon right>mdi-pill</v-icon></v-btn>
+              </v-col>
+            </v-row>
 
             <v-row class="px-5" align="center">
               <v-col cols="7">
@@ -124,6 +134,37 @@
         </template>
       </v-snackbar>
     </v-container>
+
+      <!-----------------------------    ADD MEDICINE DIALOG    --------------------------------->
+    <v-dialog v-model="addMedicineDialog" width="500">
+      <v-card style="overflow: hidden !important;" class="py-6">
+        <v-form ref="addMedicineForm" v-model="valid">
+          <v-row justify="center" class=" text-center  text-caption" style="background-color: #1bba66 !important;">
+            <v-col>
+              <div class="white--text " style="font-size: 18px !important;">Add new medicine</div>
+            </v-col>
+          </v-row>
+          <v-row justify="center" class=" px-3">
+            <v-col cols="12" sm="10">
+              <v-text-field :error-messages="errors.scientific_name" @focus="errors.scientific_name = ''"
+                            :rules="requireField" v-model="medicineForm.scientific_name"
+                            label="scientific name"></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row justify="center" class=" px-3">
+            <v-col cols="12" sm="10">
+              <v-text-field :error-messages="errors.trade_name" @focus="errors.trade_name = ''" :rules="requireField"
+                            v-model="medicineForm.trade_name" label="trade name"></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row justify="center" align="center">
+            <v-btn @click="addNewMedicine" :disabled="!valid" color="black" outlined>ADD</v-btn>
+
+          </v-row>
+        </v-form>
+
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -146,13 +187,23 @@ export default {
     selectedMedicinesModule: true,
     snackbar: false,
     snackbarMessage: '',
-    snackbarColor: ''
+    snackbarColor: '',
+    valid: false,
+    medicineForm: {
+      scientific_name: '',
+      trade_name: ''
+    },
+    errors: [],
+    addMedicineDialog:false,
+    requireField: [
+      (v) => !!v || 'field is required',
+    ],
   }),
   methods: {
     getMedicines() {
       this.dataLoading = true
       this.axios.get('/medicines').then(res => {
-        console.log(res)
+        this.medicinesNames = []
         this.medicines = res.data
         res.data.forEach(item => {
           this.medicinesNames.push(item.trade_name)
@@ -276,7 +327,22 @@ export default {
         age--;
       }
       return age;
-    }
+    },
+    addNewMedicine() {
+      this.axios.post('/medicines/add', this.medicineForm)
+          .then(res => {
+            console.log(res)
+            this.$refs.addMedicineForm.reset()
+            this.addMedicineDialog = false
+            this.getMedicines()
+
+          }).catch(err => {
+        console.log(err.response)
+        this.errors = err.response.data.errors
+      })
+
+
+    },
   },
   created() {
     this.getPatientInfo()

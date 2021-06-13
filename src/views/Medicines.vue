@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-container fluid>
+    <v-container >
       <v-subheader>
         <router-link :to="`/dashboard`" style="text-decoration: none;    ;">
           <v-icon :color="`${(mode)?'#017e5e':'primary darken-4'}`" class="mr-2">
@@ -11,6 +11,7 @@
           / Medicines
         </span>
       </v-subheader>
+
       <v-card class="pa-4 mt-4">
         <v-row class="my-4 d-flex justify-end">
           <v-btn color="primary" @click="addMedicineDialog = true" class="mr-4" outlined>New <v-icon right>mdi-plus-box</v-icon></v-btn>
@@ -79,7 +80,7 @@
     <v-dialog v-model="addMedicineDialog" width="500">
       <v-card style="overflow: hidden !important;" class="py-6">
         <v-form ref="addMedicineForm" v-model="valid">
-          <v-row justify="center" class=" text-center  text-caption" style="background-color: #2460bb !important;">
+          <v-row justify="center" class=" text-center  text-caption" style="background-color: #1bba66 !important;">
             <v-col>
               <div class="white--text " style="font-size: 15px !important;">Add new medicine</div>
             </v-col>
@@ -98,7 +99,7 @@
             </v-col>
           </v-row>
           <v-row justify="center" align="center">
-            <v-btn @click="addMedicine" :disabled="!valid" color="primary">ADD</v-btn>
+            <v-btn @click="addMedicine" :disabled="!valid"  color="black" outlined>ADD</v-btn>
 
           </v-row>
         </v-form>
@@ -112,7 +113,7 @@
     <v-dialog v-model="editMedicineDialog" width="500">
       <v-card style="overflow: hidden !important;" class="py-6">
         <v-form ref="editMedicineForm" v-model="valid">
-          <v-row justify="center" class=" text-center  text-caption" style="background-color: #2460bb !important;">
+          <v-row justify="center" class=" text-center  text-caption" style="background-color: #1bba66 !important;">
             <v-col>
               <div class="white--text " style="font-size: 15px !important;">Edit medicine</div>
             </v-col>
@@ -132,7 +133,7 @@
             </v-col>
           </v-row>
           <v-row justify="center" align="center">
-            <v-btn @click="editMedicine" :disabled="!valid" color="primary">Update</v-btn>
+            <v-btn @click="editMedicine" :disabled="!valid" color="black" outlined>Update</v-btn>
 
           </v-row>
         </v-form>
@@ -142,12 +143,12 @@
 
 
     <!------------------------------    Delete medicine dialog   ------------------------------------>
-    <v-dialog width="400" v-model="deleteMedicineDialog">
-      <v-card style="overflow: hidden !important;" width="400" height="150">
+    <v-dialog width="550" v-model="deleteMedicineDialog">
+      <v-card style="overflow: hidden !important;" width="550" height="200">
         <div class="text-caption text-center pt-6 red--text" style="font-size: 16px !important; ">Are you sure you want
-          to delete this medicine
+          to delete it
         </div>
-
+        <div class="text-caption text-center pt-6 red--text" style="font-size: 16px !important; ">( This medicine will be deleted from all prescriptions that contain it)</div>
         <v-card-text>
           <v-row class="mt-5" justify="center">
 

@@ -99,7 +99,7 @@ const routes = [
         component: () => import(/* webpackChunkName: "about" */ '../views/Patient.vue'),
         beforeEnter: (to ,from , next ) => {
             if(store.state.authenticated){
-                store.commit('setNavBarTitle' , 'Patient info')
+                store.commit('setNavBarTitle' , 'Patient profile')
 
                 next()
             }else{

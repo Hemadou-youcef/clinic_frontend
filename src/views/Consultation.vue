@@ -12,7 +12,7 @@
         </v-icon>
       </router-link>
       <span>
-          / Consultations
+          / <router-link :to="`/consultations`" style="text-decoration: none;">Consultations</router-link>
         </span>
     </v-subheader>
     <div v-if="!loadingContents">
