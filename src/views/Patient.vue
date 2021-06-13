@@ -152,7 +152,7 @@
                     @click="addAppointment"
                     outlined
                 >
-                  <v-icon color="primary">
+                  <v-icon :color="(mode)?'teal':'primary'">
                     mdi-plus
                   </v-icon>
                   ADD
@@ -324,7 +324,7 @@
           :scrollable="false"
           @click:outside="closeOverLay(true)"
       >
-        <AddAppointment v-if="hover" @ShowSnackBar="showSnackBar(message,color)" :HideOverLay="closeOverLay"
+        <AddAppointment v-if="hover" @ShowSnackBar="showSnackBar" @HideOverLay="closeOverLay"
                         :dateApp="dateApp" :timeApp="timeApp" :timeLApp="timeLApp" :revisitApp="revisit"
                         :patientId="patientInfo.id" :appointmentId="``" :color="color"/>
       </v-dialog>
@@ -571,9 +571,9 @@ export default {
     },
     getColor(state) {
 
-      if (state == 'consult' || state == 'check') {
+      if (state == 'revisit' || state == 'check') {
         return 'blue'
-      } else if (state == 'revisit') {
+      } else if (state == 'consult') {
         return 'teal'
       }
 

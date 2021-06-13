@@ -47,6 +47,7 @@
             <v-toolbar-title v-if="$refs.calendar" >
               {{ $refs.calendar.title }}
             </v-toolbar-title>
+            <v-btn color="transparent" class="elevation-0" :loading="appointmentLoding"></v-btn>
 
             <v-spacer></v-spacer>
 
@@ -467,6 +468,7 @@ export default {
     x: 0,
     y: 0,
 
+    appointmentLoding : false,
     hover : false,
     consoltHover : false,
     showMenu : false,
@@ -506,6 +508,7 @@ export default {
   },
   methods: {
     getAppointment (){
+      this.appointmentLoding = true
       this.axios.get('/appointments/all').then((res) => {
         this.appointmentInfo = [];
         console.log(res.data)
@@ -551,6 +554,7 @@ export default {
             }
           }
         }
+        this.appointmentLoding = false
       }).catch(
           err => {
             this.errors = err.response.data.errors

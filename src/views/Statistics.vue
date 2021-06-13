@@ -122,7 +122,7 @@
 
           <v-icon>mdi-account</v-icon>
         </v-btn>
-        <v-btn @click="statisticsType = 'medicin';showNumericStatistique = false" >
+        <v-btn @click="statisticsType = 'medicin';showNumericStatistique = false" disabled>
           <span>medicines</span>
 
           <v-icon>mdi-pill</v-icon>
