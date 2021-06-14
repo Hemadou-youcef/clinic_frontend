@@ -11,6 +11,7 @@ export default new Vuex.Store({
     user: {},
     patientsSearch:[],
     navBarTitle: 'Dashboard',
+    // localhost: 'http://192.168.1.9:8000',
     localhost: 'http://localhost:8000',
 
   },
@@ -50,6 +51,7 @@ export default new Vuex.Store({
       logout(context) {
           localStorage.removeItem('auth')
           localStorage.removeItem('role')
+          localStorage.removeItem('token')
           context.commit('authenticate' , false)
           context.commit('setRole' , null)
           context.commit('setUser' , {})

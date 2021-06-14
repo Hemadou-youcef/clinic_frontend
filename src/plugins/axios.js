@@ -7,14 +7,19 @@ import axios from "axios";
 // axios.defaults.baseURL = process.env.baseURL || process.env.apiUrl || '';
 // axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
 // axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-
+let token = localStorage.getItem('token');
 let config = {
   baseURL: 'http://localhost:8000/api' ,
   // timeout: 60 * 1000, // Timeout
-  withCredentials: true, // Check cross-site Access-Control
+  // withCredentials: true, // Check cross-site Access-Control
+
 };
 
 const _axios = axios.create(config);
+if (token){
+  _axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+
+}
 
 _axios.interceptors.request.use(
   function(config) {

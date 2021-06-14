@@ -18,6 +18,8 @@
             <div class="welcome">Welcome back</div>
             <v-card-text class="pt-8">
               <div>
+                <div class="caption error--text  text-center" style="font-size: 14px !important;" v-if="errors.UserNotFound">{{errors.UserNotFound[0]}}</div>
+
                 <v-form v-model="valid" ref="form">
 
                   <v-text-field
@@ -44,7 +46,6 @@
                       @focus="errors.password = ''"
 
                   ></v-text-field>
-                  <div class="caption error--text ml-3" v-if="errors.UserNotFound">{{errors.UserNotFound[0]}}</div>
 
                   <v-layout justify-space-between>
                     <v-spacer></v-spacer>
@@ -53,6 +54,7 @@
                     <v-spacer></v-spacer>
 
                   </v-layout>
+
                 </v-form>
               </div>
             </v-card-text>
@@ -88,15 +90,17 @@ export default {
     submit () {
       if (this.$refs.form.validate()) {
         // eslint-disable-next-line no-unused-vars
-        this.axios.get('/csrf-cookie').then(response => {
+        // this.axios.get('/csrf-cookie').then(response => {
 
           this.axios.post('/login' , this.form).then((res) => {
             console.log('login request')
             console.log(res.data)
             localStorage.setItem('auth' , 1 )
-            localStorage.setItem('role' , res.data.role)
+            localStorage.setItem('token' , res.data.token)
+            localStorage.setItem('role' , res.data.user.role)
+            this.axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token');
             this.$store.commit('authenticate' , true)
-            this.$store.commit('setRole' , res.data.role)
+            this.$store.commit('setRole' , res.data.user.role)
             this.$store.dispatch('getUser')
             this.$router.push({name : 'appointments'})
           }).catch(
@@ -108,7 +112,7 @@ export default {
               }
 
           )
-        });
+        // });
 
       }
     },
