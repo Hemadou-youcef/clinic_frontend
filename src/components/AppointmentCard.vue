@@ -246,6 +246,7 @@
                 </v-list-item-content>
                 <v-list-item-content>
                   <v-btn
+                      v-if="getRole == 'doctor'"
                       color="blue"
                       dark
                       class="white--text opacity-8"
@@ -256,6 +257,19 @@
                       mdi-check
                     </v-icon>
                     Attended
+                  </v-btn>
+                  <v-btn
+                      v-else
+                      color="blue"
+                      dark
+                      class="white--text opacity-8"
+                      @click="addAppointment"
+                      elevation
+                  >
+                    <v-icon color="white" class="mr-2">
+                      mdi-calendar-refresh
+                    </v-icon>
+                    Revisit
                   </v-btn>
                 </v-list-item-content>
               </v-list-item>
