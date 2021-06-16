@@ -53,7 +53,7 @@
 
 
       </v-card-title>
-      <div v-if="pagination.pagesCount == 0"  class="text-center text--darken-3 text-h4 py-4">No result</div>
+
 
       <v-card-text>
         <v-list>
@@ -117,6 +117,7 @@
               ></v-skeleton-loader>
             </v-col>
           </v-row>
+          <div v-if="!skeletonLoader && pagination.pagesCount == 0"  class="text-center text--darken-3 text-h4 py-4">No result</div>
 
           <consultation-card v-for="consultation in consultationsInfo"
                              :key="consultation.id"
@@ -202,7 +203,6 @@ export default {
       this.axios.get(`/consultation/all?s=${this.sortby}&page=${page}`).then((res) => {
         this.pagination.pagesCount = res.data.last_page
         this.consultationsInfo = res.data.data;
-        console.log(this.consultationsInfo)
         this.skeletonLoader = false
       }).catch(
           err => {
@@ -234,6 +234,8 @@ export default {
 }
 </script>
 
-<style scoped>
-
+<style >
+  .v-skeleton-loader__button:first-child {
+    display: none !important;
+  }
 </style>

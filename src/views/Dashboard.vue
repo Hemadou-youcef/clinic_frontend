@@ -54,16 +54,20 @@
           >
             Consultation today
           </v-sheet>
-          <v-list>
-            <v-list-item>
-              <v-list-item-avatar class="rounded-lg mr-2" size="70">
-                <v-img :src="`http://localhost:8000/images/patients/male/1.jpg`"></v-img>
-              </v-list-item-avatar>
-              <v-list-item-content>
-                <v-list-item-title>Consultation of: Phillip Patton</v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
+
+          <v-list v-if="consultationsList.length > 0">
+            <router-link v-for="consultation in consultationsList" :key="consultation.consult" :to="(getRole == 'doctor')?`/consultations/${consultation.consult}`:`/patients/${consultation.patient_id}`" style="text-decoration: none;">
+              <v-list-item>
+                <v-list-item-avatar class="rounded-lg mr-2" size="70" >
+                    <v-img :src="$store.state.localhost+ consultation.image"></v-img>
+                </v-list-item-avatar>
+                <v-list-item-content>
+                  <v-list-item-title>Consultation of: {{ consultation.patient_firstname + ' ' + consultation.patient_lastname}}</v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </router-link>
           </v-list>
+          <v-card-title v-else>No consultation Today</v-card-title>
         </v-card>
       </v-col>
       <v-col :cols="heightbreackpoint" class="pt-0">
@@ -198,7 +202,7 @@
               </v-btn>
               <div v-else>
 
-                <v-tooltip bottom>
+                <v-tooltip v-if="getRole == 'doctor' && item.has_consultation != 'true'" bottom>
                   <template v-slot:activator="{ on }">
                     <v-btn
                         v-on="on"
@@ -234,7 +238,7 @@
                   </template>
                   absent
                 </v-tooltip>
-                <v-tooltip v-show="getRole == 'doctor' && item.has_consultation != 'true'" bottom>
+                <v-tooltip v-if="getRole == 'doctor' && item.has_consultation != 'true'" bottom>
                   <template v-slot:activator="{ on }">
                     <v-btn
                         v-on="on"
@@ -403,10 +407,12 @@ export default {
     consoltHover: false,
 
     TakeUpIntervall: '',
+    TimeRefresh: '',
 
     checkedAppointment: [],
     missedAppointment: [],
     appointmentList: [],
+    consultationsList: [],
 
 
     form : {
@@ -487,6 +493,13 @@ export default {
 
             this.appointmentNumber = this.appointmentList.length
             this.missedAppointment = []
+            this.consultationsList = []
+            var This = this
+            res.data.data.forEach(function (item){
+              if(item.has_consultation == 'true'){
+                This.consultationsList.push(item)
+              }
+            })
             this.appointmentList = this.appointmentList.filter(function(value){
               if(value.state == 'missed' || value.state == 'check') {
                 return false
@@ -596,6 +609,13 @@ export default {
           }
       )
     },
+    AutoRefresh(){
+      if(this.$route.name != 'dashboard' ){
+        window.clearInterval(this.TimeRefresh)
+      }else{
+        this.GetTodayAppointment()
+      }
+    },
     CoverterSimpleDate(sdate){
       var date = new Date();
       var FDArray = sdate.split(' ')
@@ -651,6 +671,8 @@ export default {
   },
   created() {
     this.GetTodayAppointment()
+    this.TimeRefresh = setInterval(()=> this.AutoRefresh(), 600000)
+
   }
 
 

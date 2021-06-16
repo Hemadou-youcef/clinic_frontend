@@ -69,6 +69,7 @@
             <v-btn
                 color="white"
                 class="white--text ma-2 ml-0 grey "
+                @click="option = true"
             >
               <v-icon>
                 mdi-tune
@@ -121,9 +122,9 @@
               @click:date="viewDay"
               @mousedown:time="addAppointment"
               @mousedown:event="selectAppointment"
-              :first-interval="32"
+              :first-interval="getworkingStartTime"
               :interval-minutes="15"
-              :interval-count="36"
+              :interval-count="getworkingEndTime"
               :interval-height="40"
           >
             <template v-slot:day-header="{date,weekday}">
@@ -289,6 +290,15 @@
 
               </v-card>
             </v-dialog>
+            <v-dialog
+                v-model="option"
+                transition="dialog-bottom-transition"
+                max-width="500"
+                :scrollable="false"
+                @click:outside="closeOverLay(true)"
+            >
+              <AgendaOption v-if="option" v-on:ShowSnackBar="ShowSnackBar" v-on:HideOverLay="closeOverLay"/>
+            </v-dialog>
           </div>
           <v-menu
               v-model="showMenu"
@@ -429,9 +439,10 @@
 <script>
 import AddAppointment from "../components/AddAppointment";
 import AddConsultation from "../components/AddConsultation";
+import AgendaOption from "../components/AgendaOption";
 export default {
   name: "agenda",
-  components: {AddAppointment,AddConsultation},
+  components: {AgendaOption, AddAppointment,AddConsultation},
   props: [
     'mode'
   ],
@@ -479,6 +490,7 @@ export default {
     Deleteloading: false,
     snackbar: false,
     deleteConsultationDialog: false,
+    option: false,
   }),
   computed: {
     cal () {
@@ -490,6 +502,16 @@ export default {
     getRole() {
       return this.$store.state.role;
     },
+    getworkingStartTime(){
+      return this.$store.state.workingStartTime
+    },
+    getworkingEndTime(){
+      return this.$store.state.workingEndTime
+    },
+    getagendaView(){
+      return this.$store.state.agendaView
+    },
+
   },
   mounted () {
     this.$refs.calendar.checkChange()
@@ -617,6 +639,9 @@ export default {
       if(!this.TwoClick) {
         if(!this.showMenu){
           if (typeof event !== 'object') {
+            this.selectedEvent.color = this.selectedEvent.realcolor
+            this.selectedEvent = {}
+            this.AlreadyselectedEvent = false
             this.dateApp = this.getFullDate()
             this.timeApp = '08:00'
             this.timeLApp = 15
@@ -762,6 +787,7 @@ export default {
     },
     closeOverLay(NormalClose){
       this.hover = false;
+      this.option = false;
       this.consoltHover = false;
       if(!NormalClose) this.getAppointment()
     },
@@ -817,6 +843,7 @@ export default {
     },
   },
   created() {
+    this.type = localStorage.getItem('agendaView')
     this.setToday()
     this.getAppointment();
   },

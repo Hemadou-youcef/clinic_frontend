@@ -11,8 +11,11 @@
           mdi-home
         </v-icon>
       </router-link>
-      <span>
+        <span>
           / <router-link :to="`/consultations`" style="text-decoration: none;">Consultations</router-link>
+        </span>
+        <span>
+          / consultation #{{ ConsultationInfo.id }}
         </span>
     </v-subheader>
     <div v-if="!loadingContents">

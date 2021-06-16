@@ -167,11 +167,11 @@
 
           <v-layout justify-space-between>
             <v-spacer></v-spacer>
-            <v-btn v-if="!edit" @click="submit(true)" :loading="Submitloading" :disabled="!valid"  :class=" { 'blue darken-1 white--text' : valid, 'disabled': !valid }">
+            <v-btn v-if="!edit" @click="submit(true)" :loading="Submitloading" :disabled="IsValid"  :class=" { 'blue darken-1 white--text' : valid, 'disabled': !valid }">
               ADD CONSULTATION
               <v-icon color="white" class="pl-2">mdi-plus-box</v-icon>
             </v-btn>
-            <v-btn v-else @click="submit(false)" :loading="Editloading" :disabled="!valid" color="teal darken-2" :class=" { ' white--text' : valid, 'disabled': !valid }">
+            <v-btn v-else @click="submit(false)" :loading="Editloading" :disabled="IsValid" color="teal darken-2" :class=" { ' white--text' : valid, 'disabled': !valid }">
               EDIT CONSULTATION
               <v-icon color="white" class="pl-2">mdi-pencil</v-icon>
             </v-btn>
@@ -226,8 +226,20 @@ export default {
   }),
   watch: {
     patientID (){
+      if(!this.info && !this.edit) {
+        this.appointmentID = null
+      }
       this.getAppointmentInfo()
     },
+  },
+  computed: {
+    IsValid(){
+      if(!this.valid || this.appointmentID == null){
+        return true
+      }else {
+        return false
+      }
+    }
   },
   methods: {
     submit(add){
@@ -290,6 +302,7 @@ export default {
       this.PatientLoading = true
       this.axios.get(`/patients`)
           .then(res => {
+
             var This = this
             res.data.data.forEach(function (item) {
               This.PatientList.push({
@@ -306,14 +319,32 @@ export default {
       this.AppointmentLoading = true
       this.axios.get(`/patient/${this.patientID}?with_appointments=1`).then(res => {
         var This = this
-        console.log(res.data.appointments)
         This.patientInfo.appointments = []
-        res.data.appointments.forEach(function (item) {
-          This.patientInfo.appointments.push({
-            text : `${item.date_appointment} ${item.start_time_appointment.substr(0, 5)}`,
-            value: item.id
+        if(!this.info && !this.edit) {
+          res.data.appointments.forEach(function (AppointmentItem) {
+            let Exist = false
+            res.data.consultations.every(function (ConsultationItem) {
+              if(ConsultationItem.appointment_id == AppointmentItem.id) {
+                Exist = true
+                return false;
+              }
+              return true
+            })
+            if(!Exist){
+              This.patientInfo.appointments.push({
+                text : `${AppointmentItem.date_appointment} ${AppointmentItem.start_time_appointment.substr(0, 5)}`,
+                value: AppointmentItem.id
+              })
+            }
           })
-        })
+        }else{
+          res.data.appointments.forEach(function (AppointmentItem) {
+            This.patientInfo.appointments.push({
+              text : `${AppointmentItem.date_appointment} ${AppointmentItem.start_time_appointment.substr(0, 5)}`,
+              value: AppointmentItem.id
+            })
+          })
+        }
         this.AppointmentLoading = false
       }).catch(err => {
         this.errors = err.response.data

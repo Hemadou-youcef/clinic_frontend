@@ -98,11 +98,21 @@ export default {
             localStorage.setItem('auth' , 1 )
             localStorage.setItem('token' , res.data.token)
             localStorage.setItem('role' , res.data.user.role)
+            // localStorage.setItem('role' , 'secretary')
             this.axios.defaults.headers.common['Authorization'] = 'Bearer ' + localStorage.getItem('token');
             this.$store.commit('authenticate' , true)
             this.$store.commit('setRole' , res.data.user.role)
+            // this.$store.commit('setRole' , 'secretary')
+            this.$store.commit('setworkingStartTime' , 32)
+            this.$store.commit('setworkingEndTime' , 36)
+            this.$store.commit('setagendaView' , 'custom-daily')
+
+            localStorage.setItem('workingStartTime' , 32 )
+            localStorage.setItem('workingEndTime' , 36 )
+            localStorage.setItem('agendaView' , 'custom-daily')
+
             this.$store.dispatch('getUser')
-            this.$router.push({name : 'appointments'})
+            this.$router.push({name : 'dashboard'})
           }).catch(
 
               (err) => {

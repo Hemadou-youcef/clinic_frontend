@@ -8,7 +8,7 @@
           </v-icon>
         </router-link>
         <span>
-          / <router-link :to="`/consultations/${ConsultationInfo.id}`">Consultation #{{ConsultationInfo.id}}</router-link> / Prescription
+          / <router-link :to="`/consultations`" style="text-decoration: none;">Consultations</router-link> / <router-link :to="`/consultations/${ConsultationInfo.id}`">Consultation #{{ConsultationInfo.id}}</router-link> / Prescription
         </span>
       </v-subheader>
       <v-row justify="center">

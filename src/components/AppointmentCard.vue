@@ -115,6 +115,20 @@
             >
               go to consultation
             </v-btn>
+            <v-btn
+                class="white--text opacity-8"
+                color="red"
+                dark
+                elevation
+                outlined
+                @click="deleteConsultationDialog = true"
+                v-else-if="getRole != 'doctor' && appointment.has_consultation != 'true'"
+            >
+              <v-icon color="red" class="mr-2">
+                mdi-calendar-remove-outline
+              </v-icon>
+              absent
+            </v-btn>
 
           </div>
         </div>
@@ -215,7 +229,7 @@
                     DETAIL
                   </v-btn>
                 </v-list-item-content>
-                <v-list-item-content class="mr-2">
+                <v-list-item-content class="mr-2" v-if="getRole == 'doctor'">
                   <v-btn
                       color="red"
                       dark
@@ -440,7 +454,9 @@ export default {
         if(this.time <= 0){
 
           this.EndTime = true
-          this.CheckAppointement()
+          if(this.getRole == 'doctor'){
+            this.CheckAppointement()
+          }
           window.clearInterval(this.TimeIntervall)
         }else {
           this.progressDarken = !this.progressDarken

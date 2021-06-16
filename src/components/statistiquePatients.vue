@@ -49,11 +49,6 @@ export default {
       responsive: true,
       maintainAspectRatio: false,
       pointHoverBackgroundColor: 'red',
-
-      title: {
-        display: true,
-        text: 'Halo'
-      },
       tooltips: {
         callbacks: {
           title: function() {
@@ -295,7 +290,7 @@ export default {
         currentDate = timeline
         cuttedInformation = []
         Layout = -1
-        while(Layout <= 29){
+        while(Layout <= 30){
            currentDateCheck = this.CoverterSimpleDate(currentDate + ' 00:00:00')
           currentDateCheck.setDate(currentDateCheck.getDate() + 1)
            NextCurrentDate = this.DateDesign(currentDateCheck.getFullYear() + '-' + (currentDateCheck.getMonth() + 1) + '-' + currentDateCheck.getDate())

@@ -10,6 +10,9 @@ export default new Vuex.Store({
     role: localStorage.getItem('role')  || 'null',
     user: {},
     patientsSearch:[],
+    workingStartTime: localStorage.getItem('workingStartTime'),
+    workingEndTime: localStorage.getItem('workingEndTime'),
+    agendaView:localStorage.getItem('agendaView'),
     navBarTitle: 'Dashboard',
     // localhost: 'http://192.168.1.9:8000',
     localhost: 'http://localhost:8000',
@@ -37,6 +40,15 @@ export default new Vuex.Store({
       },
       setMode(state, payload){
           state.mode =  payload
+      },
+      setworkingStartTime(state, payload){
+          state.workingStartTime =  payload
+      },
+      setworkingEndTime(state, payload){
+          state.workingEndTime =  payload
+      },
+      setagendaView(state, payload){
+          state.agendaView =  payload
       }
   },
   actions: {
