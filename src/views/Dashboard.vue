@@ -10,7 +10,7 @@
       </v-col>
       <v-col>
         <CardInfo :message="`Todays Consultation`"
-                  :number="0"
+                  :number="consultationsList.length"
                   :icon="`mdi-heart-pulse`"
                   :firstColor="`00cc66`"
                   :secondColor="`66ff33`"/>

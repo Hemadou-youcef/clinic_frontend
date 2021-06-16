@@ -249,13 +249,13 @@
                       color="blue"
                       dark
                       class="white--text opacity-8"
-                      @click="addAppointment"
+                      @click="this.CheckAppointement()"
                       elevation
                   >
                     <v-icon color="white" class="mr-2">
-                      mdi-calendar-refresh
+                      mdi-check
                     </v-icon>
-                    Revisit
+                    Attended
                   </v-btn>
                 </v-list-item-content>
               </v-list-item>
