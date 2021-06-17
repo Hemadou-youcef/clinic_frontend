@@ -24,7 +24,7 @@
           <v-icon class="mr-2">
             mdi-heart-pulse
           </v-icon>
-          Detail Consultation
+           Consultation Details
           <v-spacer></v-spacer>
           <v-btn
               color="primary"
@@ -102,7 +102,7 @@
                 <v-icon class="mr-2">
                   mdi-emoticon-sick-outline
                 </v-icon>
-                Detail
+                Details
               </v-card-title>
 
               <v-textarea

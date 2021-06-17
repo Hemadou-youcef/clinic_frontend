@@ -169,9 +169,16 @@ export default {
 }
 @media all and (max-width: 700px)  {
   .loginBox{
-
+    margin: auto;
     width: 95% !important;
 
+  }
+  .main{
+    background: url("../assets/wallpaper.jpg") no-repeat;
+    width: 100%;
+    height: 100%;
+    background-position: right;
+    background-size: contain;
   }
 }
 .loginCard{

@@ -13,7 +13,7 @@
 
     <v-card class="rounded-lg">
       <v-card-title>
-        Consultation list
+        Consultations list
         <v-spacer></v-spacer>
         <v-btn
             color="primary"
@@ -71,7 +71,7 @@
 
             <v-list-item-content>
               <v-list-item-title class="font-weight-bold grey--text">
-                SYNDROME
+                SYNDROMES
               </v-list-item-title>
             </v-list-item-content>
             <v-list-item-content>

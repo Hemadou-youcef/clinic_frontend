@@ -87,8 +87,8 @@ export default {
   },
   methods:{
     // eslint-disable-next-line no-unused-vars
-    getAvatar: (image)=>{
-      return `http://localhost:8000${image}`
+    getAvatar(image){
+      return `${ this.$store.state.localhost }${image}`
       // return `https://i.pravatar.cc/150?${name}`
       // return `https://avatars.dicebear.com/api/${gender}/${name}.svg`;
     },

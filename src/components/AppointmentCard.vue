@@ -187,21 +187,7 @@
                   </v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
-              <v-list-item>
-                <v-list-item-content>
-                  <v-list-item-title class="font-weight-bold" style="color: #645d54">
-                    Blood type:
-                    <v-chip color="red" class="white--text rounded-lg pl-1">
-                      <v-icon color="white" class="mr-1">
-                        mdi-water
-                      </v-icon>
-                      <span class="font-weight-bold">
-                      {{ appointment.patient_bloodType }}
-                    </span>
-                    </v-chip>
-                  </v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
+
               <v-list-item>
                 <v-list-item-content>
                   <v-list-item-title class="font-weight-bold" style="color: #645d54">

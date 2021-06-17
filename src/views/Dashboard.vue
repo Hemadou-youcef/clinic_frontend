@@ -2,21 +2,21 @@
   <v-container fluid>
     <v-row class="mb-0">
       <v-col>
-        <CardInfo :message="`Todays Appointment`"
+        <CardInfo :message="`Today Appointments`"
                   :number="appointmentNumber"
                   :icon="`mdi-calendar`"
                   :firstColor="`1976d2`"
                   :secondColor="`33ccff`"/>
       </v-col>
       <v-col>
-        <CardInfo :message="`Todays Consultation`"
+        <CardInfo :message="`Today Consultations`"
                   :number="consultationsList.length"
                   :icon="`mdi-heart-pulse`"
                   :firstColor="`00cc66`"
                   :secondColor="`66ff33`"/>
       </v-col>
       <v-col>
-        <CardInfo :message="`Missed Appointment`"
+        <CardInfo :message="`Missed Appointments`"
                   :number="missedAppointment.length"
                   :icon="`mdi-clock-alert`"
                   :firstColor="`ff0000`"
@@ -52,7 +52,7 @@
               :color="(mode)?'#00b383':'primary darken-3'"
               class="pa-4 white--text font-weight-bold d-flex flex-row"
           >
-            Consultation today
+            Today consultations
           </v-sheet>
 
           <v-list v-if="consultationsList.length > 0">
@@ -77,7 +77,7 @@
               class="pa-4 white--text font-weight-bold d-flex flex-row"
           >
             <span class="align-self-center">
-              Appointment
+              Appointments
             </span>
             <v-spacer></v-spacer>
             <v-btn
@@ -245,7 +245,7 @@
                         color="white"
                         dark
                         class="teal--text opacity-8  font-weight-bold float-right"
-                        @click="fillForm(item,'waiting');consoltHover = true"
+                        @click="fillForm(item,'waiting');consultHover = true"
                         v-if="getRole == 'doctor' && item.has_consultation != 'true'"
                         elevation
                         outlined
@@ -299,13 +299,13 @@
         <AddAppointment v-if="hover" v-on:ShowSnackBar="ShowSnackBar" v-on:HideOverLay="closeOverLay" :dateApp="dateApp" :timeApp="timeApp" :timeLApp="timeLApp" :appointmentId="``" :color="`teal`"/>
       </v-dialog>
       <v-dialog
-          v-model="consoltHover"
+          v-model="consultHover"
           transition="dialog-bottom-transition"
           max-width="800"
           :scrollable="false"
           @click:outside="closeOverLay(true)"
       >
-        <AddConsultation v-if="consoltHover" v-on:ShowSnackBar="ShowSnackBar" v-on:HideOverLay="closeOverLay"
+        <AddConsultation v-if="consultHover" v-on:ShowSnackBar="ShowSnackBar" v-on:HideOverLay="closeOverLay"
                          :edit="false" :info="true"
                          :PatientInfo="{id:form.patient_id,fullName:''}"
                          :AppointmentInfo="{id: AppointmentForm.id,text: form.date + ' ' + form.start_time}"
@@ -404,7 +404,7 @@ export default {
     revisit : true,
     nextAppointmentLoading: false,
     deleteConsultationDialog:false,
-    consoltHover: false,
+    consultHover: false,
 
     TakeUpIntervall: '',
     TimeRefresh: '',
@@ -664,7 +664,7 @@ export default {
     },
     closeOverLay(){
       this.hover = false;
-      this.consoltHover = false;
+      this.consultHover = false;
       this.GetTodayAppointment()
     },
 
