@@ -93,8 +93,7 @@ export default {
         // this.axios.get('/csrf-cookie').then(response => {
 
           this.axios.post('/login' , this.form).then((res) => {
-            console.log('login request')
-            console.log(res.data)
+
             localStorage.setItem('auth' , 1 )
             localStorage.setItem('token' , res.data.token)
             localStorage.setItem('role' , res.data.user.role)
@@ -117,7 +116,6 @@ export default {
 
               (err) => {
                 this.errors = err.response.data.errors
-                console.log('login errors')
                 console.log(err.response.data)
               }
 

@@ -488,7 +488,6 @@ export default {
           fromdate: dateApp,
           todate: dateApp} })
           .then((res) => {
-            console.log(res.data)
             this.appointmentList = this.orderly(res.data.data)
 
             this.appointmentNumber = this.appointmentList.length

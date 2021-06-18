@@ -27,12 +27,7 @@ export default {
   ,
   methods: {
     modeChanger(){
-      console.log(this.mode)
-      if(this.mode){
-        this.mode = false
-      }else{
-        this.mode = true
-      }
+      this.mode = !this.mode
       localStorage.setItem('mode',this.mode)
       this.$store.commit('setMode',this.mode)
     }
@@ -53,7 +48,6 @@ export default {
           .then(res =>
         {
           this.$store.dispatch('getUser')
-            console.log('App check auth OK')
         }).catch(() => {
             this.$store.dispatch('logout')
       })

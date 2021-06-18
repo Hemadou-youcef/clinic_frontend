@@ -93,7 +93,6 @@ export default {
       // return `https://avatars.dicebear.com/api/${gender}/${name}.svg`;
     },
     showEditForm(id){
-      console.log('edit button clicked')
       this.$emit('showEditForm' , id)
     }
   }

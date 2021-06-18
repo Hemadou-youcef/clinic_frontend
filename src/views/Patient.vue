@@ -519,7 +519,6 @@ export default {
 
     },
     showSnackBar(message, color) {
-      console.log(`${message}  ${color}`)
       this.snackbarMessage = message
       this.snackbarColor = color
       this.snackbar = true
@@ -532,7 +531,6 @@ export default {
       this.axios.post(`/patient/delete/${this.patientInfo.id}`)
           // eslint-disable-next-line no-unused-vars
           .then(res => {
-            console.log('deleting user ' + this.patientInfo.id);
             this.deletePatientDialog = false
 
             this.showSnackBar('Patient Deleted', 'red')
@@ -569,7 +567,6 @@ export default {
             details: item.id
           })
         })
-        console.log(this.consultations.items)
 
         this.loadingContents = false
       }).catch(err => {

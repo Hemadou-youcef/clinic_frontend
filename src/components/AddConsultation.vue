@@ -43,7 +43,7 @@
               </v-list-item-content>
             </v-list-item>
           </v-list>
-              <hr class="ma-0 mb-2 ml-9 grey lighten-4" >
+          <hr class="ma-0 mb-2 ml-9 grey lighten-4">
           <v-row>
             <v-col>
               <!--            <v-sheet color="primary" class="pa-2 white&#45;&#45;text font-weight-bold text-h5">-->
@@ -51,7 +51,7 @@
               <!--                    Appointment-->
               <!--                  </span>-->
               <!--            </v-sheet>-->
-              <v-sheet class="elevation-0 pa-1 rounded-lg" >
+              <v-sheet class="elevation-0 pa-1 rounded-lg">
                 <v-text-field
                     background-color="white"
                     label="Reasons"
@@ -99,7 +99,7 @@
                   hide-details
                   outlined
               ></v-select>
-              <v-sheet class=" pa-0" >
+              <v-sheet class=" pa-0">
                 <v-list class="py-0">
                   <v-list-item class="primary font-weight-bold rounded-lg mb-2" style="text-align: center">
                     <v-list-item-content>
@@ -119,7 +119,8 @@
                     </v-list-item-action>
                   </v-list-item>
 
-                  <v-list-item class="pa-1 elevation-0 mb-2 rounded-lg" v-for="(exam,index) in Examination" :key="index">
+                  <v-list-item class="pa-1 elevation-0 mb-2 rounded-lg" v-for="(exam,index) in Examination"
+                               :key="index">
 
                     <v-list-item-content class="ma-0 pa-1">
                       <v-text-field
@@ -167,11 +168,13 @@
 
           <v-layout justify-space-between>
             <v-spacer></v-spacer>
-            <v-btn v-if="!edit" @click="submit(true)" :loading="Submitloading" :disabled="IsValid"  :class=" { 'blue darken-1 white--text' : valid, 'disabled': !valid }">
+            <v-btn v-if="!edit" @click="submit(true)" :loading="Submitloading" :disabled="IsValid"
+                   :class=" { 'blue darken-1 white--text' : valid, 'disabled': !valid }">
               ADD CONSULTATION
               <v-icon color="white" class="pl-2">mdi-plus-box</v-icon>
             </v-btn>
-            <v-btn v-else @click="submit(false)" :loading="Editloading" :disabled="IsValid" color="teal darken-2" :class=" { ' white--text' : valid, 'disabled': !valid }">
+            <v-btn v-else @click="submit(false)" :loading="Editloading" :disabled="IsValid" color="teal darken-2"
+                   :class=" { ' white--text' : valid, 'disabled': !valid }">
               EDIT CONSULTATION
               <v-icon color="white" class="pl-2">mdi-pencil</v-icon>
             </v-btn>
@@ -188,11 +191,11 @@
 export default {
   name: "AddAppointment",
   props: [
-    'info','edit','mode','PatientInfo','AppointmentInfo','motive','detail','treatment','type','examinations','id'
+    'info', 'edit', 'mode', 'PatientInfo', 'AppointmentInfo', 'motive', 'detail', 'treatment', 'type', 'examinations', 'id'
   ],
-  data:()=>({
+  data: () => ({
     Types: [
-      'consultation','surgery','check'
+      'consultation', 'surgery', 'check'
     ],
     PatientList: [],
     patientInfo: {
@@ -210,14 +213,14 @@ export default {
     valid: false,
 
     form: {
-      Reason:'',
+      Reason: '',
       Detail: '',
-      Examination :'',
+      Examination: '',
       Treatment: '',
       Type: 'consultation',
       idPatient: null,
       idAppointment: null,
-      id:null
+      id: null
     },
 
     requireField: [
@@ -225,71 +228,76 @@ export default {
     ],
   }),
   watch: {
-    patientID (){
-      if(!this.info && !this.edit) {
+    patientID() {
+      if (!this.info && !this.edit) {
         this.appointmentID = null
       }
       this.getAppointmentInfo()
     },
   },
   computed: {
-    IsValid(){
-      if(!this.valid || this.appointmentID == null){
+    IsValid() {
+      if (!this.valid || this.appointmentID == null) {
         return true
-      }else {
+      } else {
         return false
       }
     }
   },
   methods: {
-    submit(add){
+    submit(add) {
       this.form.Examination = JSON.stringify(this.Examination)
       this.form.idPatient = this.patientID
       this.form.idAppointment = this.appointmentID
 
-      if (add){
+      if (add) {
         this.addConsultation()
-      }else{
+      } else {
         this.editConsultation()
+
       }
     },
-    addConsultation(){
+    addConsultation() {
       this.Submitloading = true
-      this.axios.post('/consultation/add' ,
+      this.axios.post('/consultation/add',
           this.form,
       ).
-      then(res => {
-        console.log(res.data)
-        this.axios.post('/appointment/edit', {
-          id : this.form.idAppointment,
-          patient_id: 'fix',
-          date: 'fix',
-          start_time: 'fix',
-          end_time: 'fix',
-          type: 'fix',
-          state: 'check',
-        }).then( () => {
-          this.$emit('HideOverLay')
-          this.$emit('ShowSnackBar','consultation Added','primary')
-          this.Submitloading = false
-        }).catch(
-            err => {
-              this.errors = err.response.data.errors
-              console.log(this.errors)
-            }
-        )
+          // eslint-disable-next-line no-unused-vars
+          then(res => {
+            this.axios.post('/appointment/edit', {
+              id: this.form.idAppointment,
+              patient_id: 'fix',
+              date: 'fix',
+              start_time: 'fix',
+              end_time: 'fix',
+              type: 'fix',
+              state: 'check',
+            }).then(() => {
+              this.$emit('HideOverLay')
+              this.$emit('ShowSnackBar', 'consultation Added', 'primary')
+              this.Submitloading = false
 
-      }).catch(err => {
+
+            }).catch(
+                err => {
+                  this.errors = err.response.data.errors
+                  console.log(this.errors)
+                }
+            )
+
+          }).catch(err => {
         this.formErrors = err.response.data.errors
         console.log(err)
       })
     },
-    editConsultation(){
+    editConsultation() {
       this.Editloading = true;
-      this.axios.post('/consultation/edit',this.form).then(() => {
+      this.axios.post('/consultation/edit', this.form).then(() => {
         this.Editloading = false;
         this.$emit('HideOverLay')
-        this.$emit('ShowSnackBar', 'appointment Edited','green')
+        this.$emit('ShowSnackBar', 'consultation Edited', 'green')
+
+
       }).catch(
           err => {
             this.errors = err.response.data.errors
@@ -298,7 +306,6 @@ export default {
       )
     },
     getPatients() {
-      console.log('patients request')
       this.PatientLoading = true
       this.axios.get(`/patients`)
           .then(res => {
@@ -306,7 +313,7 @@ export default {
             var This = this
             res.data.data.forEach(function (item) {
               This.PatientList.push({
-                text : `${item.firstname} ${item.lastname}`,
+                text: `${item.firstname} ${item.lastname}`,
                 value: item.id
               })
             })
@@ -320,27 +327,27 @@ export default {
       this.axios.get(`/patient/${this.patientID}?with_appointments=1`).then(res => {
         var This = this
         This.patientInfo.appointments = []
-        if(!this.info && !this.edit) {
+        if (!this.info && !this.edit) {
           res.data.appointments.forEach(function (AppointmentItem) {
             let Exist = false
             res.data.consultations.every(function (ConsultationItem) {
-              if(ConsultationItem.appointment_id == AppointmentItem.id) {
+              if (ConsultationItem.appointment_id == AppointmentItem.id) {
                 Exist = true
                 return false;
               }
               return true
             })
-            if(!Exist){
+            if (!Exist) {
               This.patientInfo.appointments.push({
-                text : `${AppointmentItem.date_appointment} ${AppointmentItem.start_time_appointment.substr(0, 5)}`,
+                text: `${AppointmentItem.date_appointment} ${AppointmentItem.start_time_appointment.substr(0, 5)}`,
                 value: AppointmentItem.id
               })
             }
           })
-        }else{
+        } else {
           res.data.appointments.forEach(function (AppointmentItem) {
             This.patientInfo.appointments.push({
-              text : `${AppointmentItem.date_appointment} ${AppointmentItem.start_time_appointment.substr(0, 5)}`,
+              text: `${AppointmentItem.date_appointment} ${AppointmentItem.start_time_appointment.substr(0, 5)}`,
               value: AppointmentItem.id
             })
           })
@@ -352,9 +359,9 @@ export default {
 
       })
     },
-    orderly(list){
+    orderly(list) {
       var NoOrdredList = list
-      NoOrdredList.sort(function(a, b) {
+      NoOrdredList.sort(function (a, b) {
         const first_start = a.date.split('-').join('')
         const second_start = b.date.split('-').join('')
         return first_start - second_start;
@@ -363,14 +370,14 @@ export default {
     },
   },
   created() {
-    if(this.info){
+    if (this.info) {
       this.getPatients()
       this.patientID = this.PatientInfo.id
       this.appointmentID = this.AppointmentInfo.id
-    }else{
-      if(!this.edit){
+    } else {
+      if (!this.edit) {
         this.getPatients()
-      }else{
+      } else {
         this.form.id = this.id
         this.form.Reason = this.motive
         this.form.Detail = this.detail
@@ -378,12 +385,12 @@ export default {
         this.Examination = JSON.parse(this.examinations)
         this.form.Type = this.type
         this.PatientList = [{
-          text : this.PatientInfo.fullName,
+          text: this.PatientInfo.fullName,
           value: this.PatientInfo.id
         }]
         this.patientID = this.PatientInfo.id
         this.patientInfo.appointments = [{
-          text : this.AppointmentInfo.text,
+          text: this.AppointmentInfo.text,
           value: this.AppointmentInfo.id
         }]
         this.appointmentID = this.AppointmentInfo.id
@@ -397,10 +404,12 @@ export default {
 .custom-green .v-input--selection-controls__input div {
   color: #009688 !important;
 }
-.v-input__append-inner{
+
+.v-input__append-inner {
   margin-top: 0px !important;
 }
-.v-overflow-btn .v-select__slot{
+
+.v-overflow-btn .v-select__slot {
   height: auto !important;
 }
 </style>

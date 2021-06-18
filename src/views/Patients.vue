@@ -251,7 +251,6 @@ export default {
   },
   methods: {
     getPatients(page = 1) {
-      console.log("patients request");
       this.loadingButton = true;
       this.axios
         .get(`/patients?page=${page}`)
@@ -279,7 +278,6 @@ export default {
       this.snackbar = true;
     },
     showDeleteConfirmationDialog(id) {
-      console.log("trying to delete user with id " + id);
       this.deletePatientId = id;
       this.deletePatientDialog = true;
     },
@@ -288,7 +286,6 @@ export default {
         .post(`/patient/delete/${this.deletePatientId}`)
         // eslint-disable-next-line no-unused-vars
         .then((res) => {
-          console.log("deleting user " + this.deletePatientId);
           this.deletePatientDialog = false;
 
           this.showSnackBar("Patient Deleted");

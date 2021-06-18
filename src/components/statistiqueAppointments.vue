@@ -60,10 +60,7 @@ export default {
             return "DATA"
           },
           label: function(tooltipItem, data) {
-            // console.log('..//');
-            // console.log(tooltipItem);
-            // console.log(data);
-            console.log('test')
+
             var StatLabel = data['datasets'][tooltipItem.datasetIndex].label
             return StatLabel + " " + data['datasets'][tooltipItem.datasetIndex]['data'][tooltipItem['index']];
           },
@@ -904,8 +901,9 @@ export default {
         check += this.statistiqueResult[i].check
         missed += this.statistiqueResult[i].missed
       }
-      console.log(check)
-      console.log(missed)
+
+
+
       this.$emit('callback',{
         total: check + missed,
         values:[

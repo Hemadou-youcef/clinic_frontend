@@ -247,7 +247,6 @@ export default {
         this.snackbar = true;
 
         if (this.patientImage.imageURL) {
-          console.log('there is an image')
           this.updateImage(res.data.id)
         } else {
           this.$emit('closeDialog', 'Patient Added');

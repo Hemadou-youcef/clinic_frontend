@@ -249,7 +249,6 @@ export default {
     editPatient() {
 
       this.axios.post(`/patient/update/${this.editForm.id}`, this.editForm).then(res => {
-        console.log('edit patient request')
         console.log(res)
         if (this.patientImage.image){
           this.updateImage()
@@ -293,8 +292,6 @@ export default {
 
     getPatient(id) {
       this.axios.get(`/patient/${id}`).then(res => {
-        console.log('get patient info request')
-        console.log(res)
 
         this.editForm = res.data
       }).catch(err => {
@@ -314,7 +311,6 @@ export default {
     }
   },
   created() {
-    console.log('edit form created')
     this.getPatient(this.patientID)
   }
 }

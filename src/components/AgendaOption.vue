@@ -156,8 +156,7 @@ export default {
     save(){
       var firstInterval = (parseInt(this.SelectedStartHour) * 4) + parseInt(this.SelectedStartMinute) / 15 + this.SelectedStartType * 48
       var intervalCount = (parseInt(this.SelectedEndHour) * 4) + parseInt(this.SelectedEndMinute) / 15 + this.SelectedEndType * 48 - firstInterval
-      console.log(firstInterval)
-      console.log(intervalCount)
+
       this.$store.commit('setworkingStartTime' , firstInterval)
       this.$store.commit('setworkingEndTime' , intervalCount)
       this.$store.commit('setagendaView' , this.SelectedAgendaType)
@@ -214,7 +213,6 @@ export default {
     this.SelectedEndMinute= endInfo.minute
     this.SelectedEndType= endInfo.type
     this.SelectedAgendaType = localStorage.getItem('agendaView')
-    console.log(localStorage.getItem('agendaView'))
   }
 }
 </script>

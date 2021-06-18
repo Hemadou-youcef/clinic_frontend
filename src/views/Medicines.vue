@@ -231,7 +231,6 @@ export default {
     getMedicines() {
       this.dataLoading = true
       this.axios.get('/medicines').then(res => {
-        console.log(res)
         this.items = res.data
         this.medicinesExist = res.data.length > 0 ? true: false
         this.dataLoading = false
@@ -244,8 +243,8 @@ export default {
     },
     addMedicine() {
       this.axios.post('/medicines/add', this.medicineForm)
+          // eslint-disable-next-line no-unused-vars
           .then(res => {
-            console.log(res)
             this.$refs.addMedicineForm.reset()
             this.addMedicineDialog = false
             this.getMedicines()
@@ -258,7 +257,6 @@ export default {
 
     },
     editMedicineD(item) {
-      console.log(item)
       this.editMedicineForm = {...item}
       this.editMedicineDialog = true
     },
@@ -279,8 +277,8 @@ export default {
     },
     editMedicine() {
       this.axios.post(`/medicines/update/${this.editMedicineForm.id}`, this.editMedicineForm)
+          // eslint-disable-next-line no-unused-vars
           .then(res => {
-            console.log(res)
             this.$refs.editMedicineForm.reset()
             this.editMedicineDialog = false
             this.getMedicines()

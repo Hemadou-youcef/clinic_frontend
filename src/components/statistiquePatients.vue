@@ -56,10 +56,8 @@ export default {
             return "DATA"
           },
           label: function(tooltipItem, data) {
-            // console.log('..//');
-            // console.log(tooltipItem);
-            // console.log(data);
-            console.log('test')
+
+
             var StatLabel = data['datasets'][tooltipItem.datasetIndex].label
             return StatLabel + " " + data['datasets'][tooltipItem.datasetIndex]['data'][tooltipItem['index']];
           },
@@ -247,7 +245,6 @@ export default {
             currentDate = NextCurrentDate
           }
         }
-        console.log(cuttedInformation)
       }
       else if (this.timeLine == 'month') {
         for (i = 0; i < this.statistiqueResult.length; i++) {
@@ -320,7 +317,6 @@ export default {
             currentDate = NextCurrentDate
           }
         }
-        console.log(cuttedInformation)
       }
       else if (this.timeLine == 'year') {
 
@@ -394,7 +390,6 @@ export default {
             currentDate = NextCurrentDate
           }
         }
-        console.log(cuttedInformation)
       }
       else if (this.timeLine == 'years') {
         for (i = 0; i < this.statistiqueResult.length; i++) {
@@ -432,7 +427,6 @@ export default {
             }
           }
         }
-        console.log(cuttedInformation)
         this.statistiqueResult = cuttedInformation
 
         currentDate = timeline
@@ -480,8 +474,7 @@ export default {
         male += this.statistiqueResult[i].male
         female += this.statistiqueResult[i].female
       }
-      console.log(male)
-      console.log(female)
+
       this.$emit('callback',{
         total: male + female,
         values:[

@@ -217,8 +217,7 @@ export default {
       })
     },
     deleteMedicin(index) {
-      console.log(index)
-      console.log(this.selectedMedicines)
+
       this.selectedMedicines.splice(index, 1)
     },
     addMedicine() {
@@ -330,8 +329,8 @@ export default {
     },
     addNewMedicine() {
       this.axios.post('/medicines/add', this.medicineForm)
+          // eslint-disable-next-line no-unused-vars
           .then(res => {
-            console.log(res)
             this.$refs.addMedicineForm.reset()
             this.addMedicineDialog = false
             this.getMedicines()
