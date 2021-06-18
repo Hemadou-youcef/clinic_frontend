@@ -117,7 +117,7 @@
               ></v-skeleton-loader>
             </v-col>
           </v-row>
-          <div v-if="!skeletonLoader && pagination.pagesCount == 0"  class="text-center text--darken-3 text-h4 py-4">No result</div>
+          <div v-if="!skeletonLoader && pagination.total == 0"  class="text-h6 text--lighten-1 mb-4 red--text text-center">No consultations yet</div>
 
           <consultation-card v-for="consultation in consultationsInfo"
                              :key="consultation.id"
@@ -132,7 +132,7 @@
           ></consultation-card>
         </v-list>
       </v-card-text>
-      <div v-if="pagination.pagesCount > 0" class="text-center mb-8">
+      <div v-if="pagination.total > 0" class="text-center mb-8">
         <v-pagination
 
             color="secondary"
@@ -187,7 +187,8 @@ export default {
 
     pagination: {
       currentPage: 1,
-      pagesCount: '0'
+      pagesCount: 0,
+      total: 0
     },
     skeletonLoader: false,
     hover: false,
@@ -202,6 +203,7 @@ export default {
       this.skeletonLoader = true
       this.axios.get(`/consultation/all?s=${this.sortby}&page=${page}`).then((res) => {
         this.pagination.pagesCount = res.data.last_page
+        this.pagination.total = res.data.total
         this.consultationsInfo = res.data.data;
         this.skeletonLoader = false
       }).catch(

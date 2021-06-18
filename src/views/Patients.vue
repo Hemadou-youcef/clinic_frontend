@@ -33,12 +33,13 @@
             :length="pagination.pagesCount"
           ></v-pagination>
         </div>
-        <div
-          v-show="noResultMessage"
-          class="text-center text--darken-3 text-h4 py-4"
-        >
-          No result
-        </div>
+<!--        <div-->
+<!--          v-show="noResultMessage"-->
+<!--          class="text-center text&#45;&#45;darken-3 text-h4 py-4"-->
+<!--        >-->
+<!--          No result-->
+<!--        </div>-->
+        <div  v-show="noResultMessage" class="text-h6 text--lighten-1 mb-4 red--text text-center">patients does not exist</div>
 
         <!--        Loading button-->
         <div class="text-center pb-5">

@@ -2,7 +2,7 @@
 
 import Vue from 'vue';
 import axios from "axios";
-
+import store from '../store/index';
 // Full config:  https://github.com/axios/axios#request-config
 // axios.defaults.baseURL = process.env.baseURL || process.env.apiUrl || '';
 // axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
@@ -10,7 +10,7 @@ import axios from "axios";
 let token = localStorage.getItem('token');
 let config = {
   // baseURL: ' http://192.168.1.10:8000/api' ,
-  baseURL: 'http://localhost:8000/api' ,
+  baseURL: store.state.localhost+'/api/' ,
   // timeout: 60 * 1000, // Timeout
   // withCredentials: true, // Check cross-site Access-Control
 

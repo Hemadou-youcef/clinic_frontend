@@ -3,7 +3,7 @@
     <v-container fluid fill-height class="loginOverlay pt-10">
       <v-layout  flex align-center justify-left>
         <div   class="loginBox">
-          <v-toolbar  color="secondary" height="120" class="pt-5 grey loginHeader">
+          <v-toolbar   height="120" class="pt-5 grey loginHeader">
             <v-row justify="center" >
 
               <div class="white--text mb-10 " style="font-size: 1.5em;">
@@ -39,7 +39,7 @@
                       type="password"
                       label="Enter your password"
                       v-model="form.password"
-                      min="8"
+                      min="4"
                       :rules="passwordRules"
                       required
                       class="mb-3 mt-6"
@@ -73,7 +73,7 @@ export default {
       valid: false,
       passwordRules: [
         (v) => !!v || 'Password is required',
-        (v) => v.length > 7 || "password must be greated that 8 characters"
+        (v) => v.length > 3 || "password must be greated that 8 characters"
       ],
 
       usernameRules: [
