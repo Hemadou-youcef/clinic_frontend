@@ -14,8 +14,8 @@ export default new Vuex.Store({
     workingEndTime: localStorage.getItem('workingEndTime'),
     agendaView:localStorage.getItem('agendaView'),
     navBarTitle: 'Dashboard',
-    // localhost: 'http://192.168.1.10:8000',
-    localhost: 'http://localhost:8000',
+    localhost: 'https://app-clinic-system-managment.herokuapp.com',
+    // localhost: 'http://localhost:8000',
 
   },
   getters: {

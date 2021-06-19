@@ -128,9 +128,11 @@ export default {
     },
     logo() {
       if (this.getRole == 'doctor') {
-        return 'https://previews.123rf.com/images/yupiramos/yupiramos1607/yupiramos160705616/59613224-doctor-avatar-profile-isolated-icon-vector-illustration-graphic-.jpg'
+        let image = require('../assets/doctor.jpg')
+        return image
       }
-      return 'https://cdn1.iconfinder.com/data/icons/avatar-3/512/Secretary-512.png';
+      let image = require('../assets/secretary.png')
+      return image
     },
     MiniLogo () {
       switch (this.$vuetify.breakpoint.name) {
@@ -149,6 +151,8 @@ export default {
     // }
   },
   created() {
+    console.log(__dirname)
+
     if (this.getRole == 'doctor') {
       this.drawer_items.push({'item': 'Consultations', 'icon': 'mdi-heart-pulse', 'to': '/consultations'});
     }
